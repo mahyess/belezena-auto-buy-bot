@@ -1,3 +1,11 @@
-link,quantity,customer_first_name,customer_last_name,customer_email,customer_email_password,document,address
-https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password,1837377373,address
-https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password,1837377373,address
+link,quantity,customer_first_name,customer_last_name,customer_email,customer_email_password,birthdate,gender,cpf,cep,telephone,address_label,number,complement
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password123,12/06/1987,F,12528802781,04267-010,11954741101,apartamento,2,complement
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password321,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3211,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3212,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3213,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3215,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3216,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3217,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password3218,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
+https://www.belezanaweb.com.br/ada-tina-acqua-micellare-agua-micelar-100ml/,2,maria,souza,maria@email.com,password32190,30/03/1978,M,12528802781,04267-010,11954741101,casa,3,complementario
