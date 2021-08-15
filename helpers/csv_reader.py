@@ -30,8 +30,6 @@ def updater(completed_row: str, success_link=None):
             read_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
         )
         for row in reader:
-            print(row)
-            print(type(row))
             if row != completed_row:
                 lines.append(row)
             else:

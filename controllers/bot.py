@@ -129,34 +129,35 @@ def bot(details):
             # the step below has some issue, so the above statement is workaround.
             # driver.find_element_by_css_selector("button[data-cy='RegisterUser']").click()
         else:
-            driver.find_element_by_id("password").send_keys(password)
+            driver.find_element_by_id("password").send_keys(details["password"])
             driver.find_element_by_css_selector("button[type='submit']").click()
         # sacola form complete
 
-        # # endereco form start
-        # # if current address label is already saved
-        # if len(driver.find_elements_by_xpath(f"//span[.='{address_label}']")):
-        #     address_card = driver.find_element_by_xpath(
-        #         # f"//li[./label/span.='{address_label}']"
-        #         f"//li[.//*[text()='{address_label}']]"
-        #     )
-        #     address_card.click()
-        #     address_card.find_element_by_xpath(".//div/button").click()
+        # endereco form start
+        # if current address label is already saved
+        address_label = details["address_label"]
+        if len(driver.find_elements_by_xpath(f"//span[.='{address_label}']")):
+            address_card = driver.find_element_by_xpath(
+                # f"//li[./label/span.='{address_label}']"
+                f"//li[.//*[text()='{address_label}']]"
+            )
+            address_card.click()
+            address_card.find_element_by_xpath(".//div/button").click()
 
-        # else:
-        #     # if not saved and there is another address card, trigger new form
-        #     if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
-        #         driver.find_element_by_css_selector("label[for='addAddress']").click()
-        # this is the first one being saved, sending directly to form
-        driver.find_element_by_id("label").send_keys(details["address_label"])
-        driver.find_element_by_id("postalCode").send_keys(details["cep"])
+        else:
+            # if not saved and there is another address card, trigger new form
+            if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
+                driver.find_element_by_css_selector("label[for='addAddress']").click()
+            # this is the first one being saved, sending directly to form
+            driver.find_element_by_id("label").send_keys(details["address_label"])
+            driver.find_element_by_id("postalCode").send_keys(details["cep"])
 
-        driver.find_element_by_id("number").send_keys(details["number"])
-        Select(driver.find_element_by_id("addressType")).select_by_value(
-            f"{address_type_dict[details['address_label'].lower()]}"
-        )
-        driver.find_element_by_id("complement").send_keys(details["complement"])
-        driver.find_element_by_css_selector("button[type='submit']").click()
+            driver.find_element_by_id("number").send_keys(details["number"])
+            Select(driver.find_element_by_id("addressType")).select_by_value(
+                f"{address_type_dict[details['address_label'].lower()]}"
+            )
+            driver.find_element_by_id("complement").send_keys(details["complement"])
+            driver.find_element_by_css_selector("button[type='submit']").click()
 
         # endereco form complete
         # pagamento form start
