@@ -40,9 +40,12 @@ FIELDNAMES = [
 
 
 def file_initializer(filename):
+    global FIELDNAMES
     is_file_exists = os.path.isfile(filename)
     if not is_file_exists:
         with open(filename, "a") as save_file:
+            if "completed" in filename:
+                FIELDNAMES = [*FIELDNAMES, "success_link"]
             file_writer = csv.DictWriter(
                 save_file, delimiter=",", fieldnames=FIELDNAMES
             )
