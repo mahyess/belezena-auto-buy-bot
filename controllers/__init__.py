@@ -17,7 +17,9 @@ def ui_refresher(func):
 def load_data(root):
     filename = root.onOpen()
 
-    with open(filename, "r") as input_file, open(FEEDING_FILE, "a") as save_file:
+    with open(filename, "r", newline="") as input_file, open(
+        FEEDING_FILE, "a", newline=""
+    ) as save_file:
         file_reader = csv.DictReader(input_file, delimiter=",")
         file_writer = csv.DictWriter(
             save_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
@@ -41,7 +43,7 @@ def auto_buy(root):
         root.show_message_box("Failed", f"No data imported", "Warning")
         return
 
-    with open(FEEDING_FILE, "r") as csv_file:
+    with open(FEEDING_FILE, "r", newline="") as csv_file:
         file_reader = csv.DictReader(
             csv_file,
             delimiter=",",

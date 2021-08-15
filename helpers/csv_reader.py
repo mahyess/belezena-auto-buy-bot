@@ -25,7 +25,7 @@ def updater(completed_row: str, success_link=None):
     lines = list()
     success = list()
     failure = list()
-    with open(FEEDING_FILE, "r") as read_file:
+    with open(FEEDING_FILE, "r", newline="") as read_file:
         reader = csv.DictReader(
             read_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
         )
@@ -41,13 +41,13 @@ def updater(completed_row: str, success_link=None):
                 else:
                     failure.append(row)
 
-    with open(FEEDING_FILE, "w") as write_file:
+    with open(FEEDING_FILE, "w", newline="") as write_file:
         writer = csv.DictWriter(
             write_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
         )
         writer.writerows(lines)
 
-    with open(COMPLETED_FILE, "a") as write_file:
+    with open(COMPLETED_FILE, "a", newline="") as write_file:
         writer = csv.DictWriter(
             write_file,
             delimiter=",",
@@ -55,7 +55,7 @@ def updater(completed_row: str, success_link=None):
         )
         writer.writerows(success)
 
-    with open(ERROR_FILE, "a") as write_file:
+    with open(ERROR_FILE, "a", newline="") as write_file:
         writer = csv.DictWriter(
             write_file,
             delimiter=",",
@@ -67,7 +67,7 @@ def updater(completed_row: str, success_link=None):
 
 
 def is_empty_csv(filename):
-    with open(filename) as csvfile:
+    with open(filename, newline="") as csvfile:
         reader = csv.reader(csvfile)
         for i, _ in enumerate(reader):
             if i:  # found the second row
@@ -76,6 +76,6 @@ def is_empty_csv(filename):
 
 
 def get_lines_count(filename):
-    with open(filename, "r") as csvfile:
+    with open(filename, "r", newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=",")
         return len(list(reader)) - 1
