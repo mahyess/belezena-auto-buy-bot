@@ -35,7 +35,7 @@ def load_credit_card(root):
 
 
 @ui_refresher
-def auto_buy_thread(root):
+def auto_buy(root):
     root.status = 1
     if not os.path.isfile(FEEDING_FILE) or is_empty_csv(FEEDING_FILE):
         root.show_message_box("Failed", f"No data imported", "Warning")
@@ -55,11 +55,6 @@ def auto_buy_thread(root):
             except Exception as e:
                 print(e)
                 updater(row)
-
-
-def auto_buy(root):
-    thread = threading.Thread(target=auto_buy_thread, args=(root,))
-    thread.start()
 
 
 @ui_refresher

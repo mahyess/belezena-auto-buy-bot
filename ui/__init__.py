@@ -78,8 +78,7 @@ class BaseFrame(tk.Frame):
             text="Auto Buy",
             width=10,
             bg="green",
-            command=lambda: auto_buy(self),
-            # command=lambda: threading.Thread(target=auto_buy, args=(self,)).start(),
+            command=lambda: threading.Thread(target=auto_buy, args=(self,)).start(),
         )
         self.auto_buy_btn.pack(padx=10, pady=5, side="left")
         self.pause_btn = tk.Button(
