@@ -59,7 +59,7 @@ def bot(details):
     # options.add_argument("user-data-dir=" + opera_profile)
     # driver = webdriver.Opera(options=options)
     driver = webdriver.Chrome()
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(10)
     try:
         # get new temporary email
         driver.get("https://10minutemail.net")
