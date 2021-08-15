@@ -77,5 +77,5 @@ def is_empty_csv(filename):
 
 def get_lines_count(filename):
     with open(filename, "r") as csvfile:
-        reader = csv.reader(csvfile)
+        reader = csv.reader(csvfile, delimiter=",")
         return len(list(reader)) - 1
