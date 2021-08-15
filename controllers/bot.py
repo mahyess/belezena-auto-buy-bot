@@ -62,8 +62,8 @@ def bot(details):
     driver.implicitly_wait(10)
     try:
         # get new temporary email
-        driver.get("https://10minutemail.net")
-        email = driver.find_element_by_id("fe_text").get_attribute("value")
+        # driver.get("https://10minutemail.net")
+        # email = driver.find_element_by_id("fe_text").get_attribute("value")
 
         # open new tab
         # driver.execute_script("window.open('');")
@@ -99,7 +99,7 @@ def bot(details):
         driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']").click()
 
         # email in login form
-        driver.find_element_by_id("email").send_keys(email)
+        driver.find_element_by_id("email").send_keys(details["customer_email"])
         time.sleep(2)
         driver.find_element_by_css_selector("button[type='submit']").click()
         # time.sleep(5)
