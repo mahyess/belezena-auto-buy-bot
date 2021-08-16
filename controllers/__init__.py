@@ -1,4 +1,5 @@
 import csv, os
+from helpers.ping_checker import ping_until_up
 import threading
 from helpers.file_system import FEEDING_FILE, PLATFORM
 from controllers.bot import bot
@@ -52,6 +53,7 @@ def auto_buy(root):
             try:
                 if root.status == 0:
                     break
+                ping_until_up()
                 order_link = bot(row)
                 updater(row, order_link)
             except Exception as e:
