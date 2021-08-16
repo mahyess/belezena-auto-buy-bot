@@ -16,6 +16,9 @@ FEEDER_FILE_FIELDNAMES = [
     "cep",
     "telephone",
     "address_label",
+    "street_address",
+    "district",
+    "reference_point",
     "number",
     "complement",
 ]
