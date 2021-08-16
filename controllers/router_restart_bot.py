@@ -15,7 +15,7 @@ def router_restart():
             driver.find_element_by_id("LoginPassword").send_keys("5e65a942")
             driver.find_element_by_id("acceptLogin").click()
         driver.find_element_by_xpath("//a[.//*[text()='REBOOT']]").click()
-        driver.find_element_by_xpath("//a[.//span[text()='Yes, Reboot']]").click()
+        driver.find_element_by_xpath("//a[.//*[text()='Yes, Reboot']]").click()
         time.sleep(90)
 
     except Exception as e:
