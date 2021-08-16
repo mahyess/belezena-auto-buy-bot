@@ -1,3 +1,4 @@
+from selenium.webdriver.support.wait import WebDriverWait
 from helpers.user_agent import random_user_agent
 import platform
 import time
@@ -6,20 +7,10 @@ from selenium import webdriver
 
 from selenium.webdriver.chrome.options import Options
 
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.common.keys import Keys
-
-from fake_useragent import UserAgent
-
-
-# print platform
-# print(platform.system())
-
-
-#     for line_count, row in enumerate(feeder):
-#         # if line_count == 0:
-#         print(f'Column names are {", ".join(row)}')
-#         print(row["link"])
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def bot(details):
@@ -106,7 +97,14 @@ def bot(details):
             driver.find_element_by_id("password").send_keys(
                 details["customer_email_password"]
             )
-            driver.find_element_by_css_selector("button[type='submit']").click()
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        "button[type='submit']",
+                    )
+                )
+            ).click()
         # sacola form complete
 
         # endereco form start
