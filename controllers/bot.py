@@ -154,6 +154,10 @@ def bot(details):
             driver.find_element_by_id("label").send_keys(details["address_label"])
             driver.find_element_by_id("postalCode").send_keys(details["cep"])
 
+            driver.find_element_by_id("streetAddress").send_keys(
+                details["street_address"]
+            )
+            driver.find_element_by_id("district").send_keys(details["district"])
             driver.find_element_by_id("number").send_keys(details["number"])
             Select(driver.find_element_by_id("addressType")).select_by_value(
                 f"{address_type_dict[details['address_label'].lower()]}"
