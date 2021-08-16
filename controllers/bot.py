@@ -97,14 +97,15 @@ def bot(details):
             driver.find_element_by_id("password").send_keys(
                 details["customer_email_password"]
             )
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (
-                        By.CSS_SELECTOR,
-                        "button[type='submit']",
-                    )
-                )
-            ).click()
+            driver.find_element_by_id("password").send_keys(Keys.ENTER)
+            # WebDriverWait(driver, 10).until(
+            #     EC.element_to_be_clickable(
+            #         (
+            #             By.CSS_SELECTOR,
+            #             "button[type='submit']",
+            #         )
+            #     )
+            # ).click()
         # sacola form complete
 
         # endereco form start
