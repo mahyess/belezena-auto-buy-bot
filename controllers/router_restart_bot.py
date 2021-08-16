@@ -3,12 +3,8 @@ from selenium import webdriver
 
 from selenium.webdriver.chrome.options import Options
 
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
-
 
 def router_restart():
-
     options = Options()
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
@@ -18,8 +14,11 @@ def router_restart():
             driver.find_element_by_id("Loginuser").send_keys("admin")
             driver.find_element_by_id("LoginPassword").send_keys("5e65a942")
             driver.find_element_by_id("acceptLogin").click()
-        driver.find_element_by_id("MLG_Resets_Reboot").click()
-        driver.find_element_by_id("MLG_Pop_Reboot_Yes").click()
+            time.sleep(5)
+        driver.find_element_by_xpath("//a[.//span[text()='Reboot']]").click()
+        time.sleep(5)
+
+        driver.find_element_by_xpath("//a[.//span[text()='Yes, Reboot']]").click()
         time.sleep(90)
 
     except Exception as e:
