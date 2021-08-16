@@ -8,6 +8,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
+from fake_useragent import UserAgent
+
 
 # print platform
 # print(platform.system())
@@ -20,21 +22,6 @@ from selenium.webdriver.common.keys import Keys
 
 
 def bot(details):
-    # item link
-    # item_url = (
-    #     "https://www.belezanaweb.com.br/lancome-monsieur-big-mascara-para-cilios-10ml/"
-    # )
-    # item_sku = None
-    # item_qty = 2
-    # cep_address = "04267-010"
-    # email = "xefami4535@cfcjy.com"
-    # first_name = "Fernando"
-    # last_name = "Souza"
-    # cpf = "12528802781"
-    # birthdate = "22/05/1978"
-    # telephone = "11954741101"
-    # password = cpf + last_name
-    # gender = "M"
     gender_dict = {
         "F": "female",
         "M": "male",
@@ -49,15 +36,11 @@ def bot(details):
         "rural": "RURAL",
         "outro": "OTHER",
     }
-    # number = 3
-    # complement = "complementario"
 
     options = Options()
-    PROXY = "23.23.23.23:3128"
-    options.add_argument("--proxy-server=%s" % PROXY)
-    # opera_profile = "/home/zeph/.config/opera"
-    # options.add_argument("user-data-dir=" + opera_profile)
-    # driver = webdriver.Opera(options=options)
+    ua = UserAgent()
+    userAgent = ua.random
+    options.add_argument(f'user-agent={userAgent}')
     driver = webdriver.Chrome()
     driver.implicitly_wait(10)
     try:
