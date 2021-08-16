@@ -1,3 +1,4 @@
+from helpers.user_agent import random_user_agent
 import platform
 import time
 from tkinter import Tk
@@ -38,20 +39,10 @@ def bot(details):
     }
 
     options = Options()
-    ua = UserAgent()
-    userAgent = ua.random
-    options.add_argument(f"user-agent={userAgent}")
+    options.add_argument(f"user-agent={random_user_agent()}")
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
     try:
-        # get new temporary email
-        # driver.get("https://10minutemail.net")
-        # email = driver.find_element_by_id("fe_text").get_attribute("value")
-
-        # open new tab
-        # driver.execute_script("window.open('');")
-        # driver.switch_to.window(driver.window_handles[1])
-
         # go to item details page
         driver.get(details["link"])
         # driver.get(item_url)
@@ -159,15 +150,6 @@ def bot(details):
             "span[data-cy='OrderNumber']"
         ).text
         print(f"Order number: {order_number}")
-
-        # driver.switch_to.window(driver.window_handles[0])
-        # driver.get("https://10minutemail.net")
-        # driver.find_element_by_partial_link_text("10 Minute Mail").click()
-        # driver.find_element_by_partial_link_text(order_number).click()
-        # order_link = driver.find_element_by_partial_link_text(order_number).get_attribute(
-        #     "href"
-        # )
-        # print(order_link)
 
         order_link = f"https://meurastre.io/rastreio/{order_number}"
         driver.get(order_link)
