@@ -163,6 +163,7 @@ def bot(details):
                 f"{address_type_dict[details['address_label'].lower()]}"
             )
             driver.find_element_by_id("complement").send_keys(details["complement"])
+            time.sleep(5)
             driver.find_element_by_css_selector("button[type='submit']").click()
 
         # endereco form complete
