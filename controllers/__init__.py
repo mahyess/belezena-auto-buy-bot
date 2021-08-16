@@ -1,3 +1,4 @@
+from controllers.router_restart_bot import router_restart
 import csv, os
 from helpers.ping_checker import ping_until_up
 import threading
@@ -53,6 +54,7 @@ def auto_buy(root):
             try:
                 if root.status == 0:
                     break
+                router_restart()
                 ping_until_up()
                 order_link = bot(row)
                 updater(row, order_link)
