@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
 
-def router_restart(details):
+def router_restart():
 
     options = Options()
     driver = webdriver.Chrome(options=options)
