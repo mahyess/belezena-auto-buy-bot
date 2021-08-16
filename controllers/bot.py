@@ -40,8 +40,8 @@ def bot(details):
     options = Options()
     ua = UserAgent()
     userAgent = ua.random
-    options.add_argument(f'user-agent={userAgent}')
-    driver = webdriver.Chrome()
+    options.add_argument(f"user-agent={userAgent}")
+    driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
     try:
         # get new temporary email
