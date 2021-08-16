@@ -129,7 +129,9 @@ def bot(details):
             # the step below has some issue, so the above statement is workaround.
             # driver.find_element_by_css_selector("button[data-cy='RegisterUser']").click()
         else:
-            driver.find_element_by_id("password").send_keys(details["password"])
+            driver.find_element_by_id("password").send_keys(
+                details["customer_email_password"]
+            )
             driver.find_element_by_css_selector("button[type='submit']").click()
         # sacola form complete
 
