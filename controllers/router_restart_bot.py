@@ -15,7 +15,7 @@ def router_restart():
             driver.find_element_by_id("LoginPassword").send_keys("5e65a942")
             driver.find_element_by_id("acceptLogin").click()
             time.sleep(5)
-        driver.find_element_by_xpath("//a[.//span[text()='Reboot']]").click()
+        driver.find_element_by_xpath("//a[.//span[text()='REBOOT']]").click()
         time.sleep(5)
 
         driver.find_element_by_xpath("//a[.//span[text()='Yes, Reboot']]").click()
