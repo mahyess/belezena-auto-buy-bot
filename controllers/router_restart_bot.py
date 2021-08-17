@@ -1,3 +1,4 @@
+from helpers.wait_for_clickable import wait_for_clickable_and_click
 import time
 from selenium import webdriver
 
@@ -21,27 +22,18 @@ def router_restart():
         WebDriverWait(driver, 5).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "basefrm"))
         )
-        WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    "//a[.//span[@id='MLG_Resets_Reboot']]",
-                )
-            )
-        ).click()
+        wait_for_clickable_and_click(
+            driver.find_element_by_xpath("//a[.//span[@id='MLG_Resets_Reboot']]")
+        )
+
         WebDriverWait(driver, 5).until(
             EC.frame_to_be_available_and_switch_to_it(
                 (By.CLASS_NAME, "fancybox-iframe")
             )
         )
-        WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable(
-                (
-                    By.ID,
-                    "//a[.//span[@id='MLG_Pop_Reboot_Yes']]",
-                )
-            )
-        ).click()
+        wait_for_clickable_and_click(
+            driver.find_element_by_xpath("//a[.//span[@id='MLG_Pop_Reboot_Yes']]")
+        )
 
         time.sleep(90)
 

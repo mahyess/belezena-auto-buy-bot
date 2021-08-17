@@ -54,7 +54,7 @@ def auto_buy(root):
             try:
                 if root.status == 0:
                     break
-                # router_restart()
+                router_restart()
                 ping_until_up()
                 order_link = bot(row)
                 updater(row, order_link)
