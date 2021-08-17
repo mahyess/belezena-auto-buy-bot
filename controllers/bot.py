@@ -210,7 +210,7 @@ def bot(details, error=None):
                         break
 
                 except Exception as e:
-                    print(e)
+                    raise e
 
         print("...success")
 
