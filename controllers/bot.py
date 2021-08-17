@@ -87,7 +87,14 @@ def bot(details):
             )
             time.sleep(2)
             gender_value = gender_dict[details["gender"]]
-            driver.find_element_by_css_selector(f"label[for='{gender_value}']").click()
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(
+                    (
+                        By.CSS_SELECTOR,
+                        f"label[for='{gender_value}']",
+                    )
+                )
+            ).click()
 
             # submit register form
             driver.find_element_by_id("password").send_keys(Keys.ENTER)
@@ -98,14 +105,7 @@ def bot(details):
                 details["customer_email_password"]
             )
             driver.find_element_by_id("password").send_keys(Keys.ENTER)
-            # WebDriverWait(driver, 10).until(
-            #     EC.element_to_be_clickable(
-            #         (
-            #             By.CSS_SELECTOR,
-            #             "button[type='submit']",
-            #         )
-            #     )
-            # ).click()
+
         # sacola form complete
 
         # endereco form start
