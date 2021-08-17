@@ -94,7 +94,7 @@ class BaseFrame(tk.Frame):
             text="Clear",
             width=10,
             bg="#bada55",
-            # command=lambda: clear(self),
+            command=lambda: clear(self),
         )
         self.clear_btn.pack(padx=10, pady=5, side="left")
 
@@ -197,6 +197,8 @@ class BaseFrame(tk.Frame):
             tk.messagebox.showerror(title, message)
         elif message_type == "warning":
             tk.messagebox.showwarning(title, message)
+        elif message_type == "question":
+            return tk.messagebox.askokcancel(title, message)
         else:
             tk.messagebox.showinfo(title, message)
 

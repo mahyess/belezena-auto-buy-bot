@@ -2,7 +2,13 @@ from controllers.router_restart_bot import router_restart
 import csv, os
 from helpers.ping_checker import ping_until_up
 import threading
-from helpers.file_system import FEEDING_FILE, PLATFORM
+from helpers.file_system import (
+    COMPLETED_FILE,
+    ERROR_FILE,
+    FEEDING_FILE,
+    PLATFORM,
+    file_initializer,
+)
 from controllers.bot import bot
 from helpers.csv_reader import is_empty_csv, FEEDER_FILE_FIELDNAMES, updater
 
@@ -35,7 +41,10 @@ def load_data(root):
 
 @ui_refresher
 def load_credit_card(root):
-    print("load_credit_card")
+    root.show_message_box(
+        "Load Credit Card",
+        "This button doesn't do anything.",
+    )
 
 
 @ui_refresher
@@ -70,9 +79,24 @@ def pause(root):
 
 @ui_refresher
 def clear(root):
-    print("clear")
+    result = root.show_message_box(
+        "Clear",
+        "Are you sure? This will clear all data you cannot recover.",
+        "question",
+    )
+    if result:
+        os.remove(FEEDING_FILE)
+        os.remove(ERROR_FILE)
+        os.remove(COMPLETED_FILE)
+        file_initializer(FEEDING_FILE)
+        file_initializer(ERROR_FILE)
+        file_initializer(COMPLETED_FILE)
+        root.refresh_ui()
 
 
 @ui_refresher
 def save(root):
-    print("save")
+    root.show_message_box(
+        "Save",
+        "This button doesn't do anything.",
+    )
