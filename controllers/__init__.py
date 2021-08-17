@@ -68,11 +68,7 @@ def load_credit_card(root):
 def auto_buy(root):
     root.status = 1
     root.refresh_ui()
-    if not get_lines_count(CARD_FILE):
-        root.show_message_box("Failed", f"No card available", "Warning")
-        root.status = 0
-        root.refresh_ui()
-        return
+
     if not os.path.isfile(FEEDING_FILE) or is_empty_csv(FEEDING_FILE):
         root.show_message_box("Failed", f"No data imported", "Warning")
         root.status = 0
@@ -86,6 +82,11 @@ def auto_buy(root):
         )
         for line_count, row in enumerate(file_reader):
             try:
+                if not get_lines_count(CARD_FILE):
+                    root.show_message_box("Failed", f"No card available", "Warning")
+                    root.status = 0
+                    root.refresh_ui()
+                    return
                 if root.status == 0:
                     break
                 # router_restart()
