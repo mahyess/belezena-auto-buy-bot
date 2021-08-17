@@ -40,12 +40,16 @@ def bot(details, error=None):
     options = Options()
     options.add_argument(f"user-agent={random_user_agent()}")
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(5)
     try:
         print("start bot...")
         # go to item details page
         driver.get(details["link"])
         # driver.get(item_url)
+        if len(driver.find_elements_by_class_name("banner-close-button")):
+            wait_for_clickable_and_click(
+                driver.find_element_by_class_name("banner-close-button")
+            )
 
         # get item sku
         item_sku = driver.find_element_by_xpath(
@@ -169,17 +173,21 @@ def bot(details, error=None):
             )
             for line_count, data in enumerate(file_reader):
                 try:
-                    driver.find_element_by_id("number").send_keys(data["number"])
-                    driver.find_element_by_id("holderName").send_keys(
-                        data["holder_name"]
-                    )
+                    number_input = driver.find_element_by_id("number")
+                    number_input.clear()
+                    number_input.send_keys(data["number"])
+                    holder_name_input = driver.find_element_by_id("holderName")
+                    holder_name_input.clear()
+                    holder_name_input.send_keys(data["holder_name"])
                     Select(driver.find_element_by_id("expiryMonth")).select_by_value(
                         f"{data['expiry_month']}"
                     )
                     Select(driver.find_element_by_id("expiryYear")).select_by_value(
                         f"{data['expiry_year']}"
                     )
-                    driver.find_element_by_id("cvc").send_keys(f"{data['cvc']}")
+                    cvc_input = driver.find_element_by_id("cvc")
+                    cvc_input.clear()
+                    cvc_input.send_keys(f"{data['cvc']}")
                     Select(driver.find_element_by_id("installment")).select_by_value(
                         "1"
                     )
