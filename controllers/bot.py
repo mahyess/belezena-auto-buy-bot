@@ -174,10 +174,10 @@ def bot(details, error=None):
             for line_count, data in enumerate(file_reader):
                 try:
                     number_input = driver.find_element_by_id("number")
-                    number_input.clear()
+                    number_input.send_keys(Keys.CONTROL, 'a')
                     number_input.send_keys(data["number"])
                     holder_name_input = driver.find_element_by_id("holderName")
-                    holder_name_input.clear()
+                    holder_name_input.send_keys(Keys.CONTROL, 'a')
                     holder_name_input.send_keys(data["holder_name"])
                     Select(driver.find_element_by_id("expiryMonth")).select_by_value(
                         f"{data['expiry_month']}"
@@ -186,7 +186,7 @@ def bot(details, error=None):
                         f"{data['expiry_year']}"
                     )
                     cvc_input = driver.find_element_by_id("cvc")
-                    cvc_input.clear()
+                    cvc_input.send_keys(Keys.CONTROL, 'a')
                     cvc_input.send_keys(f"{data['cvc']}")
                     Select(driver.find_element_by_id("installment")).select_by_value(
                         "1"
