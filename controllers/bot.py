@@ -1,3 +1,4 @@
+from helpers.wait_for_clickable import wait_for_clickable_and_click
 from selenium.webdriver.support.wait import WebDriverWait
 from helpers.user_agent import random_user_agent
 import platform
@@ -34,6 +35,7 @@ def bot(details):
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
     try:
+        print("start bot...")
         # go to item details page
         driver.get(details["link"])
         # driver.get(item_url)
@@ -47,6 +49,7 @@ def bot(details):
         buy_btn = driver.find_element_by_css_selector(
             "a[href^='https://checkout.belezanaweb.com.br/sacola?skus=']"
         )
+        print("...goto product checkout")
         driver.get(buy_btn.get_attribute("href"))
 
         # enter cep_address code
@@ -58,16 +61,18 @@ def bot(details):
                 f"select[data-cy='SelectItem'][name='{item_sku}']"
             )
         ).select_by_value(f"{details['quantity']}")
-        time.sleep(5)
 
-        # proceed to checkout
-        driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']").click()
+        wait_for_clickable_and_click(
+            driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']")
+        )
 
         # email in login form
         driver.find_element_by_id("email").send_keys(details["customer_email"])
-        time.sleep(2)
-        driver.find_element_by_css_selector("button[type='submit']").click()
-        # time.sleep(5)
+
+        print("...login email form")
+        wait_for_clickable_and_click(
+            driver.find_element_by_css_selector("button[type='submit']")
+        )
 
         # if already signed up
         if len(driver.find_elements_by_css_selector("button[data-cy='RegisterUser']")):
@@ -85,19 +90,14 @@ def bot(details):
             driver.find_element_by_id("password").send_keys(
                 details["customer_email_password"]
             )
-            time.sleep(2)
             gender_value = gender_dict[details["gender"]]
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (
-                        By.CSS_SELECTOR,
-                        f"label[for='{gender_value}']",
-                    )
-                )
-            ).click()
+            wait_for_clickable_and_click(
+                driver.find_element_by_css_selector(f"label[for='{gender_value}']")
+            )
 
             # submit register form
             driver.find_element_by_id("password").send_keys(Keys.ENTER)
+            print("...complete signup")
             # the step below has some issue, so the above statement is workaround.
             # driver.find_element_by_css_selector("button[data-cy='RegisterUser']").click()
         else:
@@ -105,6 +105,7 @@ def bot(details):
                 details["customer_email_password"]
             )
             driver.find_element_by_id("password").send_keys(Keys.ENTER)
+            print("...complete login")
 
         # sacola form complete
 
@@ -118,6 +119,7 @@ def bot(details):
             )
             address_card.click()
             address_card.find_element_by_xpath(".//div/button").click()
+            print("...chosen address")
 
         else:
             # if not saved and there is another address card, trigger new form
@@ -136,15 +138,25 @@ def bot(details):
                 f"{address_type_dict[details['address_label'].lower()]}"
             )
             driver.find_element_by_id("complement").send_keys(details["complement"])
-            time.sleep(5)
-            driver.find_element_by_css_selector("button[type='submit']").click()
+
+            wait_for_clickable_and_click(
+                driver.find_element_by_css_selector("button[type='submit']")
+            )
+            print("...create new address")
 
         # endereco form complete
         # pagamento form start
-        time.sleep(5)
-        driver.find_element_by_css_selector("label[for='BOLETO']").click()
-        time.sleep(5)
-        driver.find_element_by_css_selector("button[data-cy='ProceedSuccess']").click()
+
+        print("...choose by ticket")
+        wait_for_clickable_and_click(
+            driver.find_element_by_css_selector("label[for='BOLETO']")
+        )
+        wait_for_clickable_and_click(
+            driver.find_element_by_css_selector("button[data-cy='ProceedSuccess']")
+        )
+
+        print("...success")
+
         order_number = driver.find_element_by_css_selector(
             "span[data-cy='OrderNumber']"
         ).text
@@ -152,10 +164,11 @@ def bot(details):
 
         order_link = f"https://meurastre.io/rastreio/{order_number}"
         driver.get(order_link)
+        print("...complete bot")
 
         return order_link
 
-    except Exception as e:
+    except ValueError as e:
         print(e)
         raise e
 

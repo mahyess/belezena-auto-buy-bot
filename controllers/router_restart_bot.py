@@ -13,10 +13,11 @@ def router_restart():
     driver.implicitly_wait(10)
     try:
         driver.get("http://192.168.15.1/cgi-bin/device-management-resets.cgi")
-        if not len(driver.find_elements_by_xpath('//button[text()="Logout"]')):
-            driver.find_element_by_id("Loginuser").send_keys("admin")
-            driver.find_element_by_id("LoginPassword").send_keys("5e65a942")
-            driver.find_element_by_id("acceptLogin").click()
+        # if not len(driver.find_elements_by_xpath('//button[text()="Logout"]')):
+        driver.find_element_by_id("Loginuser").send_keys("admin")
+        driver.find_element_by_id("LoginPassword").send_keys("5e65a942")
+        driver.find_element_by_id("acceptLogin").click()
+
         WebDriverWait(driver, 5).until(
             EC.frame_to_be_available_and_switch_to_it((By.ID, "basefrm"))
         )
@@ -24,7 +25,7 @@ def router_restart():
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
-                    "//a[.//span[text()='REBOOT']]",
+                    "//a[.//span[@id='MLG_Resets_Reboot']]",
                 )
             )
         ).click()
@@ -36,8 +37,8 @@ def router_restart():
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (
-                    By.XPATH,
-                    "//a[.//span[text()='Yes, Reboot']]",
+                    By.ID,
+                    "//a[.//span[@id='MLG_Pop_Reboot_Yes']]",
                 )
             )
         ).click()
