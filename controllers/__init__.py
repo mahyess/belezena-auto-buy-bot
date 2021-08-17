@@ -83,7 +83,9 @@ def auto_buy(root):
         for line_count, row in enumerate(file_reader):
             try:
                 if not get_lines_count(CARD_FILE):
-                    root.show_message_box("Failed", f"No card available", "Warning")
+                    root.show_message_box(
+                        "Failed", f"You need to use new cards", "Warning"
+                    )
                     root.status = 0
                     root.refresh_ui()
                     return
