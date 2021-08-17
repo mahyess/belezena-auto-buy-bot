@@ -225,7 +225,7 @@ def bot(details, error=None):
 
         return "order_link"
 
-    except ValueError as e:
+    except Exception as e:
         retry += 1
         bot(details, error=e)
 
