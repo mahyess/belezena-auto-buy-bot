@@ -3,6 +3,7 @@ import csv, os
 from helpers.ping_checker import ping_until_up
 import threading
 from helpers.file_system import (
+    CARD_FILE,
     COMPLETED_FILE,
     ERROR_FILE,
     FEEDING_FILE,
@@ -10,7 +11,12 @@ from helpers.file_system import (
     file_initializer,
 )
 from controllers.bot import bot
-from helpers.csv_reader import is_empty_csv, FEEDER_FILE_FIELDNAMES, updater
+from helpers.csv_reader import (
+    CARD_FILE_FIELDNAMES,
+    is_empty_csv,
+    FEEDER_FILE_FIELDNAMES,
+    updater,
+)
 
 
 def ui_refresher(func):
@@ -41,10 +47,20 @@ def load_data(root):
 
 @ui_refresher
 def load_credit_card(root):
-    root.show_message_box(
-        "Load Credit Card",
-        "This button doesn't do anything.",
-    )
+    filename = root.onOpen()
+
+    with open(filename, "r", newline="") as input_file, open(
+        CARD_FILE, "a", newline=""
+    ) as save_file:
+        file_reader = csv.DictReader(input_file, delimiter=",")
+        file_writer = csv.DictWriter(
+            save_file, delimiter=",", fieldnames=CARD_FILE_FIELDNAMES
+        )
+
+        for line_count, row in enumerate(file_reader):
+            file_writer.writerow(row)
+
+    root.show_message_box("Successful", f"{line_count+1} Data Imported")
 
 
 @ui_refresher
@@ -63,7 +79,7 @@ def auto_buy(root):
             try:
                 if root.status == 0:
                     break
-                router_restart()
+                # router_restart()
                 ping_until_up()
                 order_link = bot(row)
                 updater(row, order_link)

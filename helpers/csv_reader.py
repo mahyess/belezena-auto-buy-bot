@@ -1,7 +1,7 @@
 # csv reader
 # from _typeshed import NoneType
 import csv
-from helpers.file_system import COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
+from helpers.file_system import CARD_FILE, COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
 
 FEEDER_FILE_FIELDNAMES = [
     "link",
@@ -22,6 +22,7 @@ FEEDER_FILE_FIELDNAMES = [
     "number",
     "complement",
 ]
+CARD_FILE_FIELDNAMES = ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
 
 
 def updater(completed_row: str, success_link=None):
@@ -65,6 +66,23 @@ def updater(completed_row: str, success_link=None):
         writer.writerows(failure)
 
     return
+
+
+def card_file_updater(completed_row: str):
+    lines = list()
+    with open(CARD_FILE, "r", newline="") as read_file:
+        reader = csv.DictReader(
+            read_file, delimiter=",", fieldnames=CARD_FILE_FIELDNAMES
+        )
+        for row in reader:
+            if row != completed_row:
+                lines.append(row)
+
+    with open(CARD_FILE, "w", newline="") as write_file:
+        writer = csv.DictWriter(
+            write_file, delimiter=",", fieldnames=CARD_FILE_FIELDNAMES
+        )
+        writer.writerows(lines)
 
 
 def is_empty_csv(filename):

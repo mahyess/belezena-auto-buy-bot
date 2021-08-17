@@ -1,5 +1,5 @@
 import threading
-from helpers.file_system import COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
+from helpers.file_system import CARD_FILE, COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
 from helpers.csv_reader import get_lines_count
 import tkinter as tk
 import tkinter.filedialog as filedialog
@@ -207,6 +207,7 @@ class BaseFrame(tk.Frame):
         success_count = get_lines_count(COMPLETED_FILE)
         remaining_count = get_lines_count(FEEDING_FILE)
         error_count = get_lines_count(ERROR_FILE)
+        card_count = get_lines_count(CARD_FILE)
         self.total_data = success_count + remaining_count + error_count
 
         self.total_data_loaded_lbl.config(
@@ -215,3 +216,4 @@ class BaseFrame(tk.Frame):
         self.success_count.config(text=f"{success_count}/{self.total_data}")
         self.remaining_count.config(text=f"{remaining_count}/{self.total_data}")
         self.error_count.config(text=f"{error_count}/{self.total_data}")
+        self.cc_count.config(text=f"{card_count}")

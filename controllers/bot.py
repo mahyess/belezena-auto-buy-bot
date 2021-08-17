@@ -1,3 +1,6 @@
+import csv
+from helpers.csv_reader import card_file_updater
+from helpers.file_system import CARD_FILE
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 from selenium.webdriver.support.wait import WebDriverWait
 from helpers.user_agent import random_user_agent
@@ -14,7 +17,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def bot(details):
+def bot(details, error=None):
+    retry = 0
+    if retry > 1:
+        raise error
+
     gender_dict = {
         "F": "female",
         "M": "male",
@@ -150,29 +157,69 @@ def bot(details):
         # pagamento form start
 
         print("...choose by ticket")
-        wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("label[for='BOLETO']")
-        )
-        wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[data-cy='ProceedSuccess']")
-        )
+        if len(driver.find_elements_by_css_selector("label[for='super-express']")):
+            wait_for_clickable_and_click(
+                driver.find_element_by_css_selector("label[for='super-express']")
+            )
+
+        with open(CARD_FILE, "r", newline="") as csv_file:
+            file_reader = csv.DictReader(
+                csv_file,
+                delimiter=",",
+            )
+            for line_count, data in enumerate(file_reader):
+                try:
+                    driver.find_element_by_id("number").send_keys(data["number"])
+                    driver.find_element_by_id("holderName").send_keys(
+                        data["holder_name"]
+                    )
+                    Select(driver.find_element_by_id("expiryMonth")).select_by_value(
+                        f"{data['expiry_month']}"
+                    )
+                    Select(driver.find_element_by_id("expiryYear")).select_by_value(
+                        f"{data['expiry_year']}"
+                    )
+                    driver.find_element_by_id("cvc").send_keys(f"{data['cvc']}")
+                    Select(driver.find_element_by_id("installment")).select_by_value(
+                        "1"
+                    )
+
+                    wait_for_clickable_and_click(
+                        driver.find_element_by_css_selector(
+                            "button[data-cy='ProceedSuccess']"
+                        )
+                    )
+                    time.sleep(5)
+
+                    if len(
+                        driver.find_elements_by_css_selector(
+                            "div[data-cy='dangerLightToast']"
+                        )
+                    ):
+                        card_file_updater(data)
+                        continue
+                    else:
+                        break
+
+                except Exception as e:
+                    print(e)
 
         print("...success")
 
-        order_number = driver.find_element_by_css_selector(
-            "span[data-cy='OrderNumber']"
-        ).text
-        print(f"Order number: {order_number}")
+        # order_number = driver.find_element_by_css_selector(
+        #     "span[data-cy='OrderNumber']"
+        # ).text
+        # print(f"Order number: {order_number}")
 
-        order_link = f"https://meurastre.io/rastreio/{order_number}"
-        driver.get(order_link)
+        # order_link = f"https://meurastre.io/rastreio/{order_number}"
+        # driver.get(order_link)
         print("...complete bot")
 
-        return order_link
+        return "order_link"
 
     except ValueError as e:
-        print(e)
-        raise e
+        retry += 1
+        bot(details, error=e)
 
     finally:
         driver.quit()

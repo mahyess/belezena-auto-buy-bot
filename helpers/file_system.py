@@ -19,6 +19,7 @@ if not os.path.exists(str(Path.home()) + "/.autobuy"):
 FEEDING_FILE = str(Path.home()) + "/.autobuy/feeder.csv"
 ERROR_FILE = str(Path.home()) + "/.autobuy/error.csv"
 COMPLETED_FILE = str(Path.home()) + "/.autobuy/completed.csv"
+CARD_FILE = str(Path.home()) + "/.autobuy/card.csv"
 
 
 FIELDNAMES = [
@@ -42,15 +43,14 @@ FIELDNAMES = [
 ]
 
 
-def file_initializer(filename):
-    global FIELDNAMES
+def file_initializer(filename, fieldnames=FIELDNAMES):
     is_file_exists = os.path.isfile(filename)
     if not is_file_exists:
         with open(filename, "a", newline="") as save_file:
             if "completed" in filename:
-                FIELDNAMES = [*FIELDNAMES, "success_link"]
+                fieldnames = [*fieldnames, "success_link"]
             file_writer = csv.DictWriter(
-                save_file, delimiter=",", fieldnames=FIELDNAMES
+                save_file, delimiter=",", fieldnames=fieldnames
             )
 
             file_writer.writeheader()
@@ -59,3 +59,6 @@ def file_initializer(filename):
 file_initializer(FEEDING_FILE)
 file_initializer(ERROR_FILE)
 file_initializer(COMPLETED_FILE)
+file_initializer(
+    CARD_FILE, ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
+)
