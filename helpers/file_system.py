@@ -47,8 +47,8 @@ def file_initializer(filename, fieldnames=FIELDNAMES):
     is_file_exists = os.path.isfile(filename)
     if not is_file_exists:
         with open(filename, "a", newline="") as save_file:
-            if "completed" in filename:
-                fieldnames = [*fieldnames, "success_link"]
+            if "completed" in filename or "error" in filename:
+                fieldnames = [*fieldnames, "remarks"]
             file_writer = csv.DictWriter(
                 save_file, delimiter=",", fieldnames=fieldnames
             )

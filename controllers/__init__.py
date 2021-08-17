@@ -93,8 +93,9 @@ def auto_buy(root):
                     break
                 # router_restart()
                 ping_until_up()
-                order_link = bot(row, root)
-                updater(row, order_link)
+                remarks, success = bot(root, row)
+                print(remarks, success)
+                updater(row, remarks, success)
             except Exception as e:
                 print(e)
                 updater(row)

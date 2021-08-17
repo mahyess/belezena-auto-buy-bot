@@ -17,7 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def bot(details, root):
+def bot(root, details):
     gender_dict = {
         "F": "female",
         "M": "male",
@@ -46,6 +46,8 @@ def bot(details, root):
             wait_for_clickable_and_click(
                 driver.find_element_by_class_name("banner-close-button")
             )
+        if len(driver.find_elements_by_xpath("//button[contains(text(), 'Avise-me')]")):
+            return "Out of Stock", False
 
         # get item sku
         item_sku = driver.find_element_by_xpath(
@@ -63,11 +65,14 @@ def bot(details, root):
         driver.find_element_by_id("postalCode").send_keys(details["cep"])
 
         # get quantity select dropdown and select desired value
-        Select(
-            driver.find_element_by_css_selector(
-                f"select[data-cy='SelectItem'][name='{item_sku}']"
-            )
-        ).select_by_value(f"{details['quantity']}")
+        try:
+            Select(
+                driver.find_element_by_css_selector(
+                    f"select[data-cy='SelectItem'][name='{item_sku}']"
+                )
+            ).select_by_value(f"{details['quantity']}")
+        except Exception as e:
+            return "Desired Quantity is not available.", False
 
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']")
@@ -112,6 +117,8 @@ def bot(details, root):
                 details["customer_email_password"]
             )
             driver.find_element_by_id("password").send_keys(Keys.ENTER)
+            if len(driver.find_elements_by_css_selector("div[data-cy='dangerToast']")):
+                return "Incorrent password", False
             print("...complete login")
 
         # sacola form complete
@@ -213,7 +220,7 @@ def bot(details, root):
                         print("Card removed")
                         root.refresh_ui()
                     else:
-                        return "link"
+                        return "link", True
 
                 except Exception as e:
                     raise e

@@ -25,7 +25,7 @@ FEEDER_FILE_FIELDNAMES = [
 CARD_FILE_FIELDNAMES = ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
 
 
-def updater(completed_row: str, success_link=None):
+def updater(completed_row: str, remarks=None, success: bool = True):
     lines = list()
     success = list()
     failure = list()
@@ -37,8 +37,8 @@ def updater(completed_row: str, success_link=None):
             if row != completed_row:
                 lines.append(row)
             else:
-                if success_link:
-                    row["success_link"] = success_link
+                row["remarks"] = remarks
+                if success:
                     success.append(row)
                 else:
                     failure.append(row)
@@ -53,7 +53,7 @@ def updater(completed_row: str, success_link=None):
         writer = csv.DictWriter(
             write_file,
             delimiter=",",
-            fieldnames=[*FEEDER_FILE_FIELDNAMES, "success_link"],
+            fieldnames=[*FEEDER_FILE_FIELDNAMES, "remarks"],
         )
         writer.writerows(success)
 
@@ -61,7 +61,7 @@ def updater(completed_row: str, success_link=None):
         writer = csv.DictWriter(
             write_file,
             delimiter=",",
-            fieldnames=FEEDER_FILE_FIELDNAMES,
+            fieldnames=[*FEEDER_FILE_FIELDNAMES, "remarks"],
         )
         writer.writerows(failure)
 
