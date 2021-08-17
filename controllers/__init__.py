@@ -13,6 +13,7 @@ from helpers.file_system import (
 from controllers.bot import bot
 from helpers.csv_reader import (
     CARD_FILE_FIELDNAMES,
+    get_lines_count,
     is_empty_csv,
     FEEDER_FILE_FIELDNAMES,
     updater,
@@ -66,8 +67,16 @@ def load_credit_card(root):
 @ui_refresher
 def auto_buy(root):
     root.status = 1
+    root.refresh_ui()
+    if not get_lines_count(CARD_FILE):
+        root.show_message_box("Failed", f"No card available", "Warning")
+        root.status = 0
+        root.refresh_ui()
+        return
     if not os.path.isfile(FEEDING_FILE) or is_empty_csv(FEEDING_FILE):
         root.show_message_box("Failed", f"No data imported", "Warning")
+        root.status = 0
+        root.refresh_ui()
         return
 
     with open(FEEDING_FILE, "r", newline="") as csv_file:
@@ -81,11 +90,14 @@ def auto_buy(root):
                     break
                 # router_restart()
                 ping_until_up()
-                order_link = bot(row)
+                order_link = bot(row, root)
                 updater(row, order_link)
             except Exception as e:
                 print(e)
                 updater(row)
+            finally:
+                root.refresh_ui()
+        root.status = 0
 
 
 @ui_refresher

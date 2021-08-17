@@ -17,11 +17,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def bot(details, error=None):
-    retry = 0
-    if retry > 1:
-        raise error
-
+def bot(details, root):
     gender_dict = {
         "F": "female",
         "M": "male",
@@ -40,7 +36,7 @@ def bot(details, error=None):
     options = Options()
     options.add_argument(f"user-agent={random_user_agent()}")
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(8)
     try:
         print("start bot...")
         # go to item details page
@@ -173,11 +169,16 @@ def bot(details, error=None):
             )
             for line_count, data in enumerate(file_reader):
                 try:
+                    if len(driver.find_elements_by_class_name("toast-close")):
+                        wait_for_clickable_and_click(
+                            driver.find_element_by_class_name("toast-close")
+                        )
+
                     number_input = driver.find_element_by_id("number")
-                    number_input.send_keys(Keys.CONTROL, 'a')
+                    number_input.send_keys(Keys.CONTROL, "a")
                     number_input.send_keys(data["number"])
                     holder_name_input = driver.find_element_by_id("holderName")
-                    holder_name_input.send_keys(Keys.CONTROL, 'a')
+                    holder_name_input.send_keys(Keys.CONTROL, "a")
                     holder_name_input.send_keys(data["holder_name"])
                     Select(driver.find_element_by_id("expiryMonth")).select_by_value(
                         f"{data['expiry_month']}"
@@ -186,7 +187,7 @@ def bot(details, error=None):
                         f"{data['expiry_year']}"
                     )
                     cvc_input = driver.find_element_by_id("cvc")
-                    cvc_input.send_keys(Keys.CONTROL, 'a')
+                    cvc_input.send_keys(Keys.CONTROL, "a")
                     cvc_input.send_keys(f"{data['cvc']}")
                     Select(driver.find_element_by_id("installment")).select_by_value(
                         "1"
@@ -197,37 +198,30 @@ def bot(details, error=None):
                             "button[data-cy='ProceedSuccess']"
                         )
                     )
-                    time.sleep(5)
+                    time.sleep(6)
 
                     if len(
                         driver.find_elements_by_css_selector(
                             "div[data-cy='dangerLightToast']"
                         )
+                    ) or len(
+                        driver.find_elements_by_css_selector(
+                            "div[data-cy='dangerToast']"
+                        )
                     ):
                         card_file_updater(data)
-                        continue
+                        print("Card removed")
+                        root.refresh_ui()
                     else:
-                        break
+                        return "link"
 
                 except Exception as e:
                     raise e
 
-        print("...success")
-
-        # order_number = driver.find_element_by_css_selector(
-        #     "span[data-cy='OrderNumber']"
-        # ).text
-        # print(f"Order number: {order_number}")
-
-        # order_link = f"https://meurastre.io/rastreio/{order_number}"
-        # driver.get(order_link)
-        print("...complete bot")
-
-        return "order_link"
+        raise Exception("Credit Card Empty")
 
     except Exception as e:
-        retry += 1
-        bot(details, error=e)
+        print(e)
 
     finally:
         driver.quit()

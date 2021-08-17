@@ -173,14 +173,6 @@ class BaseFrame(tk.Frame):
     def setup_bottom_frame(self):
         # status bar
         self.status_frame = tk.Frame(self.root)
-        self.save_btn = tk.Button(
-            self.status_frame,
-            text="Save",
-            width=10,
-            bg="green",
-            command=lambda: save(self),
-        )
-        self.save_btn.pack(padx=10, pady=5, side="left")
         self.status_lbl = tk.Label(
             self.status_frame, text="Status: Paused", foreground="orange"
         )
@@ -203,7 +195,7 @@ class BaseFrame(tk.Frame):
             tk.messagebox.showinfo(title, message)
 
     def refresh_ui(self):
-        self.status = 0
+
         success_count = get_lines_count(COMPLETED_FILE)
         remaining_count = get_lines_count(FEEDING_FILE)
         error_count = get_lines_count(ERROR_FILE)
@@ -213,7 +205,16 @@ class BaseFrame(tk.Frame):
         self.total_data_loaded_lbl.config(
             text="Total Data Loaded: " + str(self.total_data)
         )
+        self.total_credit_data_loaded_lbl.config(
+            text="Total Credit Cards Loaded: " + str(card_count)
+        )
+
         self.success_count.config(text=f"{success_count}/{self.total_data}")
         self.remaining_count.config(text=f"{remaining_count}/{self.total_data}")
         self.error_count.config(text=f"{error_count}/{self.total_data}")
         self.cc_count.config(text=f"{card_count}")
+
+        self.status_lbl.config(
+            text="Status: Active" if bool(self.status) else "Status: Inactive",
+            foreground="Green" if bool(self.status) else "Orange",
+        )
