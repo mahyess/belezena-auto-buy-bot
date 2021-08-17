@@ -117,8 +117,10 @@ def bot(details):
                 # f"//li[./label/span.='{address_label}']"
                 f"//li[.//*[text()='{address_label}']]"
             )
-            address_card.click()
-            address_card.find_element_by_xpath(".//div/button").click()
+            wait_for_clickable_and_click(address_card)
+            wait_for_clickable_and_click(
+                address_card.find_element_by_xpath(".//div/button")
+            )
             print("...chosen address")
 
         else:
