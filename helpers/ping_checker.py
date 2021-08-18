@@ -16,13 +16,13 @@ def ping_until_up(root, site="www.belezanaweb.com.br"):
         while True:
             status_1 = subprocess.run(
                 ["ping", param, "3", "www.belezanaweb.com.br"],
-                capture_output=True,
+                # capture_output=True,
                 stdin=DEVNULL,
                 stderr=DEVNULL,
             )
             status_2 = subprocess.run(
                 ["ping", param, "3", "www.useragentstring.com"],
-                capture_output=True,
+                # capture_output=True,
                 stdin=DEVNULL,
                 stderr=DEVNULL,
             )
