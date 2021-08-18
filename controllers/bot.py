@@ -1,20 +1,21 @@
 import csv
+import ui.custom_dialogs
+
 from helpers.csv_reader import card_file_updater
 from helpers.file_system import CARD_FILE
 from helpers.wait_for_clickable import wait_for_clickable_and_click
-from selenium.webdriver.support.wait import WebDriverWait
 from helpers.user_agent import random_user_agent
-import platform
 import time
-from tkinter import Tk
 from selenium import webdriver
 
 from selenium.webdriver.chrome.options import Options
 
-from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+
+# try:
+#     from ui.custom_dialogs import CustomCCCardMessage
+# except ImportError:
 
 
 def bot(root, details):
@@ -169,82 +170,86 @@ def bot(root, details):
                 driver.find_element_by_css_selector("label[for='super-express']")
             )
 
-        with open(CARD_FILE, "r", newline="") as csv_file:
-            file_reader = csv.DictReader(
-                csv_file,
-                delimiter=",",
-            )
-            for line_count, data in enumerate(file_reader):
-                try:
-                    if len(driver.find_elements_by_class_name("toast-close")):
+        def read_cards_and_enter(root, driver):
+            with open(CARD_FILE, "r", newline="") as csv_file:
+                file_reader = csv.DictReader(
+                    csv_file,
+                    delimiter=",",
+                )
+                for line_count, data in enumerate(file_reader):
+                    try:
+                        if len(driver.find_elements_by_class_name("toast-close")):
+                            wait_for_clickable_and_click(
+                                driver.find_element_by_class_name("toast-close")
+                            )
+
+                        number_input = driver.find_element_by_id("number")
+                        number_input.send_keys(Keys.CONTROL, "a")
+                        number_input.send_keys(data["number"])
+                        holder_name_input = driver.find_element_by_id("holderName")
+                        holder_name_input.send_keys(Keys.CONTROL, "a")
+                        holder_name_input.send_keys(data["holder_name"])
+                        Select(
+                            driver.find_element_by_id("expiryMonth")
+                        ).select_by_value(f"{data['expiry_month']}")
+                        Select(driver.find_element_by_id("expiryYear")).select_by_value(
+                            f"{data['expiry_year']}"
+                        )
+                        cvc_input = driver.find_element_by_id("cvc")
+                        cvc_input.send_keys(Keys.CONTROL, "a")
+                        cvc_input.send_keys(f"{data['cvc']}")
+                        Select(
+                            driver.find_element_by_id("installment")
+                        ).select_by_value("1")
+
                         wait_for_clickable_and_click(
-                            driver.find_element_by_class_name("toast-close")
+                            driver.find_element_by_css_selector(
+                                "button[data-cy='ProceedSuccess']"
+                            )
                         )
+                        time.sleep(6)
 
-                    number_input = driver.find_element_by_id("number")
-                    number_input.send_keys(Keys.CONTROL, "a")
-                    number_input.send_keys(data["number"])
-                    holder_name_input = driver.find_element_by_id("holderName")
-                    holder_name_input.send_keys(Keys.CONTROL, "a")
-                    holder_name_input.send_keys(data["holder_name"])
-                    Select(driver.find_element_by_id("expiryMonth")).select_by_value(
-                        f"{data['expiry_month']}"
-                    )
-                    Select(driver.find_element_by_id("expiryYear")).select_by_value(
-                        f"{data['expiry_year']}"
-                    )
-                    cvc_input = driver.find_element_by_id("cvc")
-                    cvc_input.send_keys(Keys.CONTROL, "a")
-                    cvc_input.send_keys(f"{data['cvc']}")
-                    Select(driver.find_element_by_id("installment")).select_by_value(
-                        "1"
-                    )
-
-                    wait_for_clickable_and_click(
-                        driver.find_element_by_css_selector(
-                            "button[data-cy='ProceedSuccess']"
-                        )
-                    )
-                    time.sleep(6)
-
-                    if len(
-                        driver.find_elements_by_css_selector(
-                            "div[data-cy='dangerLightToast']"
-                        )
-                    ) or len(
-                        driver.find_elements_by_css_selector(
-                            "div[data-cy='dangerToast']"
-                        )
-                    ):
                         if len(
+                            driver.find_elements_by_css_selector(
+                                "div[data-cy='dangerLightToast']"
+                            )
+                        ) or len(
                             driver.find_elements_by_css_selector(
                                 "div[data-cy='dangerToast']"
                             )
                         ):
-                            toast = driver.find_element_by_css_selector(
-                                "div[data-cy='dangerToast']"
-                            )
-                            is_excessive = len(
-                                toast.find_elements_by_xpath(
-                                    "//*[contains(text(), 'excedido')]"
+                            if len(
+                                driver.find_elements_by_css_selector(
+                                    "div[data-cy='dangerToast']"
                                 )
-                            )
-                            if is_excessive:
-                                return "excess request", False
+                            ):
+                                toast = driver.find_element_by_css_selector(
+                                    "div[data-cy='dangerToast']"
+                                )
+                                is_excessive = len(
+                                    toast.find_elements_by_xpath(
+                                        "//*[contains(text(), 'excedido')]"
+                                    )
+                                )
+                                if is_excessive:
+                                    return "excess request", False
 
-                        card_file_updater(data)
-                        print("Card removed")
-                        root.refresh_ui()
-                    else:
-                        return "link", True
+                            card_file_updater(data)
+                            print("Card removed")
+                            root.refresh_ui()
+                        else:
+                            return "link", True
 
-                except Exception as e:
-                    raise e
+                    except Exception as e:
+                        return "system error", False
 
-        raise Exception("Credit Card Empty")
+                ui.custom_dialogs.CustomCCCardMessage(root).show()
+                read_cards_and_enter(root, driver)
+
+        read_cards_and_enter(root, driver)
 
     except Exception as e:
-        root.show_message_box("error from bot", e)
+        return "system error", False
 
     finally:
         driver.quit()

@@ -1,4 +1,5 @@
 import threading
+from ui.custom_dialogs import CustomCCCardMessage
 from helpers.file_system import CARD_FILE, COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
 from helpers.csv_reader import get_lines_count
 import tkinter as tk
@@ -11,7 +12,6 @@ from controllers import (
     load_credit_card,
     load_data,
     pause,
-    save,
 )
 
 
@@ -193,6 +193,15 @@ class BaseFrame(tk.Frame):
             self.status_frame, text="Status: Paused", foreground="orange"
         )
         self.status_lbl.pack(fill="both", expand=True)
+
+        self.custom_message_btn = tk.Button(
+            self.status_frame,
+            text="Custom Message",
+            width=10,
+            bg="#bada55",
+            command=lambda: CustomCCCardMessage(self).show(),
+        )
+        self.custom_message_btn.pack(padx=10, pady=5, side="left")
 
     def onOpen(self):
         ftypes = [("Csv files", "*.csv"), ("All files", "*")]

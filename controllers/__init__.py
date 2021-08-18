@@ -1,13 +1,11 @@
 from controllers.router_restart_bot import router_restart
 import csv, os
 from helpers.ping_checker import ping_until_up
-import threading
 from helpers.file_system import (
     CARD_FILE,
     COMPLETED_FILE,
     ERROR_FILE,
     FEEDING_FILE,
-    PLATFORM,
     file_initializer,
 )
 from controllers.bot import bot
@@ -97,8 +95,7 @@ def auto_buy(root):
                 print(remarks, success)
                 updater(row, remarks, success)
             except Exception as e:
-                root.show_message_box("error from button", e)
-                updater(row)
+                updater(row, "system error", False)
             finally:
                 root.refresh_ui()
         root.status = 0
