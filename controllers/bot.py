@@ -111,12 +111,13 @@ def bot(root, details):
             # the step below has some issue, so the above statement is workaround.
             # driver.find_element_by_css_selector("button[data-cy='RegisterUser']").click()
         else:
+            return "already registered.", False
             driver.find_element_by_id("password").send_keys(
                 details["customer_email_password"]
             )
+            driver.find_element_by_id("password").send_keys(Keys.ENTER)
             if len(driver.find_elements_by_css_selector("div[data-cy='dangerToast']")):
                 return "Incorrent password", False
-            driver.find_element_by_id("password").send_keys(Keys.ENTER)
             print("...complete login")
 
         # sacola form complete
@@ -208,7 +209,7 @@ def bot(root, details):
 
                         # if order number is found, it means the order is complete
                         if len(
-                            driver.find_element_by_css_selector(
+                            driver.find_elements_by_css_selector(
                                 "span[data-cy='OrderNumber']"
                             )
                         ):
