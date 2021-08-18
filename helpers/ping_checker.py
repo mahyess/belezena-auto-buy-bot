@@ -26,6 +26,7 @@ def ping_until_up(root, site="www.belezanaweb.com.br"):
                 stdin=DEVNULL,
                 stderr=DEVNULL,
             )
+            root.show_message_box("from ping until up", status_1)
             if status_1.returncode == 0 and status_2.returncode == 0:
                 return
             print("www.belezanaweb.com.br or www.useragentstring.com is down...")
