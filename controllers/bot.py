@@ -205,20 +205,7 @@ def bot(root, details):
                                 "button[data-cy='ProceedSuccess']"
                             )
                         )
-                        time.sleep(6)
-
-                        # if order number is found, it means the order is complete
-                        if len(
-                            driver.find_elements_by_css_selector(
-                                "span[data-cy='OrderNumber']"
-                            )
-                        ):
-                            return (
-                                driver.find_element_by_css_selector(
-                                    "span[data-cy='OrderNumber']"
-                                ).text,
-                                True,
-                            )
+                        time.sleep(4)
 
                         # runs if order number is not found
                         if len(
@@ -251,6 +238,19 @@ def bot(root, details):
                             card_file_updater(data)
                             print("Card removed")
                             root.refresh_ui()
+
+                        # if order number is found, it means the order is complete
+                        if len(
+                            driver.find_elements_by_css_selector(
+                                "span[data-cy='OrderNumber']"
+                            )
+                        ):
+                            return (
+                                driver.find_element_by_css_selector(
+                                    "span[data-cy='OrderNumber']"
+                                ).text,
+                                True,
+                            )
 
                     except Exception as e:
                         return "system error", False
