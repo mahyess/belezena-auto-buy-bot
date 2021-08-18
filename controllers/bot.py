@@ -176,10 +176,10 @@ def bot(root, details):
                 )
                 for line_count, data in enumerate(file_reader):
                     try:
-                        if len(driver.find_elements_by_class_name("toast-close")):
-                            wait_for_clickable_and_click(
-                                driver.find_element_by_class_name("toast-close")
-                            )
+                        # if len(driver.find_elements_by_class_name("toast-close")):
+                        #     wait_for_clickable_and_click(
+                        #         driver.find_element_by_class_name("toast-close")
+                        #     )
 
                         number_input = driver.find_element_by_id("number")
                         number_input.send_keys(Keys.CONTROL, "a")
