@@ -127,6 +127,19 @@ def clear(root):
 
 
 @ui_refresher
+def clear_credit(root):
+    result = root.show_message_box(
+        "Clear Credit",
+        "Are you sure? This will clear credit data you cannot recover.",
+        "question",
+    )
+    if result:
+        os.remove(CARD_FILE)
+        file_initializer(CARD_FILE, ["number", "holder_name", "expiry_month", "expiry_year", "cvc"])
+        root.refresh_ui()
+
+
+@ui_refresher
 def save(root):
     root.show_message_box(
         "Save",

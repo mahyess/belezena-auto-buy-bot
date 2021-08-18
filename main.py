@@ -4,7 +4,7 @@ from ui import BaseFrame
 
 def main():
     root = tk.Tk()
-    root.geometry("700x300")
+    root.geometry("950x300")
     root.title("Auto Buy Bot")
     BaseFrame(root)
     root.mainloop()

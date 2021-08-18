@@ -4,7 +4,15 @@ from helpers.csv_reader import get_lines_count
 import tkinter as tk
 import tkinter.filedialog as filedialog
 from tkinter.constants import END, RIDGE
-from controllers import auto_buy, clear, load_credit_card, load_data, pause, save
+from controllers import (
+    auto_buy,
+    clear,
+    clear_credit,
+    load_credit_card,
+    load_data,
+    pause,
+    save,
+)
 
 
 class BaseFrame(tk.Frame):
@@ -37,7 +45,7 @@ class BaseFrame(tk.Frame):
         self.load_data_btn = tk.Button(
             self.top_left_frame,
             text="Load Data",
-            width=10,
+            width=12,
             bg="sky blue",
             command=lambda: load_data(self),
         )
@@ -45,7 +53,7 @@ class BaseFrame(tk.Frame):
         self.load_credit_data_btn = tk.Button(
             self.top_left_frame,
             text="Load Credit Card",
-            width=10,
+            width=15,
             bg="sky blue",
             command=lambda: load_credit_card(self),
         )
@@ -97,6 +105,14 @@ class BaseFrame(tk.Frame):
             command=lambda: clear(self),
         )
         self.clear_btn.pack(padx=10, pady=5, side="left")
+        self.clear_credit_btn = tk.Button(
+            self.top_right_frame,
+            text="Clear Credit",
+            width=10,
+            bg="#bada55",
+            command=lambda: clear_credit(self),
+        )
+        self.clear_credit_btn.pack(padx=10, pady=5, side="left")
 
     def setup_middle_frame(self):
         self.report_frame = tk.Frame(
