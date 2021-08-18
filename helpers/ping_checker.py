@@ -20,7 +20,6 @@ def ping_until_up(root, site="www.belezanaweb.com.br"):
             status_2 = (
                 subprocess.call(["ping", param, "3", "www.useragentstring.com"]) == 0
             )
-            root.show_message_box("from ping until up", status_1)
             if status_1 and status_2:
                 return
             print("www.belezanaweb.com.br or www.useragentstring.com is down...")
