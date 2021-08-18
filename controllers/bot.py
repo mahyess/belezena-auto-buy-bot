@@ -116,9 +116,9 @@ def bot(root, details):
             driver.find_element_by_id("password").send_keys(
                 details["customer_email_password"]
             )
-            driver.find_element_by_id("password").send_keys(Keys.ENTER)
             if len(driver.find_elements_by_css_selector("div[data-cy='dangerToast']")):
                 return "Incorrent password", False
+            driver.find_element_by_id("password").send_keys(Keys.ENTER)
             print("...complete login")
 
         # sacola form complete
