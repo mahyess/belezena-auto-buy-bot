@@ -97,7 +97,7 @@ def auto_buy(root):
                 print(remarks, success)
                 updater(row, remarks, success)
             except Exception as e:
-                print(e)
+                root.show_message_box("error from button", e)
                 updater(row)
             finally:
                 root.refresh_ui()

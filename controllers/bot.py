@@ -244,7 +244,7 @@ def bot(root, details):
         raise Exception("Credit Card Empty")
 
     except Exception as e:
-        print(e)
+        root.show_message_box("error from bot", e)
 
     finally:
         driver.quit()
