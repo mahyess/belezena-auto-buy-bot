@@ -57,19 +57,22 @@ cached = [
 ]
 
 
-def random_user_agent():
-    url = "http://www.useragentstring.com/pages/useragentstring.php?name=Chrome"
-    r = req.get(url)
+def random_user_agent(root):
+    try:
+        url = "http://www.useragentstring.com/pages/useragentstring.php?name=Chrome"
+        r = req.get(url)
 
-    if r.status_code == 200:
-        soup = BeautifulSoup(r.content, "html.parser")
-    else:
-        soup = False
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.content, "html.parser")
+        else:
+            soup = False
 
-    if soup:
-        div = soup.find("div", {"id": "liste"})
-        lnk = div.findAll("a")
-        return lnk[randint(0, len(lnk) - 1)].text
+        if soup:
+            div = soup.find("div", {"id": "liste"})
+            lnk = div.findAll("a")
+            return lnk[randint(0, len(lnk) - 1)].text
 
-    else:
-        return cached[randint(0, len(cached))]
+        else:
+            return cached[randint(0, len(cached))]
+    except Exception as e:
+        root.show_message_box("from user agent", e, "warning")
