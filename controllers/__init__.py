@@ -91,7 +91,7 @@ def auto_buy(root):
                     return
                 if root.status == 0:
                     break
-                # router_restart()
+                router_restart()
                 ping_until_up()
                 remarks, success = bot(root, row)
                 print(remarks, success)
@@ -135,7 +135,9 @@ def clear_credit(root):
     )
     if result:
         os.remove(CARD_FILE)
-        file_initializer(CARD_FILE, ["number", "holder_name", "expiry_month", "expiry_year", "cvc"])
+        file_initializer(
+            CARD_FILE, ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
+        )
         root.refresh_ui()
 
 
