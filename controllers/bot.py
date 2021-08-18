@@ -206,6 +206,20 @@ def bot(root, details):
                         )
                         time.sleep(6)
 
+                        # if order number is found, it means the order is complete
+                        if len(
+                            driver.find_element_by_css_selector(
+                                "span[data-cy='OrderNumber']"
+                            )
+                        ):
+                            return (
+                                driver.find_element_by_css_selector(
+                                    "span[data-cy='OrderNumber']"
+                                ).text,
+                                True,
+                            )
+
+                        # runs if order number is not found
                         if len(
                             driver.find_elements_by_css_selector(
                                 "div[data-cy='dangerLightToast']"
@@ -215,6 +229,7 @@ def bot(root, details):
                                 "div[data-cy='dangerToast']"
                             )
                         ):
+                            # if recessive order error is thrown, close the bot here.
                             if len(
                                 driver.find_elements_by_css_selector(
                                     "div[data-cy='dangerToast']"
@@ -231,16 +246,18 @@ def bot(root, details):
                                 if is_excessive:
                                     return "excess request", False
 
+                            # if some other errors, consider card problem, change card and try again
                             card_file_updater(data)
                             print("Card removed")
                             root.refresh_ui()
-                        else:
-                            return "link", True
 
                     except Exception as e:
                         return "system error", False
 
+                # reach here, if every card is used up
+                # prompt to add more cards
                 _ = ui.custom_dialogs.load_more_credit_card(root)
+                # repeat the process until return is True
                 read_cards_and_enter(root, driver)
 
         read_cards_and_enter(root, driver)
