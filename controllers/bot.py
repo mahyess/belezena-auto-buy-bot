@@ -13,10 +13,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
-# try:
-#     from ui.custom_dialogs import CustomCCCardMessage
-# except ImportError:
-
 
 def bot(root, details):
     gender_dict = {
@@ -41,6 +37,7 @@ def bot(root, details):
     try:
         print("start bot...")
         # go to item details page
+
         driver.get(details["link"])
         # driver.get(item_url)
         if len(driver.find_elements_by_class_name("banner-close-button")):
@@ -243,12 +240,13 @@ def bot(root, details):
                     except Exception as e:
                         return "system error", False
 
-                ui.custom_dialogs.CustomCCCardMessage(root).show()
+                _ = ui.custom_dialogs.load_more_credit_card(root)
                 read_cards_and_enter(root, driver)
 
         read_cards_and_enter(root, driver)
 
     except Exception as e:
+        print(e)
         return "system error", False
 
     finally:

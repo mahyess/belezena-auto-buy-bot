@@ -2,36 +2,49 @@ import tkinter as tk
 from controllers import load_credit_card
 
 
-from tkinter.commondialog import Dialog
+# from tkinter.commondialog import Dialog
+import tkinter.simpledialog as sd
 
 
-class CustomCCCardMessage(Dialog):
-    command = None
-
-    def __init__(self, parent, *args, **options):
-        super().__init__(parent, *args, **options)
+class CustomCCCardMessage(sd.Dialog):
+    def __init__(self, parent, title="Hello", *args, **options):
         self.parent = parent
         self.master = parent
-        self.top = tk.Toplevel(self.parent)
-        self.top.geometry("400x200")
-        self.top.transient(self.parent)
+        super().__init__(parent, title, *args, **options)
 
-        self.top.title("Credit Card Empty")
-        self.f0 = tk.Frame(self.top)
-        self.top.l1 = tk.Label(self.f0, text="Load more cards to continue.")
-        self.top.l1.pack(pady=30)
-        self.f0.pack()
-        self.top.grab_set()
-        self.top.f1 = tk.Frame(self.top)
-        # for key in kwargs:
-        import_btn = tk.Button(
-            self.top.f1,
-            text=f"Load Credit Cards",
+    def body(self, frame):
+        self.l1 = tk.Label(frame, text="Load more cards to continue.")
+        self.l1.pack()
+
+        return frame
+
+    def buttonbox(self):
+        box = tk.Frame(self)
+
+        w = tk.Button(
+            box,
+            text="Load Credit Cards",
+            width=10,
             command=lambda: self.on_load_credit_card(),
+            default=tk.ACTIVE,
         )
-        import_btn.pack(side=tk.LEFT)
-        self.top.f1.pack()
+        w.pack(side=tk.LEFT, padx=5, pady=5)
+        w = tk.Button(box, text="Cancel", width=10, command=self.cancel_pressed)
+        w.pack(side=tk.LEFT, padx=5, pady=5)
+
+        self.bind("<Return>", self.on_load_credit_card)
+        self.bind("<Escape>", self.cancel_pressed)
+
+        box.pack()
 
     def on_load_credit_card(self):
         load_credit_card(self.parent)
-        self.top.destroy()
+        self.destroy()
+
+    def cancel_pressed(self):
+        self.destroy()
+
+
+def load_more_credit_card(root):
+    CustomCCCardMessage(title="Load More Credit Cards", parent=root)
+    return 1

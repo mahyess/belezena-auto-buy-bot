@@ -1,5 +1,5 @@
 import threading
-from ui.custom_dialogs import CustomCCCardMessage
+from ui.custom_dialogs import CustomCCCardMessage, load_more_credit_card
 from helpers.file_system import CARD_FILE, COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
 from helpers.csv_reader import get_lines_count
 import tkinter as tk
@@ -199,7 +199,7 @@ class BaseFrame(tk.Frame):
             text="Custom Message",
             width=10,
             bg="#bada55",
-            command=lambda: CustomCCCardMessage(self).show(),
+            command=lambda: load_more_credit_card(self),  # .show(),
         )
         self.custom_message_btn.pack(padx=10, pady=5, side="left")
 
