@@ -216,6 +216,22 @@ def bot(root, details):
                             "div[data-cy='dangerToast']"
                         )
                     ):
+                        if len(
+                            driver.find_elements_by_css_selector(
+                                "div[data-cy='dangerToast']"
+                            )
+                        ):
+                            toast = driver.find_element_by_css_selector(
+                                "div[data-cy='dangerToast']"
+                            )
+                            is_excessive = len(
+                                toast.find_elements_by_xpath(
+                                    "//*[contains(text(), 'excedido')]"
+                                )
+                            )
+                            if is_excessive:
+                                return "excess request", False
+
                         card_file_updater(data)
                         print("Card removed")
                         root.refresh_ui()
