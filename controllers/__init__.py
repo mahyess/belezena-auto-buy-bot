@@ -8,7 +8,7 @@ from helpers.file_system import (
     FEEDING_FILE,
     file_initializer,
 )
-from controllers.bot import bot
+import controllers.bot as botfile
 from helpers.csv_reader import (
     CARD_FILE_FIELDNAMES,
     get_lines_count,
@@ -91,7 +91,7 @@ def auto_buy(root):
                     break
                 # router_restart()
                 # ping_until_up(root)
-                remarks, success = bot(root, row)
+                remarks, success = botfile.bot(root, row)
                 print(remarks, success)
                 updater(row, remarks, success)
             except Exception as e:

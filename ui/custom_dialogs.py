@@ -1,5 +1,5 @@
 import tkinter as tk
-from controllers import load_credit_card
+import controllers
 
 
 # from tkinter.commondialog import Dialog
@@ -38,7 +38,7 @@ class CustomCCCardMessage(sd.Dialog):
         box.pack()
 
     def on_load_credit_card(self):
-        load_credit_card(self.parent)
+        controllers.load_credit_card(self.parent)
         self.destroy()
 
     def cancel_pressed(self):
