@@ -37,11 +37,8 @@ def bot(root, details):
     try:
         print("start bot...")
         # go to item details page
-        driver.get("https://www.google.com")
-        _ = ui.custom_dialogs.load_more_credit_card(root)
-        driver.get("https://www.youtube.com")
-
         driver.get(details["link"])
+
         # driver.get(item_url)
         if len(driver.find_elements_by_class_name("banner-close-button")):
             wait_for_clickable_and_click(
@@ -262,7 +259,6 @@ def bot(root, details):
             # prompt to add more cards
             _ = ui.custom_dialogs.load_more_credit_card(root)
             # repeat the process until return is True
-            print("hello here")
             read_cards_and_enter(root, driver)
 
         read_cards_and_enter(root, driver)

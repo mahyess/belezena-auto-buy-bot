@@ -46,5 +46,8 @@ class CustomCCCardMessage(sd.Dialog):
 
 
 def load_more_credit_card(root):
-    CustomCCCardMessage(title="Load More Credit Cards", parent=root)
+    try:
+        CustomCCCardMessage(title="Load More Credit Cards", parent=root)
+    except Exception as e:
+        pass
     return 1
