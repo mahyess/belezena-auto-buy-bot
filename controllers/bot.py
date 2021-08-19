@@ -252,6 +252,9 @@ def bot(root, details):
                                 True,
                             )
 
+                        # refresh the page
+                        driver.get(driver.current_url)
+
                     except Exception as e:
                         return "system error", False
 
