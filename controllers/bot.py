@@ -235,11 +235,9 @@ def bot(root, details):
                             lambda d: "is-visible" not in el.get_attribute("class")
                         )
                         if "transacional/sucesso" in driver.current_url:
-                            root.show_message_box("from ticket", f"success")
                             order_number = driver.find_element_by_css_selector(
                                 "span[data-cy='OrderNumber']"
                             ).text
-                            root.show_message_box("order number", order_number)
                             return f"https://meurastre.io/rastreio/{order_number}", True
 
                         # runs if order number is not found
@@ -286,7 +284,7 @@ def bot(root, details):
             # repeat the process until return is True
             read_cards_and_enter(root, driver)
 
-        read_cards_and_enter(root, driver)
+        return read_cards_and_enter(root, driver)
 
     except Exception as e:
         print(e)
