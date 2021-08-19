@@ -163,10 +163,6 @@ def bot(root, details):
         # pagamento form start
 
         print("...choose by ticket")
-        if len(driver.find_elements_by_css_selector("label[for='super-express']")):
-            wait_for_clickable_and_click(
-                driver.find_element_by_css_selector("label[for='super-express']")
-            )
 
         def read_cards_and_enter(root, driver):
             with open(CARD_FILE, "r", newline="") as csv_file:
@@ -180,6 +176,16 @@ def bot(root, details):
                         #     wait_for_clickable_and_click(
                         #         driver.find_element_by_class_name("toast-close")
                         #     )
+                        if len(
+                            driver.find_elements_by_css_selector(
+                                "label[for='super-express']"
+                            )
+                        ):
+                            wait_for_clickable_and_click(
+                                driver.find_element_by_css_selector(
+                                    "label[for='super-express']"
+                                )
+                            )
 
                         number_input = driver.find_element_by_id("number")
                         number_input.send_keys(Keys.CONTROL, "a")
