@@ -190,7 +190,7 @@ class BaseFrame(tk.Frame):
         self.status_frame = tk.Frame(self.root)
 
         self.is_reset_router_check = tk.BooleanVar()
-        self.is_reset_router_check.set(True)
+        self.is_reset_router_check.set(False)
 
         self.reset_router_chk = tk.Checkbutton(
             self.status_frame,
