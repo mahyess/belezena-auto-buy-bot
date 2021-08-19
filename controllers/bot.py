@@ -211,7 +211,6 @@ def bot(root, details):
                                 "button[data-cy='ProceedSuccess']"
                             )
                         )
-                        time.sleep(4)
 
                         # runs if order number is not found
                         if len(
