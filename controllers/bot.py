@@ -240,7 +240,7 @@ def bot(root, details):
                             root.refresh_ui()
 
                         # if order number is found, it means the order is complete
-                        if len(
+                        elif len(
                             driver.find_elements_by_css_selector(
                                 "span[data-cy='OrderNumber']"
                             )
