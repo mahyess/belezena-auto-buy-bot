@@ -220,10 +220,11 @@ def bot(root, details):
                         #     )
                         # ):
                         if before_proceed_url != driver.current_url:
+                            order_number = driver.find_element_by_css_selector(
+                                "span[data-cy='OrderNumber']"
+                            ).text
                             return (
-                                driver.find_element_by_css_selector(
-                                    "span[data-cy='OrderNumber']"
-                                ).text,
+                                f"https://meurastre.io/rastreio/{order_number}",
                                 True,
                             )
 
