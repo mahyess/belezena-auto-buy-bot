@@ -93,8 +93,10 @@ def auto_buy(root):
                     return
                 if root.status == 0:
                     break
-                # router_restart()
-                # ping_until_up(root)
+                if root.is_reset_router_check.get():
+                    router_restart()
+                    ping_until_up(root)
+
                 remarks, success = botfile.bot(root, row)
                 print(remarks, success)
                 updater(row, remarks, success)

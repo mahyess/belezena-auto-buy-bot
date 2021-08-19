@@ -188,6 +188,23 @@ class BaseFrame(tk.Frame):
     def setup_bottom_frame(self):
         # status bar
         self.status_frame = tk.Frame(self.root)
+
+        self.is_reset_router_check = tk.BooleanVar()
+        self.is_reset_router_check.set(True)
+
+        self.reset_router_chk = tk.Checkbutton(
+            self.status_frame,
+            text="Reset Router?",
+            variable=self.is_reset_router_check,
+            bg="#fff",
+            fg="#000",
+        )
+        self.reset_router_chk.pack(
+            side="left",
+            pady=5,
+            padx=5,
+        )
+
         self.status_lbl = tk.Label(
             self.status_frame, text="Status: Paused", foreground="orange"
         )
