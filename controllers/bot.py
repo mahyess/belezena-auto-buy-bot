@@ -37,6 +37,9 @@ def bot(root, details):
     try:
         print("start bot...")
         # go to item details page
+        driver.get("https://www.google.com")
+        _ = ui.custom_dialogs.load_more_credit_card(root)
+        driver.get("https://www.youtube.com")
 
         driver.get(details["link"])
         # driver.get(item_url)
@@ -255,11 +258,12 @@ def bot(root, details):
                     except Exception as e:
                         return "system error", False
 
-                # reach here, if every card is used up
-                # prompt to add more cards
-                _ = ui.custom_dialogs.load_more_credit_card(root)
-                # repeat the process until return is True
-                read_cards_and_enter(root, driver)
+            # reach here, if every card is used up
+            # prompt to add more cards
+            _ = ui.custom_dialogs.load_more_credit_card(root)
+            # repeat the process until return is True
+            print("hello here")
+            read_cards_and_enter(root, driver)
 
         read_cards_and_enter(root, driver)
 
