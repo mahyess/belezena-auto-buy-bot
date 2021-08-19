@@ -70,7 +70,7 @@ def bot(root, details):
                 )
             ).select_by_value(f"{details['quantity']}")
         except Exception as e:
-            return "Desired Quantity is not available.", False
+            return "Out of stock", False
 
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']")
