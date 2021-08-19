@@ -1,4 +1,6 @@
 import csv
+
+from selenium.webdriver.support.wait import WebDriverWait
 import ui.custom_dialogs
 
 from helpers.csv_reader import card_file_updater
@@ -9,7 +11,8 @@ import time
 from selenium import webdriver
 
 from selenium.webdriver.chrome.options import Options
-
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
@@ -219,7 +222,14 @@ def bot(root, details):
                         #         "span[data-cy='OrderNumber']"
                         #     )
                         # ):
-                        time.sleep(4)
+                        el = WebDriverWait(driver, 10).until(
+                            EC.visibility_of_element_located(
+                                (By.XPATH, "//div[@class='loading is-visible']")
+                            )
+                        )
+                        WebDriverWait(driver, 10).until(
+                            lambda d: "is-visible" not in el.get_attribute("class")
+                        )
                         if "transacional/sucesso" in driver.current_url:
                             order_number = driver.find_element_by_css_selector(
                                 "span[data-cy='OrderNumber']"
