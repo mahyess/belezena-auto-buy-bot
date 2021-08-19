@@ -284,7 +284,8 @@ def bot(root, details):
             # repeat the process until return is True
             read_cards_and_enter(root, driver)
 
-        return read_cards_and_enter(root, driver)
+        remarks, success = read_cards_and_enter(root, driver)
+        return remarks, success
 
     except Exception as e:
         print(e)
