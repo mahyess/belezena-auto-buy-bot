@@ -29,37 +29,41 @@ def ui_refresher(func):
 @ui_refresher
 def load_data(root):
     filename = root.onOpen()
+    try:
+        with open(filename, "r", newline="") as input_file, open(
+            FEEDING_FILE, "a", newline=""
+        ) as save_file:
+            file_reader = csv.DictReader(input_file, delimiter=",")
+            file_writer = csv.DictWriter(
+                save_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
+            )
 
-    with open(filename, "r", newline="") as input_file, open(
-        FEEDING_FILE, "a", newline=""
-    ) as save_file:
-        file_reader = csv.DictReader(input_file, delimiter=",")
-        file_writer = csv.DictWriter(
-            save_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
-        )
+            for line_count, row in enumerate(file_reader):
+                file_writer.writerow(row)
 
-        for line_count, row in enumerate(file_reader):
-            file_writer.writerow(row)
-
-    root.show_message_box("Successful", f"{line_count+1} Data Imported")
+        root.show_message_box("Successful", f"{line_count+1} Data Imported")
+    except ValueError:
+        root.show_message_box("Error", "Invalid File Headers", "warning")
 
 
 @ui_refresher
 def load_credit_card(root):
     filename = root.onOpen()
+    try:
+        with open(filename, "r", newline="") as input_file, open(
+            CARD_FILE, "a", newline=""
+        ) as save_file:
+            file_reader = csv.DictReader(input_file, delimiter=",")
+            file_writer = csv.DictWriter(
+                save_file, delimiter=",", fieldnames=CARD_FILE_FIELDNAMES
+            )
 
-    with open(filename, "r", newline="") as input_file, open(
-        CARD_FILE, "a", newline=""
-    ) as save_file:
-        file_reader = csv.DictReader(input_file, delimiter=",")
-        file_writer = csv.DictWriter(
-            save_file, delimiter=",", fieldnames=CARD_FILE_FIELDNAMES
-        )
+            for line_count, row in enumerate(file_reader):
+                file_writer.writerow(row)
 
-        for line_count, row in enumerate(file_reader):
-            file_writer.writerow(row)
-
-    root.show_message_box("Successful", f"{line_count+1} Data Imported")
+        root.show_message_box("Successful", f"{line_count+1} Data Imported")
+    except ValueError:
+        root.show_message_box("Error", "Invalid File Headers", "warning")
 
 
 @ui_refresher
