@@ -219,6 +219,7 @@ def bot(root, details):
                         #         "span[data-cy='OrderNumber']"
                         #     )
                         # ):
+                        time.sleep(4)
                         if "transacional/sucesso" in driver.current_url:
                             order_number = driver.find_element_by_css_selector(
                                 "span[data-cy='OrderNumber']"
