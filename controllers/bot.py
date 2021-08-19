@@ -41,6 +41,7 @@ def bot(root, details):
         print("start bot...")
         # go to item details page
         driver.get(details["link"])
+        print("https" in driver.current_url)
 
         # driver.get(item_url)
         if len(driver.find_elements_by_class_name("banner-close-button")):
@@ -210,6 +211,9 @@ def bot(root, details):
                         ).select_by_value("1")
 
                         # before_proceed_url = driver.current_url
+                        driver.find_element_by_css_selector(
+                            "label[for='BOLETO']"
+                        ).click()
 
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
@@ -231,13 +235,12 @@ def bot(root, details):
                             lambda d: "is-visible" not in el.get_attribute("class")
                         )
                         if "transacional/sucesso" in driver.current_url:
+                            root.show_message_box("from ticket", f"success")
                             order_number = driver.find_element_by_css_selector(
                                 "span[data-cy='OrderNumber']"
                             ).text
-                            return (
-                                f"https://meurastre.io/rastreio/{order_number}",
-                                True,
-                            )
+                            root.show_message_box("order number", order_number)
+                            return f"https://meurastre.io/rastreio/{order_number}", True
 
                         # runs if order number is not found
                         if len(
