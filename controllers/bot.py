@@ -206,11 +206,26 @@ def bot(root, details):
                             driver.find_element_by_id("installment")
                         ).select_by_value("1")
 
+                        before_proceed_url = driver.current_url
+
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
                                 "button[data-cy='ProceedSuccess']"
                             )
                         )
+                        # if order number is found, it means the order is complete
+                        # if len(
+                        #     driver.find_elements_by_css_selector(
+                        #         "span[data-cy='OrderNumber']"
+                        #     )
+                        # ):
+                        if before_proceed_url != driver.current_url:
+                            return (
+                                driver.find_element_by_css_selector(
+                                    "span[data-cy='OrderNumber']"
+                                ).text,
+                                True,
+                            )
 
                         # runs if order number is not found
                         if len(
@@ -243,19 +258,6 @@ def bot(root, details):
                             card_file_updater(data)
                             print("Card removed")
                             root.refresh_ui()
-
-                        # if order number is found, it means the order is complete
-                        elif len(
-                            driver.find_elements_by_css_selector(
-                                "span[data-cy='OrderNumber']"
-                            )
-                        ):
-                            return (
-                                driver.find_element_by_css_selector(
-                                    "span[data-cy='OrderNumber']"
-                                ).text,
-                                True,
-                            )
 
                         # refresh the page
                         driver.get(driver.current_url)
