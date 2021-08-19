@@ -206,7 +206,7 @@ def bot(root, details):
                             driver.find_element_by_id("installment")
                         ).select_by_value("1")
 
-                        before_proceed_url = driver.current_url
+                        # before_proceed_url = driver.current_url
 
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
@@ -219,7 +219,7 @@ def bot(root, details):
                         #         "span[data-cy='OrderNumber']"
                         #     )
                         # ):
-                        if before_proceed_url != driver.current_url:
+                        if "transacional/sucesso" in driver.current_url:
                             order_number = driver.find_element_by_css_selector(
                                 "span[data-cy='OrderNumber']"
                             ).text
