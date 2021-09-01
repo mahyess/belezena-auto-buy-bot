@@ -17,7 +17,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 
 
-def bot(root, details):
+def bot(root, details, driver=None):
     gender_dict = {
         "F": "female",
         "M": "male",
@@ -32,16 +32,20 @@ def bot(root, details):
         "rural": "RURAL",
         "outro": "OTHER",
     }
+    using_param_driver = False
+    if not driver:
+        options = Options()
+        options.add_argument(f"user-agent={random_user_agent(root)}")
+        driver = webdriver.Chrome(options=options)
+        driver.implicitly_wait(8)
+    else:
+        using_param_driver = True
 
-    options = Options()
-    options.add_argument(f"user-agent={random_user_agent(root)}")
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(8)
     try:
         print("start bot...")
         # go to item details page
-        driver.get(details["link"])
-        print("https" in driver.current_url)
+        driver.get(f"https://www.belezanaweb.com.br/busca?q={details['name']}")
+        wait_for_clickable_and_click(driver.find_element_by_class_name("showcase-item"))
 
         # driver.get(item_url)
         if len(driver.find_elements_by_class_name("banner-close-button")):
@@ -74,7 +78,7 @@ def bot(root, details):
                 )
             ).select_by_value(f"{details['quantity']}")
         except Exception as e:
-            return "Out of stock", False
+            return "Not enough quantity", False
 
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']")
@@ -176,27 +180,20 @@ def bot(root, details):
                 )
                 for line_count, data in enumerate(file_reader):
                     try:
-                        # if len(driver.find_elements_by_class_name("toast-close")):
-                        #     wait_for_clickable_and_click(
-                        #         driver.find_element_by_class_name("toast-close")
-                        #     )
-                        if len(
-                            driver.find_elements_by_css_selector(
-                                "label[for='super-express']"
+                        wait_for_clickable_and_click(
+                            driver.find_elements_by_xpath(
+                                "//div[.//*[contains(@name, 'shipping')]][1]/label"
                             )
-                        ):
-                            wait_for_clickable_and_click(
-                                driver.find_element_by_css_selector(
-                                    "label[for='super-express']"
-                                )
-                            )
+                        )
 
                         number_input = driver.find_element_by_id("number")
                         number_input.send_keys(Keys.CONTROL, "a")
                         number_input.send_keys(data["number"])
                         holder_name_input = driver.find_element_by_id("holderName")
                         holder_name_input.send_keys(Keys.CONTROL, "a")
-                        holder_name_input.send_keys(data["holder_name"])
+                        holder_name_input.send_keys(
+                            f"{details['customer_first_name']} {details['customer_last_name']}"
+                        )
                         Select(
                             driver.find_element_by_id("expiryMonth")
                         ).select_by_value(f"{data['expiry_month']}")
@@ -211,9 +208,9 @@ def bot(root, details):
                         ).select_by_value("1")
 
                         # before_proceed_url = driver.current_url
-                        driver.find_element_by_css_selector(
-                            "label[for='BOLETO']"
-                        ).click()
+                        # driver.find_element_by_css_selector(
+                        #    "label[for='BOLETO']"
+                        # ).click()
 
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
@@ -234,12 +231,6 @@ def bot(root, details):
                         WebDriverWait(driver, 10).until(
                             lambda d: "is-visible" not in el.get_attribute("class")
                         )
-                        if "transacional/sucesso" in driver.current_url:
-                            order_number = driver.find_element_by_css_selector(
-                                "span[data-cy='OrderNumber']"
-                            ).text
-                            return f"https://meurastre.io/rastreio/{order_number}", True
-
                         # runs if order number is not found
                         if len(
                             driver.find_elements_by_css_selector(
@@ -270,12 +261,35 @@ def bot(root, details):
                             # if some other errors, consider card problem, change card and try again
                             card_file_updater(data)
                             print("Card removed")
-                            root.refresh_ui()
+                            root.refresh_ui
+
+                        try:
+                            time.sleep(8)
+                            if "transacional/sucesso" in driver.current_url:
+                                try:
+                                    # if alert box present
+                                    driver.find_element_by_id(
+                                        "onesignal-slidedown-cancel-button"
+                                    ).click()
+                                except Exception as e:
+                                    # alert box not found.
+                                    pass
+
+                                order_number = driver.find_element_by_css_selector(
+                                    "span[data-cy='OrderNumber']"
+                                ).text
+                                return (
+                                    f"https://meurastre.io/rastreio/{order_number}",
+                                    True,
+                                )
+                        except Exception as e:
+                            return f"Sucess but {e}", False
 
                         # refresh the page
                         driver.get(driver.current_url)
 
                     except Exception as e:
+                        print(e)
                         return "system error", False
 
             # reach here, if every card is used up
@@ -292,4 +306,5 @@ def bot(root, details):
         return "system error", False
 
     finally:
-        driver.quit()
+        if not using_param_driver:
+            driver.quit()

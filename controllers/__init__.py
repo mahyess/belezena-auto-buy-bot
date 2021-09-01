@@ -1,3 +1,4 @@
+from helpers.ui_refresher import ui_refresher
 from controllers.router_restart_bot import router_restart
 import csv, os
 from helpers.ping_checker import ping_until_up
@@ -9,6 +10,7 @@ from helpers.file_system import (
     file_initializer,
 )
 import controllers.bot as botfile
+import controllers.get_data_bot as get_data_bot_file
 from helpers.csv_reader import (
     CARD_FILE_FIELDNAMES,
     get_lines_count,
@@ -18,32 +20,26 @@ from helpers.csv_reader import (
 )
 
 
-def ui_refresher(func):
-    def wrapper(root, *args):
-        func(root, *args)
-        root.refresh_ui()
-
-    return wrapper
-
-
 @ui_refresher
 def load_data(root):
-    filename = root.onOpen()
-    try:
-        with open(filename, "r", newline="") as input_file, open(
-            FEEDING_FILE, "a", newline=""
-        ) as save_file:
-            file_reader = csv.DictReader(input_file, delimiter=",")
-            file_writer = csv.DictWriter(
-                save_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
-            )
+    root.show_message_box("Error", "This button is not used.", "warning")
+    # get_data_bot_file.bot(root)
+    # filename = root.onOpen()
+    # try:
+    #     with open(filename, "r", newline="") as input_file, open(
+    #         FEEDING_FILE, "a", newline=""
+    #     ) as save_file:
+    #         file_reader = csv.DictReader(input_file, delimiter=",")
+    #         file_writer = csv.DictWriter(
+    #             save_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
+    #         )
 
-            for line_count, row in enumerate(file_reader):
-                file_writer.writerow(row)
+    #         for line_count, row in enumerate(file_reader):
+    #             file_writer.writerow(row)
 
-        root.show_message_box("Successful", f"{line_count+1} Data Imported")
-    except ValueError:
-        root.show_message_box("Error", "Invalid File Headers", "warning")
+    #     root.show_message_box("Successful", f"{line_count+1} Data Imported")
+    # except ValueError:
+    #     root.show_message_box("Error", "Invalid File Headers", "warning")
 
 
 @ui_refresher
@@ -68,43 +64,7 @@ def load_credit_card(root):
 
 @ui_refresher
 def auto_buy(root):
-    root.status = 1
-    root.refresh_ui()
-
-    if not os.path.isfile(FEEDING_FILE) or is_empty_csv(FEEDING_FILE):
-        root.show_message_box("Failed", f"No data imported", "Warning")
-        root.status = 0
-        root.refresh_ui()
-        return
-
-    with open(FEEDING_FILE, "r", newline="") as csv_file:
-        file_reader = csv.DictReader(
-            csv_file,
-            delimiter=",",
-        )
-        for line_count, row in enumerate(file_reader):
-            try:
-                if not get_lines_count(CARD_FILE):
-                    root.show_message_box(
-                        "Failed", f"You need to use new cards", "Warning"
-                    )
-                    root.status = 0
-                    root.refresh_ui()
-                    return
-                if root.status == 0:
-                    break
-                if root.is_reset_router_check.get():
-                    router_restart()
-                    ping_until_up(root)
-
-                remarks, success = botfile.bot(root, row)
-                print(remarks, success)
-                updater(row, remarks, success)
-            except Exception as e:
-                updater(row, "system error", False)
-            finally:
-                root.refresh_ui()
-        root.status = 0
+    get_data_bot_file.bot(root)
 
 
 @ui_refresher
@@ -138,9 +98,7 @@ def clear_credit(root):
     )
     if result:
         os.remove(CARD_FILE)
-        file_initializer(
-            CARD_FILE, ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
-        )
+        file_initializer(CARD_FILE, ["number", "expiry_month", "expiry_year", "cvc"])
         root.refresh_ui()
 
 

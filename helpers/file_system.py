@@ -23,7 +23,8 @@ CARD_FILE = str(Path.home()) + "/.autobuy/card.csv"
 
 
 FIELDNAMES = [
-    "link",
+    "order_number",
+    "name",
     "quantity",
     "customer_first_name",
     "customer_last_name",
@@ -59,6 +60,4 @@ def file_initializer(filename, fieldnames=FIELDNAMES):
 file_initializer(FEEDING_FILE)
 file_initializer(ERROR_FILE)
 file_initializer(COMPLETED_FILE)
-file_initializer(
-    CARD_FILE, ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
-)
+file_initializer(CARD_FILE, ["number", "expiry_month", "expiry_year", "cvc"])

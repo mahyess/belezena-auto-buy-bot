@@ -189,6 +189,35 @@ class BaseFrame(tk.Frame):
         # status bar
         self.status_frame = tk.Frame(self.root)
 
+        self.router_ip = tk.StringVar()
+        self.router_ip.set("192.168.15.1")
+        self.router_ip_radio_1 = tk.Radiobutton(
+            self.status_frame,
+            text="192.168.15.1",
+            value="192.168.15.1",
+            variable=self.router_ip,
+        )
+        self.router_ip_radio_2 = tk.Radiobutton(
+            self.status_frame,
+            text="192.168.1.1",
+            value="192.168.1.1",
+            variable=self.router_ip,
+        )
+        self.router_ip_radio_1.pack(
+            side="left",
+            pady=5,
+            padx=5,
+            # bg="#fff",
+            # fg="#000",
+        )
+        self.router_ip_radio_2.pack(
+            side="left",
+            pady=5,
+            padx=5,
+            # bg="#fff",
+            # fg="#000",
+        )
+
         self.is_reset_router_check = tk.BooleanVar()
         self.is_reset_router_check.set(False)
 

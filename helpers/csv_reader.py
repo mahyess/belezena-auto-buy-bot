@@ -1,10 +1,10 @@
 # csv reader
-# from _typeshed import NoneType
 import csv
 from helpers.file_system import CARD_FILE, COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
 
 FEEDER_FILE_FIELDNAMES = [
-    "link",
+    "order_number",
+    "name",
     "quantity",
     "customer_first_name",
     "customer_last_name",
@@ -22,10 +22,10 @@ FEEDER_FILE_FIELDNAMES = [
     "number",
     "complement",
 ]
-CARD_FILE_FIELDNAMES = ["number", "holder_name", "expiry_month", "expiry_year", "cvc"]
+CARD_FILE_FIELDNAMES = ["number", "expiry_month", "expiry_year", "cvc"]
 
 
-def updater(completed_row: str, remarks=None, success: bool = True):
+def updater(completed_row, remarks=None, is_success: bool = True):
     lines = list()
     success = list()
     failure = list()
@@ -38,7 +38,7 @@ def updater(completed_row: str, remarks=None, success: bool = True):
                 lines.append(row)
             else:
                 row["remarks"] = remarks
-                if success:
+                if is_success:
                     success.append(row)
                 else:
                     failure.append(row)
