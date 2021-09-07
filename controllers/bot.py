@@ -208,9 +208,9 @@ def bot(root, details, driver=None):
                         ).select_by_value("1")
 
                         # before_proceed_url = driver.current_url
-                        # driver.find_element_by_css_selector(
-                        #    "label[for='BOLETO']"
-                        # ).click()
+                        driver.find_element_by_css_selector(
+                           "label[for='BOLETO']"
+                        ).click()
 
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(

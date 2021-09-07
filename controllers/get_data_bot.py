@@ -236,13 +236,7 @@ def bot(root):
             # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
             details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
 
-            telefone = (
-                str(cpf_data["telefone"][0]["codigo"])
-                if len(cpf_data["telefone"])
-                else f"1{dt.now().strftime('%d%H%M%S')}"
-            )
-
-            details["telephone"] = "1199"[: 11 - len(telefone)] + telefone
+            details["telephone"] = str(cpf_data["telefone"][0]["ddd"]) + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
 
             details[
                 "customer_email"
