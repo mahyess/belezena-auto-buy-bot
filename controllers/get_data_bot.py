@@ -2,12 +2,12 @@ from helpers.ping_checker import ping_until_up
 from controllers.router_restart_bot import router_restart
 import re
 import csv
+import requests
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 
 from selenium.webdriver.support.wait import WebDriverWait
-import ui.custom_dialogs
 
-from helpers.csv_reader import FEEDER_FILE_FIELDNAMES, card_file_updater, updater
+from helpers.csv_reader import FEEDER_FILE_FIELDNAMES, updater
 from helpers.file_system import CARD_FILE, ERROR_FILE, FEEDING_FILE
 from helpers.user_agent import random_user_agent
 import time
@@ -17,7 +17,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime as dt
 import controllers.bot as botfile
@@ -45,14 +44,24 @@ def bot(root):
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
     try:
-        driver.get("https://app.melicontrol.com.br/access/users/login")
-        driver.find_element_by_id("password").send_keys("Cavalo123/")
-        driver.find_element_by_id("username").send_keys("brenoml0721@gmail.com")
+        driver.get("https://app.mercadoturbo.com.br//login_operador")
+        driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
+            "brenoml0721@gmail.com"
+        )
+        driver.find_element_by_xpath(
+            "//input[contains(@id, 'input-usuario')]"
+        ).send_keys("operado1")
+        driver.find_element_by_css_selector("input[type='password']").send_keys(
+            "36461529"
+        )
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("button[type='submit']")
         )
+        print("submit")
+        time.sleep(3)
 
-        driver.get("https://app.melicontrol.com.br/Orders")
+        driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
+        print("order page")
         # filters
         # ---------
         # wait_for_clickable_and_click(
@@ -88,16 +97,15 @@ def bot(root):
         def start_fetching_products(root, line_count, product=None, order_number=None):
             try:
                 if product is None:
-                    product = driver.find_element_by_class_name("orderEach")
-                if order_number is None:
-                    order_number = product.get_attribute("id").replace(
-                        "panel-announcement-", ""
+                    product = driver.find_element_by_class_name(
+                        "ui-datatable-selectable"
                     )
 
-                # first_order = driver.find_element_by_class_name("orderEach")
-                # first_order_number = first_order.get_attribute("id").replace(
-                #     "panel-announcement-", ""
-                # )
+                if order_number is None:
+                    order_number = product.get_attribute("data-rk")
+
+                print(order_number)
+
             except Exception as e:
                 root.status = 0
                 driver.quit()
@@ -111,14 +119,16 @@ def bot(root):
                 )
                 next_product, next_order_number = product, order_number
                 for row in error_file_reader:
-                    if row["order_number"] == next_order_number:
+                    if row[
+                        "order_number"
+                    ] == next_order_number and product.find_element_by_xpath(
+                        "//span[contains(@title, 'Rastreio: Aguardando envio')]"
+                    ):
                         try:
                             next_product = next_product.find_element_by_xpath(
-                                "following-sibling::div[contains(@class, 'orderEach')]"
+                                "following-sibling::*[contains(@class, 'ui-datatable-selectable')]"
                             )
-                            next_order_number = next_product.get_attribute(
-                                "id"
-                            ).replace("panel-announcement-", "")
+                            next_order_number = next_product.get_attribute("data-rk")
                             start_fetching_products(
                                 root,
                                 line_count,
@@ -126,22 +136,24 @@ def bot(root):
                                 order_number=next_order_number,
                             )
                         except NoSuchElementException:
-                            next_btn = driver.find_element_by_class_name("next")
+                            next_btn = driver.find_element_by_class_name(
+                                "ui-paginator-next"
+                            )
 
                             if "disabled" not in next_btn.get_attribute("class"):
                                 wait_for_clickable_and_click(
                                     driver.find_element_by_class_name(
-                                        "next"
-                                    ).find_element_by_tag_name("a")
+                                        "ui-paginator-next"
+                                    )
                                 )
                                 time.sleep(4)
 
                                 next_product = driver.find_element_by_class_name(
-                                    "orderEach"
+                                    "ui-datatable-selectable"
                                 )
                                 next_order_number = next_product.get_attribute(
-                                    "id"
-                                ).replace("panel-announcement-", "")
+                                    "data-rk"
+                                )
                                 start_fetching_products(
                                     root,
                                     line_count,
@@ -157,75 +169,81 @@ def bot(root):
                 "reference_point": "",
                 "order_number": order_number,
             }
-            (
-                user_card,
-                payment_card,
-                post_card,
-                product_card,
-            ) = product.find_elements_by_class_name("panel-items")
 
-            details["quantity"], details["name"] = html_cleaner(
-                # returns something like "2 x product name"
-                product_card.find_element_by_class_name(
-                    "panel-heading-items"
-                ).get_attribute("innerHTML")
-            ).split(" x ", maxsplit=1)
-
-            name_span = post_card.find_element_by_xpath(
-                "//span[contains(text(), 'Destinatário:')]"
+            name_span = product.find_element_by_id(
+                f"TituloAnuncio_{details['order_number']}"
             )
-            details["customer_first_name"], details["customer_last_name"] = (
-                name_span.get_attribute("innerHTML")
-                .replace("Destinatário: ", "")
-                .split(" ", maxsplit=1)
+            details["name"] = name_span.text.replace("-", "").strip()
+            details["quantity"] = (
+                name_span.find_element_by_xpath("preceding-sibling::span")
+                .text.replace("x", "")
+                .strip()
             )
 
-            details["cpf"] = (
-                name_span.find_element_by_xpath("following-sibling::*")
-                .get_attribute("innerHTML")
-                .replace("-", "")
-            )
-            details["telephone"] = (
-                user_card.find_element_by_class_name("fa-phone")  # phone icon
-                .find_element_by_xpath("./..")  # parent column div of phone icon
-                .find_element_by_xpath("following-sibling::*")  # sibling column div
-                .find_element_by_tag_name("span")  # child span
-                .text
-            )
-            details["telephone"] = (
-                details["telephone"]
-                if not details["telephone"] == "Sem informações"
-                else ""
-            )
-
-            # -------------- remove later ------------------------
-            details["cpf"] = "40262399857"
-            # -------------- remove later ------------------------
-
-            # -------------- new tab / need the old tab for later ------------------------
-            driver.execute_script(
-                "window.open('');"
-            )  # Switch to the new window and open URL B
-            driver.switch_to.window(driver.window_handles[1])
-            driver.get(
-                f"http://149.28.231.171/temgenteusando/inBusca/?doc={details['cpf']}"
-            )
-
-            def get_cpf_related_data(attr):
-                return (
-                    driver.find_element_by_xpath(f"//h5[contains(text(), '{attr}')]")
-                    .find_element_by_xpath("following-sibling::p")
-                    .text
+            # open dialog
+            wait_for_clickable_and_click(
+                product.find_element_by_xpath(
+                    "//*[contains(@aria-label, 'Clique para editar o endereço do comprador')]"
                 )
+            )
+            dialog = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.ID, "editarEnderecoDialog"))
+            )
+            WebDriverWait(driver, 10).until(
+                lambda d: "false" in dialog.get_attribute("aria-hidden")
+            )
 
-            details["gender"] = get_cpf_related_data("SEXO")[0]
-            details["cep"] = get_cpf_related_data("cep")
-            details["number"] = get_cpf_related_data("numero")
-            details["complement"] = get_cpf_related_data("complemento")
+            details["cpf"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'CPF / CNPJ')]/following-sibling::input"
+            ).get_attribute("value")
+            details["cep"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'CEP')]/following-sibling::input"
+            ).get_attribute("value")
+            details["street_address"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'Endereço')]/following-sibling::input"
+            ).get_attribute("value")
+            details["number"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'Número')]/following-sibling::input"
+            ).get_attribute("value")
+            details["complement"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'Complemento')]/following-sibling::input"
+            ).get_attribute("value")
+            details["reference_point"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'Bairro')]/following-sibling::input"
+            ).get_attribute("value")
+            details["district"] = dialog.find_element_by_xpath(
+                "//label[contains(text(), 'Cidade')]/following-sibling::input"
+            ).get_attribute("value")
+            (details["customer_first_name"], details["customer_last_name"],) = (
+                dialog.find_element_by_xpath(
+                    "//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
+                )
+                .get_attribute("value")
+                .split(" ", 1)
+            )
+
+            wait_for_clickable_and_click(
+                dialog.find_element_by_class_name("ui-dialog-titlebar-close")
+            )
+
+
+            cpf_data = requests.get(
+                f"http://20.197.179.206:7777/?token=778277777777-17e5-48d1-7777-9839fed672d9&cpf={details['cpf']}"
+            )
+            cpf_data = cpf_data.json()
+
+            details["gender"] = cpf_data.get("sexo", "F")
             # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
-            details["street_address"] = get_cpf_related_data("logradouro")
-            details["district"] = get_cpf_related_data("bairro")
-            details["birthdate"] = get_cpf_related_data("NASCIMENTO").split(" ")[0]
+            details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
+
+            telefone = (
+                str(cpf_data["telefone"][0]["codigo"])
+                if len(cpf_data["telefone"])
+                else f"1{dt.now().strftime('%d%H%M%S')}"
+            )
+
+            details["telephone"] = "1199"[: 11 - len(telefone)] + telefone
+
             details[
                 "customer_email"
             ] = f"{details['customer_first_name']}{dt.now().strftime('%Y%m%d%H%M%S')}@gmail.com"
@@ -234,6 +252,7 @@ def bot(root):
             ] = f"Abc{dt.now().strftime('%Y%m%d%H%M%S')}"
 
             details = strip_dict(details)
+
             line_count += 1
 
             if root.status == 0:
@@ -256,30 +275,37 @@ def bot(root):
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])
                 time.sleep(2)
-                if len(driver.find_elements_by_id("onesignal-slidedown-cancel-button")):
-                    wait_for_clickable_and_click(
-                        driver.find_element_by_id("onesignal-slidedown-cancel-button")
-                    )
+                # if len(driver.find_elements_by_id("onesignal-slidedown-cancel-button")):
+                #     wait_for_clickable_and_click(
+                #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
+                #     )
 
                 if success:
-                    driver.find_element_by_css_selector(
-                        "input[placeholder='Forma de Envio']"
-                    ).send_keys(".")
-                    driver.find_element_by_css_selector(
-                        "input[placeholder='Código de Rastreio']"
-                    ).send_keys(remarks)
-                    Select(
-                        driver.find_element_by_css_selector(
-                            "select[placeholder='Prazo de entrega']"
-                        )
-                    ).select_by_value("288")
-                    Select(
-                        driver.find_element_by_css_selector(
-                            "select[placeholder='Situação']"
-                        )
-                    ).select_by_value("shipped")
                     wait_for_clickable_and_click(
-                        driver.find_element_by_id("btn-save-shipping-custom")
+                        product.find_element_by_css_selector(
+                            "a[class*='statusDoPedido']"
+                        )
+                    )
+                    dialog = WebDriverWait(driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "jaEntregueiDialog"))
+                    )
+                    WebDriverWait(driver, 10).until(
+                        lambda d: "false" in dialog.get_attribute("aria-hidden")
+                    )
+
+                    dialog.find_element_by_css_selector("input[type='text']").send_keys(
+                        remarks
+                    )
+                    Select(
+                        dialog.find_element_by_css_selector("select[]")
+                    ).select_by_value("13")
+                    # Select(
+                    #     driver.find_element_by_css_selector(
+                    #         "select[placeholder='Situação']"
+                    #     )
+                    # ).select_by_value("shipped")
+                    wait_for_clickable_and_click(
+                        dialog.find_element_by_css_selector("button[type='submit']")
                     )
                     time.sleep(3)
             except Exception as e:
