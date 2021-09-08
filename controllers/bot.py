@@ -48,7 +48,7 @@ def bot(root, details, driver=None):
         driver.get(f"https://www.belezanaweb.com.br/busca?q={product_name}")
         wait_for_clickable_and_click(
             driver.find_element_by_xpath(
-                f"//div[@class='showcase-item'][contains(text(), '{product_name}')]"
+                f"//div[@class='showcase-item'][contains(@data-event, '{product_name}')]"
             )
         )
 
