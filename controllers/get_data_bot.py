@@ -171,7 +171,7 @@ def bot(root):
             name_span = product.find_element_by_id(
                 f"TituloAnuncio_{details['order_number']}"
             )
-            details["name"] = name_span.text.replace("-", "").strip()
+            details["name"] = name_span.text.strip()
             details["quantity"] = (
                 name_span.find_element_by_xpath("preceding-sibling::span")
                 .text.replace("x", "")
