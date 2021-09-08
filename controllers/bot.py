@@ -189,7 +189,7 @@ def bot(root, details, driver=None):
                 for line_count, data in enumerate(file_reader):
                     try:
                         wait_for_clickable_and_click(
-                            driver.find_elements_by_xpath(
+                            driver.find_element_by_xpath(
                                 "//div[.//*[contains(@name, 'shipping')]][1]/label"
                             )
                         )
