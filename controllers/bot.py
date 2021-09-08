@@ -193,8 +193,13 @@ def bot(root, details, driver=None):
                                 "//div[.//*[contains(@name, 'shipping')]][1]/label"
                             )
                         )
-                        time.sleep(3)
 
+                        Select(
+                            driver.find_element_by_id("expiryMonth")
+                        ).select_by_value(f"{data['expiry_month']}")
+                        Select(driver.find_element_by_id("expiryYear")).select_by_value(
+                            f"{data['expiry_year']}"
+                        )
                         number_input = driver.find_element_by_id("number")
                         number_input.send_keys(Keys.CONTROL, "a")
                         number_input.send_keys(data["number"])
@@ -202,12 +207,6 @@ def bot(root, details, driver=None):
                         holder_name_input.send_keys(Keys.CONTROL, "a")
                         holder_name_input.send_keys(
                             f"{details['customer_first_name']} {details['customer_last_name']}"
-                        )
-                        Select(
-                            driver.find_element_by_id("expiryMonth")
-                        ).select_by_value(f"{data['expiry_month']}")
-                        Select(driver.find_element_by_id("expiryYear")).select_by_value(
-                            f"{data['expiry_year']}"
                         )
                         cvc_input = driver.find_element_by_id("cvc")
                         cvc_input.send_keys(Keys.CONTROL, "a")
