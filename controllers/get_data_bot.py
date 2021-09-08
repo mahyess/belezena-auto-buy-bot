@@ -263,6 +263,10 @@ def bot(root):
                     file_writer.writerow(details)
 
                 root.refresh_ui()
+                driver.execute_script(
+                    "window.open('');"
+                )  # Switch to the new window and open URL B
+                driver.switch_to.window(driver.window_handles[1])
                 remarks, success = botfile.bot(root, details, driver)
                 updater(details, remarks, success)
                 root.refresh_ui()
