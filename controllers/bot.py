@@ -46,11 +46,16 @@ def bot(root, details, driver=None):
         # go to item details page
         product_name = details["name"]
         driver.get(f"https://www.belezanaweb.com.br/busca?q={product_name}")
-        wait_for_clickable_and_click(
-            driver.find_element_by_xpath(
-                f"//a[contains(@class, 'showcase-item-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
-            )
-        )
+        product_cards = driver.find_elements_by_class_name("showcase-item-image")
+        for product in product_cards:
+            if product_name.lower() in product.get_attribute("innerHTML").lower():
+                product.click()
+                break
+        # wait_for_clickable_and_click(
+        #     driver.find_element_by_xpath(
+        #         f"//a[contains(@class, 'showcase-item-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
+        #     )
+        # )
 
         # driver.get(item_url)
         if len(driver.find_elements_by_class_name("banner-close-button")):
