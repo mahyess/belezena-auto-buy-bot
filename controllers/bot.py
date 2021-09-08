@@ -45,7 +45,11 @@ def bot(root, details, driver=None):
         print("start bot...")
         # go to item details page
         driver.get(f"https://www.belezanaweb.com.br/busca?q={details['name']}")
-        wait_for_clickable_and_click(driver.find_element_by_class_name("showcase-item"))
+        wait_for_clickable_and_click(
+            driver.find_element_by_xpath(
+                f"//div[@class='showcase-item'][text()='{details['name']}']"
+            )
+        )
 
         # driver.get(item_url)
         if len(driver.find_elements_by_class_name("banner-close-button")):
@@ -209,7 +213,7 @@ def bot(root, details, driver=None):
 
                         # before_proceed_url = driver.current_url
                         driver.find_element_by_css_selector(
-                           "label[for='BOLETO']"
+                            "label[for='BOLETO']"
                         ).click()
 
                         wait_for_clickable_and_click(

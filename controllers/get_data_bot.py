@@ -226,7 +226,6 @@ def bot(root):
                 dialog.find_element_by_class_name("ui-dialog-titlebar-close")
             )
 
-
             cpf_data = requests.get(
                 f"http://20.197.179.206:7777/?token=778277777777-17e5-48d1-7777-9839fed672d9&cpf={details['cpf']}"
             )
@@ -236,7 +235,11 @@ def bot(root):
             # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
             details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
 
-            details["telephone"] = str(cpf_data["telefone"][0]["ddd"]) + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
+            details["telephone"] = (
+                str(cpf_data["telefone"][0]["ddd"])
+                + "99"
+                + f"1{dt.now().strftime('%d%H%M%S')}"
+            )
 
             details[
                 "customer_email"
@@ -275,6 +278,14 @@ def bot(root):
                 #     )
 
                 if success:
+                    remarks_input_btn = product.find_element_by_id("div-toggle")
+                    wait_for_clickable_and_click(remarks_input_btn)
+                    remarks_form = remarks_input_btn.find_element_by_xpath(
+                        "following-sibling::div"
+                    )
+                    remarks_form.find_element_by_tag_name("input").send_keys(f"{remarks}")
+                    remarks_form.find_element_by_css_selector("button[type='submit']")
+
                     wait_for_clickable_and_click(
                         product.find_element_by_css_selector(
                             "a[class*='statusDoPedido']"
