@@ -276,8 +276,7 @@ def bot(root):
                 #     wait_for_clickable_and_click(
                 #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
                 #     )
-
-                if success:
+                if remarks == "":
                     remarks_input_btn = product.find_element_by_id("div-toggle")
                     wait_for_clickable_and_click(remarks_input_btn)
                     remarks_form = remarks_input_btn.find_element_by_xpath(
@@ -286,6 +285,7 @@ def bot(root):
                     remarks_form.find_element_by_tag_name("input").send_keys(f"{remarks}")
                     remarks_form.find_element_by_css_selector("button[type='submit']")
 
+                if success:
                     wait_for_clickable_and_click(
                         product.find_element_by_css_selector(
                             "a[class*='statusDoPedido']"
