@@ -286,7 +286,11 @@ def bot(root):
                     remarks_form.find_element_by_tag_name("input").send_keys(
                         f"{remarks}"
                     )
-                    remarks_form.find_element_by_css_selector("button[type='submit']")
+                    wait_for_clickable_and_click(
+                        remarks_form.find_element_by_css_selector(
+                            "button[type='submit']"
+                        )
+                    )
 
                 if success:
                     wait_for_clickable_and_click(
@@ -304,9 +308,9 @@ def bot(root):
                     dialog.find_element_by_css_selector("input[type='text']").send_keys(
                         remarks
                     )
-                    Select(
-                        dialog.find_element_by_css_selector("select[]")
-                    ).select_by_value("13")
+                    Select(dialog.find_element_by_tag_name("select")).select_by_value(
+                        "13"
+                    )
                     # Select(
                     #     driver.find_element_by_css_selector(
                     #         "select[placeholder='Situação']"
