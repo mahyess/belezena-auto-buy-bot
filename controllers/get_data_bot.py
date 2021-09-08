@@ -104,8 +104,6 @@ def bot(root):
                 if order_number is None:
                     order_number = product.get_attribute("data-rk")
 
-                print(order_number)
-
             except Exception as e:
                 root.status = 0
                 driver.quit()
@@ -235,11 +233,10 @@ def bot(root):
             # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
             details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
 
-            details["telephone"] = (
-                str(cpf_data["telefone"][0]["ddd"])
-                + "99"
-                + f"1{dt.now().strftime('%d%H%M%S')}"
-            )
+            ddd = "11"
+            if cpf_data.get("telefone") and cpf_data.get("telefone")[0].get("ddd"):
+                ddd = cpf_data.get("telefone")[0].get("ddd")
+            details["telephone"] = ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
 
             details[
                 "customer_email"
@@ -282,7 +279,9 @@ def bot(root):
                     remarks_form = remarks_input_btn.find_element_by_xpath(
                         "following-sibling::div"
                     )
-                    remarks_form.find_element_by_tag_name("input").send_keys(f"{remarks}")
+                    remarks_form.find_element_by_tag_name("input").send_keys(
+                        f"{remarks}"
+                    )
                     remarks_form.find_element_by_css_selector("button[type='submit']")
 
                 if success:
