@@ -143,39 +143,39 @@ def bot(root, details, driver=None):
         # endereco form start
         # if current address label is already saved
         address_label = details["address_label"]
-        if len(driver.find_elements_by_xpath(f"//span[.='{address_label}']")):
-            address_card = driver.find_element_by_xpath(
-                # f"//li[./label/span.='{address_label}']"
-                f"//li[.//*[text()='{address_label}']]"
-            )
-            wait_for_clickable_and_click(address_card)
-            wait_for_clickable_and_click(
-                address_card.find_element_by_xpath(".//div/button")
-            )
-            print("...chosen address")
+        # if len(driver.find_elements_by_xpath(f"//span[.='{address_label}']")):
+        #     address_card = driver.find_element_by_xpath(
+        #         # f"//li[./label/span.='{address_label}']"
+        #         f"//li[.//*[text()='{address_label}']]"
+        #     )
+        #     wait_for_clickable_and_click(address_card)
+        #     wait_for_clickable_and_click(
+        #         address_card.find_element_by_xpath(".//div/button")
+        #     )
+        #     print("...chosen address")
 
-        else:
-            # if not saved and there is another address card, trigger new form
-            if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
-                driver.find_element_by_css_selector("label[for='addAddress']").click()
-            # this is the first one being saved, sending directly to form
-            driver.find_element_by_id("label").send_keys(details["address_label"])
-            driver.find_element_by_id("postalCode").send_keys(details["cep"])
+        # else:
+        # if not saved and there is another address card, trigger new form
+        if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
+            driver.find_element_by_css_selector("label[for='addAddress']").click()
+        # this is the first one being saved, sending directly to form
+        driver.find_element_by_id("label").send_keys(details["address_label"])
+        driver.find_element_by_id("postalCode").send_keys(details["cep"])
 
-            driver.find_element_by_id("streetAddress").send_keys(
-                details["street_address"]
-            )
-            driver.find_element_by_id("district").send_keys(details["district"])
-            driver.find_element_by_id("number").send_keys(details["number"])
-            Select(driver.find_element_by_id("addressType")).select_by_value(
-                f"{address_type_dict[details['address_label'].lower()]}"
-            )
-            driver.find_element_by_id("complement").send_keys(details["complement"])
+        driver.find_element_by_id("streetAddress").send_keys(
+            details["street_address"]
+        )
+        driver.find_element_by_id("district").send_keys(details["district"])
+        driver.find_element_by_id("number").send_keys(details["number"])
+        Select(driver.find_element_by_id("addressType")).select_by_value(
+            f"{address_type_dict[details['address_label'].lower()]}"
+        )
+        driver.find_element_by_id("complement").send_keys(details["complement"])
 
-            wait_for_clickable_and_click(
-                driver.find_element_by_css_selector("button[type='submit']")
-            )
-            print("...create new address")
+        wait_for_clickable_and_click(
+            driver.find_element_by_css_selector("button[type='submit']")
+        )
+        print("...create new address")
 
         # endereco form complete
         # pagamento form start
@@ -190,6 +190,7 @@ def bot(root, details, driver=None):
                 )
                 for line_count, data in enumerate(file_reader):
                     try:
+                        print(data["number"])
                         wait_for_clickable_and_click(
                             driver.find_elements_by_xpath(
                                 "//div[.//*[contains(@name, 'shipping')]][1]/label"
