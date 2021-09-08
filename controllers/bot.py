@@ -44,10 +44,11 @@ def bot(root, details, driver=None):
     try:
         print("start bot...")
         # go to item details page
-        driver.get(f"https://www.belezanaweb.com.br/busca?q={details['name']}")
+        product_name = details["name"]
+        driver.get(f"https://www.belezanaweb.com.br/busca?q={product_name}")
         wait_for_clickable_and_click(
             driver.find_element_by_xpath(
-                f"//div[@class='showcase-item'][text()='{details['name']}']"
+                f"//div[@class='showcase-item'][contains(text(), '{product_name}']"
             )
         )
 
