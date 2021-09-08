@@ -162,9 +162,7 @@ def bot(root, details, driver=None):
         driver.find_element_by_id("label").send_keys(details["address_label"])
         driver.find_element_by_id("postalCode").send_keys(details["cep"])
 
-        driver.find_element_by_id("streetAddress").send_keys(
-            details["street_address"]
-        )
+        driver.find_element_by_id("streetAddress").send_keys(details["street_address"])
         driver.find_element_by_id("district").send_keys(details["district"])
         driver.find_element_by_id("number").send_keys(details["number"])
         Select(driver.find_element_by_id("addressType")).select_by_value(
@@ -190,12 +188,12 @@ def bot(root, details, driver=None):
                 )
                 for line_count, data in enumerate(file_reader):
                     try:
-                        print(data["number"])
                         wait_for_clickable_and_click(
                             driver.find_elements_by_xpath(
                                 "//div[.//*[contains(@name, 'shipping')]][1]/label"
                             )
                         )
+                        time.sleep(3)
 
                         number_input = driver.find_element_by_id("number")
                         number_input.send_keys(Keys.CONTROL, "a")
