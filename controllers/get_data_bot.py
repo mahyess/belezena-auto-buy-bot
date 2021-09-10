@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from helpers.ping_checker import ping_until_up
 from controllers.router_restart_bot import router_restart
 import re
@@ -8,7 +9,7 @@ from helpers.wait_for_clickable import wait_for_clickable_and_click
 from selenium.webdriver.support.wait import WebDriverWait
 
 from helpers.csv_reader import FEEDER_FILE_FIELDNAMES, updater
-from helpers.file_system import CARD_FILE, ERROR_FILE, FEEDING_FILE
+from helpers.file_system import FEEDING_FILE
 from helpers.user_agent import random_user_agent
 import time
 from selenium import webdriver
@@ -35,7 +36,6 @@ def strip_dict(d):
 
 
 def bot(root):
-    line_count = 0
     root.status = 1
     root.refresh_ui()
 
@@ -92,13 +92,13 @@ def bot(root):
         # wait_for_clickable_and_click(
         #     filter_options.find_element_by_id("btn-search-orders")
         # )
-        time.sleep(3)
         # -----------
-        def start_fetching_products(root, line_count, product=None, order_number=None):
+        def start_fetching_products(root, product=None, order_number=None):
             try:
                 if product is None:
-                    product = driver.find_element_by_class_name(
-                        "ui-datatable-selectable"
+                    product = driver.find_element_by_xpath(
+                        "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
+                        # "//div[contains(@class, 'ui-datatable-selectable') and .//*[text()='Aguardando Impressão']]"
                     )
 
                 if order_number is None:
@@ -109,58 +109,41 @@ def bot(root):
                 driver.quit()
                 return
 
-            with open(ERROR_FILE, "r") as error_file:
-                error_file_reader = csv.DictReader(
-                    error_file,
-                    delimiter=",",
-                    fieldnames=[*FEEDER_FILE_FIELDNAMES, "remarks"],
-                )
-                next_product, next_order_number = product, order_number
-                for row in error_file_reader:
-                    if row[
-                        "order_number"
-                    ] == next_order_number and product.find_element_by_xpath(
-                        "//span[contains(@title, 'Rastreio: Aguardando envio')]"
-                    ):
-                        try:
-                            next_product = next_product.find_element_by_xpath(
-                                "following-sibling::*[contains(@class, 'ui-datatable-selectable')]"
-                            )
-                            next_order_number = next_product.get_attribute("data-rk")
-                            start_fetching_products(
-                                root,
-                                line_count,
-                                product=next_product,
-                                order_number=next_order_number,
-                            )
-                        except NoSuchElementException:
-                            next_btn = driver.find_element_by_class_name(
-                                "ui-paginator-next"
-                            )
+            next_product, next_order_number = product, order_number
+            if not len(
+                product.find_elements_by_xpath(".//span[text()='Aguardando Impressão']")
+            ):
+                try:
+                    next_product = next_product.find_element_by_xpath(
+                        "following-sibling::*[contains(@class, 'ui-datatable-selectable')]"
+                    )
+                    next_order_number = next_product.get_attribute("data-rk")
+                    start_fetching_products(
+                        root,
+                        product=next_product,
+                        order_number=next_order_number,
+                    )
+                except NoSuchElementException:
+                    next_btn = driver.find_element_by_class_name("ui-paginator-next")
 
-                            if "disabled" not in next_btn.get_attribute("class"):
-                                wait_for_clickable_and_click(
-                                    driver.find_element_by_class_name(
-                                        "ui-paginator-next"
-                                    )
-                                )
-                                time.sleep(4)
+                    if "disabled" not in next_btn.get_attribute("class"):
+                        wait_for_clickable_and_click(
+                            driver.find_element_by_class_name("ui-paginator-next")
+                        )
+                        time.sleep(4)
 
-                                next_product = driver.find_element_by_class_name(
-                                    "ui-datatable-selectable"
-                                )
-                                next_order_number = next_product.get_attribute(
-                                    "data-rk"
-                                )
-                                start_fetching_products(
-                                    root,
-                                    line_count,
-                                    product=next_product,
-                                    order_number=next_order_number,
-                                )
-                            else:
-                                root.status = 0
-                                driver.quit()
+                        next_product = driver.find_element_by_class_name(
+                            "ui-datatable-selectable"
+                        )
+                        next_order_number = next_product.get_attribute("data-rk")
+                        start_fetching_products(
+                            root,
+                            product=next_product,
+                            order_number=next_order_number,
+                        )
+                    else:
+                        root.status = 0
+                        driver.quit()
 
             details = {
                 "address_label": "casa",
@@ -181,7 +164,7 @@ def bot(root):
             # open dialog
             wait_for_clickable_and_click(
                 product.find_element_by_xpath(
-                    "//*[contains(@aria-label, 'Clique para editar o endereço do comprador')]"
+                    ".//*[contains(@aria-label, 'Clique para editar o endereço do comprador')]"
                 )
             )
             dialog = WebDriverWait(driver, 10).until(
@@ -192,34 +175,35 @@ def bot(root):
             )
 
             details["cpf"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'CPF / CNPJ')]/following-sibling::input"
+                ".//label[contains(text(), 'CPF / CNPJ')]/following-sibling::input"
             ).get_attribute("value")
             details["cep"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'CEP')]/following-sibling::input"
+                ".//form[@id='form-dialog-endereco']/div/label[contains(text(), 'CEP')]/following-sibling::input"
             ).get_attribute("value")
             details["street_address"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'Endereço')]/following-sibling::input"
+                ".//label[contains(text(), 'Endereço')]/following-sibling::input"
             ).get_attribute("value")
             details["number"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'Número')]/following-sibling::input"
+                ".//label[contains(text(), 'Número')]/following-sibling::input"
             ).get_attribute("value")
             details["complement"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'Complemento')]/following-sibling::input"
+                ".//label[contains(text(), 'Complemento')]/following-sibling::input"
             ).get_attribute("value")
             details["reference_point"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'Bairro')]/following-sibling::input"
+                ".//label[contains(text(), 'Bairro')]/following-sibling::input"
             ).get_attribute("value")
             details["district"] = dialog.find_element_by_xpath(
-                "//label[contains(text(), 'Cidade')]/following-sibling::input"
+                ".//label[contains(text(), 'Cidade')]/following-sibling::input"
             ).get_attribute("value")
             (details["customer_first_name"], details["customer_last_name"],) = (
                 dialog.find_element_by_xpath(
-                    "//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
+                    ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
                 )
                 .get_attribute("value")
                 .split(" ", 1)
             )
 
+            time.sleep(1)
             wait_for_clickable_and_click(
                 dialog.find_element_by_class_name("ui-dialog-titlebar-close")
             )
@@ -246,8 +230,7 @@ def bot(root):
             ] = f"Abc{dt.now().strftime('%Y%m%d%H%M%S')}"
 
             details = strip_dict(details)
-
-            line_count += 1
+            print(details)
 
             if root.status == 0:
                 return
@@ -263,34 +246,32 @@ def bot(root):
                     file_writer.writerow(details)
 
                 root.refresh_ui()
-                driver.execute_script(
-                    "window.open('');"
-                )  # Switch to the new window and open URL B
-                driver.switch_to.window(driver.window_handles[1])
-                remarks, success = botfile.bot(root, details, driver)
+
+                remarks, success = botfile.bot(root, details)
+                remarks = "ok"
+                success = True
                 updater(details, remarks, success)
                 root.refresh_ui()
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])
                 time.sleep(2)
                 # if len(driver.find_elements_by_id("onesignal-slidedown-cancel-button")):
                 #     wait_for_clickable_and_click(
                 #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
                 #     )
-                if remarks == "":
+                if remarks != "":
                     remarks_input_btn = product.find_element_by_id("div-toggle")
                     wait_for_clickable_and_click(remarks_input_btn)
                     remarks_form = remarks_input_btn.find_element_by_xpath(
                         "following-sibling::div"
                     )
-                    remarks_form.find_element_by_tag_name("input").send_keys(
-                        f"{remarks}"
-                    )
+                    remarks_form.find_element_by_xpath(
+                        ".//div[contains(@class, 'mt-width-full')]/input"
+                    ).send_keys(f"{remarks}")
                     wait_for_clickable_and_click(
                         remarks_form.find_element_by_css_selector(
-                            "button[type='submit']"
+                            "button[type='submit'][class*='ui-button-success']"
                         )
                     )
+                    time.sleep(2)
 
                 if success:
                     wait_for_clickable_and_click(
@@ -305,17 +286,30 @@ def bot(root):
                         lambda d: "false" in dialog.get_attribute("aria-hidden")
                     )
 
-                    dialog.find_element_by_css_selector("input[type='text']").send_keys(
-                        remarks
+                    remarks_field = dialog.find_element_by_css_selector(
+                        "input[type='text']"
                     )
-                    Select(dialog.find_element_by_tag_name("select")).select_by_value(
-                        "13"
+
+                    remarks_field.send_keys(
+                        f"{remarks}?email={details['customer_email']}"
                     )
-                    # Select(
-                    #     driver.find_element_by_css_selector(
-                    #         "select[placeholder='Situação']"
-                    #     )
-                    # ).select_by_value("shipped")
+                    time.sleep(1)
+                    remarks_field.send_keys(
+                        Keys.TAB,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                        Keys.UP,
+                    )
+
                     wait_for_clickable_and_click(
                         dialog.find_element_by_css_selector("button[type='submit']")
                     )
@@ -327,11 +321,11 @@ def bot(root):
                 # driver.get(driver.current_url)
                 root.refresh_ui()
                 if root.status:
-                    start_fetching_products(root, line_count)
+                    start_fetching_products(root)
                 else:
                     driver.refresh()
 
-        start_fetching_products(root, line_count)
+        start_fetching_products(root)
 
     except Exception as e:
         print(e)
@@ -343,4 +337,3 @@ def bot(root):
         root.status = 0
         root.refresh_ui()
         driver.quit()
-        root.show_message_box("Successful", f"{line_count+1} Data Imported")
