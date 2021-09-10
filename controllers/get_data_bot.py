@@ -60,7 +60,6 @@ def bot(root):
         print("submit")
         time.sleep(3)
 
-        driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
         print("order page")
         # filters
         # ---------
@@ -95,6 +94,7 @@ def bot(root):
         # -----------
         def start_fetching_products(root, product=None, order_number=None):
             try:
+                driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
                 if product is None:
                     product = driver.find_element_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
@@ -194,13 +194,6 @@ def bot(root):
             details["district"] = dialog.find_element_by_xpath(
                 ".//label[contains(text(), 'Cidade')]/following-sibling::input"
             ).get_attribute("value")
-            (details["customer_first_name"], details["customer_last_name"],) = (
-                dialog.find_element_by_xpath(
-                    ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
-                )
-                .get_attribute("value")
-                .split(" ", 1)
-            )
 
             time.sleep(1)
             wait_for_clickable_and_click(
@@ -212,6 +205,10 @@ def bot(root):
             )
             cpf_data = cpf_data.json()
 
+            (
+                details["customer_first_name"],
+                details["customer_last_name"],
+            ) = cpf_data.get("name", "agenericname randomized").split(" ", 1)
             details["gender"] = cpf_data.get("sexo", "F")
             # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
             details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
