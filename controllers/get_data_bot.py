@@ -205,10 +205,10 @@ def bot(root):
             )
             cpf_data = cpf_data.json()
 
-            (
-                details["customer_first_name"],
-                details["customer_last_name"],
-            ) = cpf_data.get("name", "agenericname randomized").split(" ", 1)
+            (details["customer_first_name"], details["customer_last_name"],) = (
+                cpf_data.get("name", "agenericname randomized").title().split(" ", 1)
+            )
+
             details["gender"] = cpf_data.get("sexo", "F")
             # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
             details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
