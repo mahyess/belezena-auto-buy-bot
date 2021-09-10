@@ -215,7 +215,7 @@ def bot(root):
 
             ddd = "11"
             if cpf_data.get("telefone") and cpf_data.get("telefone")[0].get("ddd"):
-                ddd = cpf_data.get("telefone")[0].get("ddd")
+                ddd = str(cpf_data.get("telefone")[0].get("ddd"))
             details["telephone"] = ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
 
             details[
@@ -284,6 +284,7 @@ def bot(root):
                         "input[type='text']"
                     )
 
+                    time.sleep(1)
                     remarks_field.send_keys(
                         f"{remarks}?email={details['customer_email']}"
                     )
