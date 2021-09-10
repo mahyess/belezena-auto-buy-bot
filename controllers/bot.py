@@ -283,11 +283,21 @@ def bot(root, details, driver=None):
                                     # alert box not found.
                                     pass
 
-                                order_number = driver.find_element_by_css_selector(
-                                    "span[data-cy='OrderNumber']"
-                                ).text
+                                wait_for_clickable_and_click(
+                                    driver.find_element_by_xpath(
+                                        '//a[contains(@href,"https://meurastre.io/")]'
+                                    )
+                                )
+                                driver.find_element_by_css_selector(
+                                    "input[type='email']"
+                                ).send_keys(details["email"])
+                                driver.find_element_by_css_selector(
+                                    "input[type='email']"
+                                ).send_keys(Keys.ENTER)
+                                time.sleep(2)
+
                                 return (
-                                    f"https://meurastre.io/rastreio/{order_number}",
+                                    driver.current_url,
                                     True,
                                 )
                         except Exception as e:
