@@ -209,7 +209,7 @@ def bot(root):
             )
 
             cpf_data = requests.get(
-                f"http://20.197.179.206:7777/?token=778277777777-17e5-48d1-7777-9839fed672d9&cpf={details['cpf']}"
+                f"http://ifind.chapada.com.br:7777/?token=0201234d-32d6-4e74-9038-dd326cb388b7&cpf={details['cpf']}"
             )
             cpf_data = cpf_data.json()
 
