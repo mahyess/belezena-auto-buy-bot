@@ -105,9 +105,8 @@ def bot(root):
                     order_number = product.get_attribute("data-rk")
 
             except Exception as e:
-                root.status = 0
-                driver.quit()
-                return
+                time.sleep(30)
+                start_fetching_products(root)
 
             next_product, next_order_number = product, order_number
             if not len(
@@ -248,8 +247,6 @@ def bot(root):
                 root.refresh_ui()
 
                 remarks, success = botfile.bot(root, details)
-                remarks = "ok"
-                success = True
                 updater(details, remarks, success)
                 root.refresh_ui()
                 time.sleep(2)
