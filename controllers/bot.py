@@ -290,7 +290,7 @@ def bot(root, details, driver=None):
                                 )
                                 driver.find_element_by_css_selector(
                                     "input[type='email']"
-                                ).send_keys(details["email"])
+                                ).send_keys(details["customer_email"])
                                 driver.find_element_by_css_selector(
                                     "input[type='email']"
                                 ).send_keys(Keys.ENTER)
