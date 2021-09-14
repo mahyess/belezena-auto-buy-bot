@@ -224,7 +224,9 @@ def bot(root):
 
             details[
                 "customer_email"
-            ] = f"{details['customer_first_name']}{dt.now().strftime('%Y%m%d%H%M%S')}@gmail.com"
+            ] = f"{details['customer_first_name']}_{details['customer_last_name']}{dt.now().strftime('%S%M')}@gmail.com".replace(
+                " ", "_"
+            ).lower()
             details[
                 "customer_email_password"
             ] = f"Abc{dt.now().strftime('%Y%m%d%H%M%S')}"
