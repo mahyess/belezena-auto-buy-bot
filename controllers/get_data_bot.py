@@ -200,23 +200,27 @@ def bot(root):
                 dialog.find_element_by_class_name("ui-dialog-titlebar-close")
             )
 
-            cpf_data = requests.get(
-                f"http://ifind.chapada.com.br:7777/?token=0201234d-32d6-4e74-9038-dd326cb388b7&cpf={details['cpf']}"
+            cpf_data_response = requests.get(
+                f"http://140.238.187.29/maykedrumon210901091034114.php?cpf={details['cpf']}"
             )
-            cpf_data = cpf_data.json()
+            if cpf_data_response.status_code == 200:
+                # if this request is succesfull
+                cpf_data = cpf_data_response.json()
 
-            (details["customer_first_name"], details["customer_last_name"],) = (
-                cpf_data.get("name", "agenericname randomized").title().split(" ", 1)
-            )
+                (details["customer_first_name"], details["customer_last_name"],) = (
+                    cpf_data.get("nome", "agenericname randomized")
+                    .title()
+                    .split(" ", 1)
+                )
 
-            details["gender"] = cpf_data.get("sexo", "F")
-            # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
-            details["birthdate"] = cpf_data.get("dataNascimento", "12/12/1992")
+                details["gender"] = cpf_data.get("sexoDescricao", "F")
+                # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
+                details["birthdate"] = cpf_data.get("nascimento", "12/12/1992")
 
-            ddd = "11"
-            if cpf_data.get("telefone") and cpf_data.get("telefone")[0].get("ddd"):
-                ddd = str(cpf_data.get("telefone")[0].get("ddd"))
-            details["telephone"] = ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
+                ddd = cpf_data.get("ddd", "11")
+                details["telephone"] = ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
+            else:
+                pass
 
             details[
                 "customer_email"
@@ -226,7 +230,6 @@ def bot(root):
             ] = f"Abc{dt.now().strftime('%Y%m%d%H%M%S')}"
 
             details = strip_dict(details)
-            print(details)
 
             if root.status == 0:
                 return
@@ -305,9 +308,9 @@ def bot(root):
                         Keys.UP,
                     )
 
-                    wait_for_clickable_and_click(
-                        dialog.find_element_by_css_selector("button[type='submit']")
-                    )
+                    # wait_for_clickable_and_click(
+                    #     dialog.find_element_by_css_selector("button[type='submit']")
+                    # )
                     time.sleep(3)
             except Exception as e:
                 print(e)
