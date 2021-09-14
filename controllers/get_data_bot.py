@@ -294,9 +294,9 @@ def bot(root):
                         Keys.UP,
                     )
 
-                    # wait_for_clickable_and_click(
-                    #     dialog.find_element_by_css_selector("button[type='submit']")
-                    # )
+                    wait_for_clickable_and_click(
+                        dialog.find_element_by_css_selector("button[type='submit']")
+                    )
                     time.sleep(3)
 
                 else:
