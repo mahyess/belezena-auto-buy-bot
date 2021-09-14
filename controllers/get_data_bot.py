@@ -254,22 +254,6 @@ def bot(root):
                 #     wait_for_clickable_and_click(
                 #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
                 #     )
-                if remarks != "":
-                    remarks_input_btn = product.find_element_by_id("div-toggle")
-                    wait_for_clickable_and_click(remarks_input_btn)
-                    remarks_form = remarks_input_btn.find_element_by_xpath(
-                        "following-sibling::div"
-                    )
-                    remarks_form.find_element_by_xpath(
-                        ".//div[contains(@class, 'mt-width-full')]/input"
-                    ).send_keys(f"{remarks}")
-                    wait_for_clickable_and_click(
-                        remarks_form.find_element_by_css_selector(
-                            "button[type='submit'][class*='ui-button-success']"
-                        )
-                    )
-                    time.sleep(2)
-
                 if success:
                     wait_for_clickable_and_click(
                         product.find_element_by_css_selector(
@@ -312,6 +296,23 @@ def bot(root):
                     #     dialog.find_element_by_css_selector("button[type='submit']")
                     # )
                     time.sleep(3)
+
+                else:
+                    if remarks != "":
+                        remarks_input_btn = product.find_element_by_id("div-toggle")
+                        wait_for_clickable_and_click(remarks_input_btn)
+                        remarks_form = remarks_input_btn.find_element_by_xpath(
+                            "following-sibling::div"
+                        )
+                        remarks_form.find_element_by_xpath(
+                            ".//div[contains(@class, 'mt-width-full')]/input"
+                        ).send_keys(f"{remarks}")
+                        wait_for_clickable_and_click(
+                            remarks_form.find_element_by_css_selector(
+                                "button[type='submit'][class*='ui-button-success']"
+                            )
+                        )
+                        time.sleep(2)
             except Exception as e:
                 print(e)
                 updater(details, "system error", False)
