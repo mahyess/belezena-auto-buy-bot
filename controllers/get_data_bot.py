@@ -94,8 +94,10 @@ def bot(root):
         # -----------
         def start_fetching_products(root, product=None, order_number=None):
             try:
-                driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
                 if product is None:
+                    driver.get(
+                        "https://app.mercadoturbo.com.br/sistema/venda/vendas_ml"
+                    )
                     product = driver.find_element_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
                         # "//div[contains(@class, 'ui-datatable-selectable') and .//*[text()='Aguardando Impressão']]"
