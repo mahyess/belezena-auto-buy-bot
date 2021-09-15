@@ -132,33 +132,33 @@ def bot(root):
                                 order_number=next_order_number,
                             )
                         except NoSuchElementException:
-                            next_btn = driver.find_element_by_class_name(
-                                "ui-paginator-next"
-                            )
+                            # next_btn = driver.find_element_by_class_name(
+                            #     "ui-paginator-next"
+                            # )
 
-                            if "disabled" not in next_btn.get_attribute("class"):
-                                wait_for_clickable_and_click(
-                                    driver.find_element_by_class_name(
-                                        "ui-paginator-next"
-                                    ),
-                                    driver,
-                                )
-                                time.sleep(4)
+                            # if "disabled" not in next_btn.get_attribute("class"):
+                            #     wait_for_clickable_and_click(
+                            #         driver.find_element_by_class_name(
+                            #             "ui-paginator-next"
+                            #         ),
+                            #         driver,
+                            #     )
+                            #     time.sleep(4)
 
-                                next_product = driver.find_element_by_class_name(
-                                    "ui-datatable-selectable"
-                                )
-                                next_order_number = next_product.get_attribute(
-                                    "data-rk"
-                                )
-                                start_fetching_products(
-                                    root,
-                                    product=next_product,
-                                    order_number=next_order_number,
-                                )
-                            else:
-                                time.sleep(30)
-                                start_fetching_products(root)
+                            #     next_product = driver.find_element_by_class_name(
+                            #         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
+                            #     )
+                            #     next_order_number = next_product.get_attribute(
+                            #         "data-rk"
+                            #     )
+                            #     start_fetching_products(
+                            #         root,
+                            #         product=next_product,
+                            #         order_number=next_order_number,
+                            #     )
+                            # else:
+                            time.sleep(30)
+                            start_fetching_products(root)
 
             details = {
                 "address_label": "casa",
@@ -292,9 +292,7 @@ def bot(root):
                     )
 
                     time.sleep(1)
-                    remarks_field.send_keys(
-                        f"{remarks}?email={details['customer_email']}"
-                    )
+                    remarks_field.send_keys(remarks)
                     time.sleep(1)
                     remarks_field.send_keys(
                         Keys.TAB,
