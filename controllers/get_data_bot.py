@@ -9,7 +9,7 @@ from helpers.wait_for_clickable import wait_for_clickable_and_click
 from selenium.webdriver.support.wait import WebDriverWait
 
 from helpers.csv_reader import FEEDER_FILE_FIELDNAMES, updater
-from helpers.file_system import FEEDING_FILE
+from helpers.file_system import ERROR_FILE, FEEDING_FILE
 from helpers.user_agent import random_user_agent
 import time
 from selenium import webdriver
@@ -109,41 +109,49 @@ def bot(root):
                 start_fetching_products(root)
 
             next_product, next_order_number = product, order_number
-            if not len(
-                product.find_elements_by_xpath(".//span[text()='Aguardando Impressão']")
-            ):
-                try:
-                    next_product = next_product.find_element_by_xpath(
-                        "following-sibling::*[contains(@class, 'ui-datatable-selectable')]"
-                    )
-                    next_order_number = next_product.get_attribute("data-rk")
-                    start_fetching_products(
-                        root,
-                        product=next_product,
-                        order_number=next_order_number,
-                    )
-                except NoSuchElementException:
-                    next_btn = driver.find_element_by_class_name("ui-paginator-next")
+            with open(ERROR_FILE, "r", newline="") as error_file:
+                file_reader = csv.DictReader(error_file, delimiter=",")
 
-                    if "disabled" not in next_btn.get_attribute("class"):
-                        wait_for_clickable_and_click(
-                            driver.find_element_by_class_name("ui-paginator-next"),
-                            driver,
-                        )
-                        time.sleep(4)
+                for line_count, row in enumerate(file_reader):
+                    if row.get("order_number") == order_number:
+                        try:
+                            next_product = next_product.find_element_by_xpath(
+                                "following-sibling::*[contains(@class, 'ui-datatable-selectable') and .//span[text()='Aguardando Impressão']]"
+                            )
+                            next_order_number = next_product.get_attribute("data-rk")
+                            start_fetching_products(
+                                root,
+                                product=next_product,
+                                order_number=next_order_number,
+                            )
+                        except NoSuchElementException:
+                            next_btn = driver.find_element_by_class_name(
+                                "ui-paginator-next"
+                            )
 
-                        next_product = driver.find_element_by_class_name(
-                            "ui-datatable-selectable"
-                        )
-                        next_order_number = next_product.get_attribute("data-rk")
-                        start_fetching_products(
-                            root,
-                            product=next_product,
-                            order_number=next_order_number,
-                        )
-                    else:
-                        root.status = 0
-                        driver.quit()
+                            if "disabled" not in next_btn.get_attribute("class"):
+                                wait_for_clickable_and_click(
+                                    driver.find_element_by_class_name(
+                                        "ui-paginator-next"
+                                    ),
+                                    driver,
+                                )
+                                time.sleep(4)
+
+                                next_product = driver.find_element_by_class_name(
+                                    "ui-datatable-selectable"
+                                )
+                                next_order_number = next_product.get_attribute(
+                                    "data-rk"
+                                )
+                                start_fetching_products(
+                                    root,
+                                    product=next_product,
+                                    order_number=next_order_number,
+                                )
+                            else:
+                                time.sleep(30)
+                                start_fetching_products(root)
 
             details = {
                 "address_label": "casa",
