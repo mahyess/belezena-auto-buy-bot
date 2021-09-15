@@ -4,7 +4,7 @@ import time
 def close_unnecessary_dialogs_if_any(element):
     try:
         print("// closing banner if found")
-        element.find_element_by_xpath("//*[@id, 'onetrust-accept-btn-handler']").click()
+        element.find_element_by_xpath("//*[@id='onetrust-accept-btn-handler']").click()
         print("// closed banner")
     except Exception as e:
         print(e)
@@ -12,7 +12,7 @@ def close_unnecessary_dialogs_if_any(element):
     try:
         print("// closing notification dialog if found")
         element.find_element_by_xpath(
-            "//*[@id, 'onesignal-slidedown-cancel-button']"
+            "//*[@id='onesignal-slidedown-cancel-button']"
         ).click()
         print("// closed notification dialog")
     except Exception as e:
