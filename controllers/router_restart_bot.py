@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 import time
 from selenium import webdriver
@@ -40,6 +41,7 @@ def router_restart(root):
         elif root.router_ip.get() == "192.168.1.1":
             driver.get("http://192.168.1.1/index.html#login")
             driver.find_element_by_id("txtPwd").send_keys("vivo")
+            driver.find_element_by_id("txtPwd").send_keys(Keys.ENTER)
             wait_for_clickable_and_click(driver.find_element_by_id("h_connect_btn"))
             time.sleep(60)
             wait_for_clickable_and_click(driver.find_element_by_id("h_connect_btn"))
