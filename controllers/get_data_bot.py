@@ -115,7 +115,12 @@ def bot(root):
                 file_reader = csv.DictReader(error_file, delimiter=",")
 
                 for line_count, row in enumerate(file_reader):
-                    if row.get("order_number") == order_number:
+                    if row.get("order_number") == order_number and row.get(
+                        "remarks"
+                    ) in [
+                        "Out of Stock",
+                        "Not enough quantity",
+                    ]:
                         try:
                             next_product = next_product.find_element_by_xpath(
                                 "following-sibling::*[contains(@class, 'ui-datatable-selectable') and .//span[text()='Aguardando Impressão']]"
