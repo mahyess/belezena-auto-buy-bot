@@ -2,6 +2,8 @@ import time
 
 
 def close_unnecessary_dialogs_if_any(element):
+    element.implicitly_wait(1)
+
     try:
         print("// closing banner if found")
         element.find_element_by_xpath("//*[@id='onetrust-accept-btn-handler']").click()
@@ -17,6 +19,8 @@ def close_unnecessary_dialogs_if_any(element):
         print("// closed notification dialog")
     except Exception as e:
         print(e)
+
+    element.implicitly_wait(10)
 
 
 def wait_for_clickable_and_click(element):
