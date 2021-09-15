@@ -292,7 +292,7 @@ def bot(root):
                     )
 
                     time.sleep(1)
-                    remarks_field.send_keys(remarks)
+                    # remarks_field.send_keys(remarks)  # this field is supposed to be blank
                     time.sleep(1)
                     remarks_field.send_keys(
                         Keys.TAB,
@@ -316,23 +316,22 @@ def bot(root):
                     )
                     time.sleep(3)
 
-                else:
-                    if remarks != "":
-                        remarks_input_btn = product.find_element_by_id("div-toggle")
-                        wait_for_clickable_and_click(remarks_input_btn, driver)
-                        remarks_form = remarks_input_btn.find_element_by_xpath(
-                            "following-sibling::div"
-                        )
-                        remarks_form.find_element_by_xpath(
-                            ".//div[contains(@class, 'mt-width-full')]/input"
-                        ).send_keys(f"{remarks}")
-                        wait_for_clickable_and_click(
-                            remarks_form.find_element_by_css_selector(
-                                "button[type='submit'][class*='ui-button-success']"
-                            ),
-                            driver,
-                        )
-                        time.sleep(2)
+                if remarks:
+                    remarks_input_btn = product.find_element_by_id("div-toggle")
+                    wait_for_clickable_and_click(remarks_input_btn, driver)
+                    remarks_form = remarks_input_btn.find_element_by_xpath(
+                        "following-sibling::div"
+                    )
+                    remarks_form.find_element_by_xpath(
+                        ".//div[contains(@class, 'mt-width-full')]/input"
+                    ).send_keys(remarks)
+                    wait_for_clickable_and_click(
+                        remarks_form.find_element_by_css_selector(
+                            "button[type='submit'][class*='ui-button-success']"
+                        ),
+                        driver,
+                    )
+                    time.sleep(2)
             except Exception as e:
                 print(e)
                 updater(details, "system error", False)
