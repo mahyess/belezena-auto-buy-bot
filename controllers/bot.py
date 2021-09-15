@@ -46,7 +46,7 @@ def bot(root, details, driver=None):
         # go to item details page
         product_name = details["name"]
         driver.get(f"https://www.belezanaweb.com.br/busca?q={product_name}")
-        product_cards = driver.find_elements_by_class_name("showcase-item-image")
+        # product_cards = driver.find_elements_by_class_name("showcase-item-image")
         # for product in product_cards:
         #     if product_name.lower() in product.get_attribute("innerHTML").lower():
         #         product.click()
@@ -57,11 +57,11 @@ def bot(root, details, driver=None):
             )
         )
 
-        # driver.get(item_url)
-        if len(driver.find_elements_by_class_name("banner-close-button")):
-            wait_for_clickable_and_click(
-                driver.find_element_by_class_name("banner-close-button")
-            )
+        # # driver.get(item_url)
+        # if len(driver.find_elements_by_class_name("banner-close-button")):
+        #     wait_for_clickable_and_click(
+        #         driver.find_element_by_class_name("banner-close-button")
+        #     )
         if len(driver.find_elements_by_xpath("//button[contains(text(), 'Avise-me')]")):
             return "Out of Stock", False
 
@@ -273,18 +273,14 @@ def bot(root, details, driver=None):
 
                         try:
                             time.sleep(8)
-                            print("******** order is successful. page is changed probably.")
+                            print(
+                                "******** order is successful. page is changed probably."
+                            )
                             print(f"******** page link is {driver.current_url}")
                             if "transacional/sucesso" in driver.current_url:
-                                print("******** if condition is matched. it has t/s in url.")
-                                try:
-                                    # if alert box present
-                                    driver.find_element_by_id(
-                                        "onesignal-slidedown-cancel-button"
-                                    ).click()
-                                except Exception as e:
-                                    # alert box not found.
-                                    pass
+                                print(
+                                    "******** if condition is matched. it has t/s in url."
+                                )
 
                                 print("******** trying to click on meurastre link.")
                                 wait_for_clickable_and_click(
