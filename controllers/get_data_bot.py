@@ -55,7 +55,7 @@ def bot(root):
             "36461529"
         )
         wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']")
+            driver.find_element_by_css_selector("button[type='submit']"), driver
         )
         print("submit")
         time.sleep(3)
@@ -127,7 +127,8 @@ def bot(root):
 
                     if "disabled" not in next_btn.get_attribute("class"):
                         wait_for_clickable_and_click(
-                            driver.find_element_by_class_name("ui-paginator-next")
+                            driver.find_element_by_class_name("ui-paginator-next"),
+                            driver,
                         )
                         time.sleep(4)
 
@@ -164,7 +165,8 @@ def bot(root):
             wait_for_clickable_and_click(
                 product.find_element_by_xpath(
                     ".//*[contains(@aria-label, 'Clique para editar o endereço do comprador')]"
-                )
+                ),
+                driver,
             )
             dialog = WebDriverWait(driver, 10).until(
                 EC.visibility_of_element_located((By.ID, "editarEnderecoDialog"))
@@ -197,7 +199,7 @@ def bot(root):
 
             time.sleep(1)
             wait_for_clickable_and_click(
-                dialog.find_element_by_class_name("ui-dialog-titlebar-close")
+                dialog.find_element_by_class_name("ui-dialog-titlebar-close"), driver
             )
 
             cpf_data_response = requests.get(
@@ -260,7 +262,8 @@ def bot(root):
                     wait_for_clickable_and_click(
                         product.find_element_by_css_selector(
                             "a[class*='statusDoPedido']"
-                        )
+                        ),
+                        driver,
                     )
                     dialog = WebDriverWait(driver, 10).until(
                         EC.visibility_of_element_located((By.ID, "jaEntregueiDialog"))
@@ -295,14 +298,15 @@ def bot(root):
                     )
 
                     wait_for_clickable_and_click(
-                        dialog.find_element_by_css_selector("button[type='submit']")
+                        dialog.find_element_by_css_selector("button[type='submit']"),
+                        driver,
                     )
                     time.sleep(3)
 
                 else:
                     if remarks != "":
                         remarks_input_btn = product.find_element_by_id("div-toggle")
-                        wait_for_clickable_and_click(remarks_input_btn)
+                        wait_for_clickable_and_click(remarks_input_btn, driver)
                         remarks_form = remarks_input_btn.find_element_by_xpath(
                             "following-sibling::div"
                         )
@@ -312,7 +316,8 @@ def bot(root):
                         wait_for_clickable_and_click(
                             remarks_form.find_element_by_css_selector(
                                 "button[type='submit'][class*='ui-button-success']"
-                            )
+                            ),
+                            driver,
                         )
                         time.sleep(2)
             except Exception as e:

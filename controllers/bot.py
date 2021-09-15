@@ -54,7 +54,7 @@ def bot(root, details, driver=None):
         wait_for_clickable_and_click(
             driver.find_element_by_xpath(
                 f"//a[contains(@class, 'showcase-item-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
-            )
+            ), driver
         )
 
         # # driver.get(item_url)
@@ -91,7 +91,7 @@ def bot(root, details, driver=None):
             return "Not enough quantity", False
 
         wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']")
+            driver.find_element_by_css_selector("a[data-cy='ProceedCheckout']"), driver
         )
 
         # email in login form
@@ -99,7 +99,7 @@ def bot(root, details, driver=None):
 
         print("...login email form")
         wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']")
+            driver.find_element_by_css_selector("button[type='submit']"), driver
         )
 
         # if already signed up
@@ -120,7 +120,7 @@ def bot(root, details, driver=None):
             )
             gender_value = gender_dict[details["gender"]]
             wait_for_clickable_and_click(
-                driver.find_element_by_css_selector(f"label[for='{gender_value}']")
+                driver.find_element_by_css_selector(f"label[for='{gender_value}']"), driver
             )
 
             # submit register form
@@ -171,7 +171,7 @@ def bot(root, details, driver=None):
         driver.find_element_by_id("complement").send_keys(details["complement"])
 
         wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']")
+            driver.find_element_by_css_selector("button[type='submit']"), driver
         )
         print("...create new address")
 
@@ -191,7 +191,7 @@ def bot(root, details, driver=None):
                         wait_for_clickable_and_click(
                             driver.find_element_by_xpath(
                                 "//div[.//*[contains(@name, 'shipping')]][1]/label"
-                            )
+                            ), driver
                         )
 
                         Select(
@@ -223,7 +223,7 @@ def bot(root, details, driver=None):
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
                                 "button[data-cy='ProceedSuccess']"
-                            )
+                            ), driver
                         )
                         # if order number is found, it means the order is complete
                         # if len(
@@ -286,7 +286,7 @@ def bot(root, details, driver=None):
                                 wait_for_clickable_and_click(
                                     driver.find_element_by_xpath(
                                         '//a[contains(@href,"https://meurastre.io/")]'
-                                    )
+                                    ), driver
                                 )
                                 print("******** meurastre page is opened.")
                                 driver.find_element_by_css_selector(
