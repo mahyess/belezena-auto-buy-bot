@@ -273,7 +273,10 @@ def bot(root, details, driver=None):
 
                         try:
                             time.sleep(8)
+                            print("******** order is successful. page is changed probably.")
+                            print(f"******** page link is {driver.current_url}")
                             if "transacional/sucesso" in driver.current_url:
+                                print("******** if condition is matched. it has t/s in url.")
                                 try:
                                     # if alert box present
                                     driver.find_element_by_id(
@@ -283,19 +286,24 @@ def bot(root, details, driver=None):
                                     # alert box not found.
                                     pass
 
+                                print("******** trying to click on meurastre link.")
                                 wait_for_clickable_and_click(
                                     driver.find_element_by_xpath(
                                         '//a[contains(@href,"https://meurastre.io/")]'
                                     )
                                 )
+                                print("******** meurastre page is opened.")
                                 driver.find_element_by_css_selector(
                                     "input[type='email']"
                                 ).send_keys(details["customer_email"])
+                                print("******** enter email.")
                                 driver.find_element_by_css_selector(
                                     "input[type='email']"
                                 ).send_keys(Keys.ENTER)
+                                print("******** button click.")
                                 time.sleep(2)
 
+                                print("******** return successfully.")
                                 return (
                                     driver.current_url,
                                     True,
