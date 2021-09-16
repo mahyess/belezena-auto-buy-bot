@@ -342,12 +342,13 @@ def bot(root):
                     print(e)
                     updater(details, "system error", False)
 
-                start_fetching_products(root)
             except Exception as e:
                 time.sleep(30)
             finally:
                 root.refresh_ui()
                 start_fetching_products(root)
+        
+        start_fetching_products(root)
 
     except Exception as e:
         print(e)
