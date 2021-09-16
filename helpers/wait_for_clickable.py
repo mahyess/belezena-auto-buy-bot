@@ -2,7 +2,7 @@ import time
 
 
 def close_unnecessary_dialogs_if_any(driver):
-    driver.implicitly_wait(1)
+    driver.implicitly_wait(0)
 
     try:
         print("// closing banner if found")
@@ -30,7 +30,8 @@ def wait_for_clickable_and_click(element, driver=None):
         if driver:
             close_unnecessary_dialogs_if_any(driver)
 
-        element.click()
+        driver.execute_script("arguments[0].scrollIntoView();", element)
+        driver.execute_script("arguments[0].click();", element)
     except Exception as e:
         print(e)
         time.sleep(2)
