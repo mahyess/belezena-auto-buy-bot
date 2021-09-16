@@ -174,6 +174,12 @@ def bot(root):
                     .strip()
                 )
 
+                # scroll to top
+                driver.execute_script(
+                    "arguments[0].scrollIntoView();",
+                    driver.find_element_by_class_name("route-bar-breadcrumb"),
+                )
+
                 # open dialog
                 wait_for_clickable_and_click(
                     product.find_element_by_xpath(

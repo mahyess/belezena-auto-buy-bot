@@ -26,13 +26,18 @@ def close_unnecessary_dialogs_if_any(driver):
 
 
 def wait_for_clickable_and_click(element, driver=None):
-    try:
-        if driver:
-            close_unnecessary_dialogs_if_any(driver)
+    try_count = 0
+    while try_count < 20:
+        try:
+            try_count += 1
+            if driver:
+                close_unnecessary_dialogs_if_any(driver)
 
-        driver.execute_script("arguments[0].scrollIntoView();", element)
-        driver.execute_script("arguments[0].click();", element)
-    except Exception as e:
-        print(e)
-        time.sleep(2)
-        wait_for_clickable_and_click(element)
+            driver.execute_script("arguments[0].scrollIntoView();", element)
+            driver.execute_script("arguments[0].click();", element)
+
+            break
+
+        except Exception as e:
+            print(f"try_count: {try_count} ", e)
+            time.sleep(2)
