@@ -235,14 +235,16 @@ def bot(root, details, driver=None):
                         #         "span[data-cy='OrderNumber']"
                         #     )
                         # ):
-                        el = WebDriverWait(driver, 10).until(
+                        el = WebDriverWait(driver, 30).until(
                             EC.visibility_of_element_located(
                                 (By.XPATH, "//div[contains(@class,'loading')")
                             )
                         )
                         if el:
-                            time.sleep(1)
-                            WebDriverWait(driver, 10).until(
+                            WebDriverWait(driver, 30).until(
+                                lambda d: "is-visible" in el.get_attribute("class")
+                            )
+                            WebDriverWait(driver, 30).until(
                                 lambda d: "is-visible" not in el.get_attribute("class")
                             )
                         # runs if order number is not found
@@ -278,7 +280,7 @@ def bot(root, details, driver=None):
                             root.refresh_ui()
 
                         try:
-                            time.sleep(8)
+                            time.sleep(10)
                             print(
                                 "******** order is successful. page is changed probably."
                             )
