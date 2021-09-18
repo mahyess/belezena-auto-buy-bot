@@ -222,6 +222,9 @@ def bot(root, details, driver=None):
                         # driver.find_element_by_css_selector(
                         #     "label[for='BOLETO']"
                         # ).click()
+                        loading_div = driver.find_element_by_css_selector(
+                            "div[class='loading']"
+                        )
 
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
@@ -235,18 +238,19 @@ def bot(root, details, driver=None):
                         #         "span[data-cy='OrderNumber']"
                         #     )
                         # ):
-                        el = WebDriverWait(driver, 30).until(
-                            EC.visibility_of_element_located(
-                                (By.XPATH, "//div[contains(@class,'loading')")
-                            )
+                        # loading_div = WebDriverWait(driver, 30).until(
+                        #     EC.visibility_of_element_located(
+                        #         (By.XPATH, "//div[contains(@class,'loading')")
+                        #     )
+                        # )
+                        WebDriverWait(driver, 30).until(
+                            lambda d: "is-visible" in loading_div.get_attribute("class")
                         )
-                        if el:
-                            WebDriverWait(driver, 30).until(
-                                lambda d: "is-visible" in el.get_attribute("class")
-                            )
-                            WebDriverWait(driver, 30).until(
-                                lambda d: "is-visible" not in el.get_attribute("class")
-                            )
+                        WebDriverWait(driver, 30).until(
+                            lambda d: "is-visible"
+                            not in loading_div.get_attribute("class")
+                        )
+
                         # runs if order number is not found
                         if len(
                             driver.find_elements_by_css_selector(
