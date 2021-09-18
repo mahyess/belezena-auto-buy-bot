@@ -348,7 +348,8 @@ def bot(root):
                     print(e)
                     updater(details, "system error", False)
 
-                start_fetching_products(root)
+                finally:
+                    start_fetching_products(root)
 
             except Exception as e:
                 time.sleep(30)
@@ -368,3 +369,4 @@ def bot(root):
         root.status = 0
         root.refresh_ui()
         driver.quit()
+        bot(root)

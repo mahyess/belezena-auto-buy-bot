@@ -24,7 +24,8 @@ def router_restart(root):
                 EC.frame_to_be_available_and_switch_to_it((By.ID, "basefrm"))
             )
             wait_for_clickable_and_click(
-                driver.find_element_by_xpath("//a[.//span[@id='MLG_Resets_Reboot']]")
+                driver.find_element_by_xpath("//a[.//span[@id='MLG_Resets_Reboot']]"),
+                driver,
             )
 
             WebDriverWait(driver, 5).until(
@@ -33,7 +34,8 @@ def router_restart(root):
                 )
             )
             wait_for_clickable_and_click(
-                driver.find_element_by_xpath("//a[.//span[@id='MLG_Pop_Reboot_Yes']]")
+                driver.find_element_by_xpath("//a[.//span[@id='MLG_Pop_Reboot_Yes']]"),
+                driver,
             )
 
             time.sleep(90)
@@ -42,9 +44,13 @@ def router_restart(root):
             driver.get("http://192.168.1.1/index.html#login")
             driver.find_element_by_id("txtPwd").send_keys("vivo")
             driver.find_element_by_id("txtPwd").send_keys(Keys.ENTER)
-            wait_for_clickable_and_click(driver.find_element_by_id("h_connect_btn"))
+            wait_for_clickable_and_click(
+                driver.find_element_by_id("h_connect_btn"), driver
+            )
             time.sleep(60)
-            wait_for_clickable_and_click(driver.find_element_by_id("h_connect_btn"))
+            wait_for_clickable_and_click(
+                driver.find_element_by_id("h_connect_btn"), driver
+            )
             time.sleep(5)
 
     except Exception as e:

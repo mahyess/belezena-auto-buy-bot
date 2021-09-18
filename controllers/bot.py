@@ -54,7 +54,8 @@ def bot(root, details, driver=None):
         wait_for_clickable_and_click(
             driver.find_element_by_xpath(
                 f"//a[contains(@class, 'showcase-item-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
-            ), driver
+            ),
+            driver,
         )
 
         # # driver.get(item_url)
@@ -120,7 +121,8 @@ def bot(root, details, driver=None):
             )
             gender_value = gender_dict[details["gender"]]
             wait_for_clickable_and_click(
-                driver.find_element_by_css_selector(f"label[for='{gender_value}']"), driver
+                driver.find_element_by_css_selector(f"label[for='{gender_value}']"),
+                driver,
             )
 
             # submit register form
@@ -191,7 +193,8 @@ def bot(root, details, driver=None):
                         wait_for_clickable_and_click(
                             driver.find_element_by_xpath(
                                 "//div[.//*[contains(@name, 'shipping')]][1]/label"
-                            ), driver
+                            ),
+                            driver,
                         )
 
                         Select(
@@ -223,7 +226,8 @@ def bot(root, details, driver=None):
                         wait_for_clickable_and_click(
                             driver.find_element_by_css_selector(
                                 "button[data-cy='ProceedSuccess']"
-                            ), driver
+                            ),
+                            driver,
                         )
                         # if order number is found, it means the order is complete
                         # if len(
@@ -233,12 +237,14 @@ def bot(root, details, driver=None):
                         # ):
                         el = WebDriverWait(driver, 10).until(
                             EC.visibility_of_element_located(
-                                (By.XPATH, "//div[@class='loading is-visible']")
+                                (By.XPATH, "//div[contains(@class,'loading')")
                             )
                         )
-                        WebDriverWait(driver, 10).until(
-                            lambda d: "is-visible" not in el.get_attribute("class")
-                        )
+                        if el:
+                            time.sleep(1)
+                            WebDriverWait(driver, 10).until(
+                                lambda d: "is-visible" not in el.get_attribute("class")
+                            )
                         # runs if order number is not found
                         if len(
                             driver.find_elements_by_css_selector(
@@ -269,7 +275,7 @@ def bot(root, details, driver=None):
                             # if some other errors, consider card problem, change card and try again
                             card_file_updater(data)
                             print("Card removed")
-                            root.refresh_ui
+                            root.refresh_ui()
 
                         try:
                             time.sleep(8)
@@ -286,7 +292,8 @@ def bot(root, details, driver=None):
                                 wait_for_clickable_and_click(
                                     driver.find_element_by_xpath(
                                         '//a[contains(@href,"https://meurastre.io/")]'
-                                    ), driver
+                                    ),
+                                    driver,
                                 )
                                 print("******** meurastre page is opened.")
                                 driver.find_element_by_css_selector(
