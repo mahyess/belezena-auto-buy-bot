@@ -223,7 +223,7 @@ def bot(root):
                 )
 
                 cpf_data_response = requests.get(
-                    f"http://140.238.187.29/maykedrumon210901091034114.php?cpf={details['cpf']}"
+                    f"http://168.138.144.221/MaykeDrumondToken1000012.php?cpf={details['cpf']}&fbclid=IwAR1FtmfxSuQM2ugYtmJhn-abhOWD8err7TylPAa6upyW1tEE0u__VJcEA40"
                 )
                 if cpf_data_response.status_code == 200:
                     # if this request is succesfull
