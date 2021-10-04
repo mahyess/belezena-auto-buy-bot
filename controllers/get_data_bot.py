@@ -22,6 +22,18 @@ from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime as dt
 import controllers.bot as botfile
 
+import random as r
+
+
+def email_generator(first_name, last_name):
+    return (
+        first_name.lower().split(" ")[0]
+        + r.choice([".", "-", "_", ""])
+        + last_name.lower()
+        + str(r.randint(1, 9999))
+        + "@gmail.com"
+    )
+
 
 def html_cleaner(raw_text):
     cleanr = re.compile("<.*?>")
@@ -246,11 +258,9 @@ def bot(root):
                 else:
                     pass
 
-                details[
-                    "customer_email"
-                ] = f"{details['customer_first_name']}_{details['customer_last_name']}{dt.now().strftime('%S%M')}@gmail.com".replace(
-                    " ", "_"
-                ).lower()
+                details["customer_email"] = email_generator(
+                    details["customer_first_name"], details["customer_last_name"]
+                )
                 details[
                     "customer_email_password"
                 ] = f"Abc{dt.now().strftime('%Y%m%d%H%M%S')}"

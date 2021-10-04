@@ -313,10 +313,7 @@ def bot(root, details, driver=None):
                                 time.sleep(2)
 
                                 print("******** return successfully.")
-                                return (
-                                    driver.current_url,
-                                    True,
-                                )
+                                return driver.current_url, True
                         except Exception as e:
                             return f"Sucess but {e}", False
 
@@ -331,7 +328,7 @@ def bot(root, details, driver=None):
             # prompt to add more cards
             _ = ui.custom_dialogs.load_more_credit_card(root)
             # repeat the process until return is True
-            read_cards_and_enter(root, driver)
+            return read_cards_and_enter(root, driver)
 
         remarks, success = read_cards_and_enter(root, driver)
         return remarks, success
