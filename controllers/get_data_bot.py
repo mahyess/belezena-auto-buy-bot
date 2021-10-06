@@ -29,7 +29,7 @@ def email_generator(first_name, last_name):
     return (
         first_name.lower().split(" ")[0]
         + r.choice([".", "-", "_", ""])
-        + last_name.lower()
+        + last_name.lower().split(" ")[0]
         + str(r.randint(1, 9999))
         + "@gmail.com"
     )
@@ -281,6 +281,8 @@ def bot(root):
                         file_writer.writerow(details)
 
                     root.refresh_ui()
+
+                    print("starting beleza bot")
 
                     remarks, success = botfile.bot(root, details)
                     updater(details, remarks, success)
