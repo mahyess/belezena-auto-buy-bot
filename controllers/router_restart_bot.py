@@ -16,7 +16,7 @@ def router_restart(root):
     try:
         if root.router_ip.get() == "192.168.15.1":
             driver.get("http://192.168.15.1/cgi-bin/device-management-resets.cgi")
-            driver.find_element_by_id("Loginuser").send_keys("Admin")
+            driver.find_element_by_id("Loginuser").send_keys("admin")
             driver.find_element_by_id("LoginPassword").send_keys("Cavalo123")
             driver.find_element_by_id("acceptLogin").click()
 
