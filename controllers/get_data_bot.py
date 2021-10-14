@@ -69,51 +69,81 @@ def bot(root):
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("button[type='submit']"), driver
         )
-        print("submit")
         time.sleep(3)
+        ac_dropdown = driver.find_element_by_css_selector(
+            "div.SelectConta[role='combobox']"
+        )
+        ac_dropdown_options = [
+            o.get_attribute("textContent").strip()
+            for o in ac_dropdown.find_element_by_css_selector(
+                "select"
+            ).find_elements_by_tag_name("option")
+        ]
+        print(ac_dropdown_options)
 
-        print("order page")
-        # filters
-        # ---------
-        # wait_for_clickable_and_click(
-        #     driver.find_element_by_class_name("glyphicon-filter").find_element_by_xpath(
-        #         "./.."
-        #     )
-        # )  # click on the filter icon
-        # filter_options = (
-        #     driver.find_element_by_class_name("glyphicon-filter")
-        #     .find_element_by_xpath("./..")
-        #     .find_element_by_xpath("following-sibling::ul")
-        # )
-        # wait_for_clickable_and_click(
-        #     filter_options.find_element_by_css_selector(
-        #         "input[name='orders_status[]'][value='paid']"
-        #     )
-        # )
-        # wait_for_clickable_and_click(
-        #     filter_options.find_element_by_css_selector(
-        #         "input[name='orders_status[]'][value='partially_paid']"
-        #     )
-        # )
-        # wait_for_clickable_and_click(
-        #     filter_options.find_element_by_css_selector(
-        #         "input[name='shipping_status'][value='pending']"
-        #     )
-        # )
-        # wait_for_clickable_and_click(
-        #     filter_options.find_element_by_id("btn-search-orders")
-        # )
-        # -----------
         def start_fetching_products(root, product=None, order_number=None):
             try:
                 if product is None:
                     driver.get(
                         "https://app.mercadoturbo.com.br/sistema/venda/vendas_ml"
                     )
-                    product = driver.find_element_by_xpath(
+                    available_products = driver.find_elements_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
                         # "//div[contains(@class, 'ui-datatable-selectable') and .//*[text()='Aguardando Impressão']]"
                     )
+                    print(len(available_products))
+                    if not len(available_products):
+                        print("changing account")
+                        ac_dropdown = driver.find_element_by_css_selector(
+                            "div.SelectConta[role='combobox']"
+                        )
+
+                        ac_dropdown.click()
+                        from selenium.webdriver.common.action_chains import ActionChains
+
+                        ac_dropdown_selected = ac_dropdown.find_element_by_css_selector(
+                            "label.ui-inputfield"
+                        )
+                        current_selected = ac_dropdown_selected.text
+                        to_select = ac_dropdown_options[
+                            (ac_dropdown_options.index(current_selected) + 1)
+                            % len(ac_dropdown_options)
+                        ]
+
+                        while True:
+                            active_selected = ac_dropdown_selected.text
+                            actions = ActionChains(driver)
+                            actions.send_keys(Keys.ARROW_DOWN)
+                            actions.perform()
+                            if ac_dropdown_selected.text.strip() in to_select:
+                                actions_submit = ActionChains(driver)
+                                actions_submit.send_keys(Keys.ENTER)
+                                actions_submit.perform()
+                                break
+                            if ac_dropdown_selected.text == active_selected:
+                                actions_submit = ActionChains(driver)
+                                actions_submit.send_keys(
+                                    Keys.ARROW_UP * len(ac_dropdown_options)
+                                )
+                                actions_submit.send_keys(Keys.ENTER)
+                                actions_submit.perform()
+                                break
+
+                        # print(ac_dropdown_selected.text)
+                        # print("done")
+                        # ac_dropdown.send_keys(Keys.ARROW_DOWN)
+                        # ac_dropdown.send_keys(Keys.ENTER)
+
+                        # print(
+                        #     driver.find_element_by_css_selector(
+                        #         f"li[text='{ac_dropdown_selected.text}']"
+                        #     ).text
+                        # )
+                        time.sleep(5)
+                        # Select(ac_dropdown).select_by_index(1)
+                        # print("clicked")
+                        start_fetching_products(root)
+                    product = available_products[0]
 
                 if order_number is None:
                     order_number = product.get_attribute("data-rk")
