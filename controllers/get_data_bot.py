@@ -236,6 +236,13 @@ def bot(root):
                     lambda d: "false" in dialog.get_attribute("aria-hidden")
                 )
 
+                details["customer_first_name"], details["customer_last_name"] = (
+                    dialog.find_element_by_xpath(
+                        ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
+                    )
+                    .get_attribute("value")
+                    .split(" ", 1)
+                )
                 details["cpf"] = dialog.find_element_by_xpath(
                     ".//label[contains(text(), 'CPF / CNPJ')]/following-sibling::input"
                 ).get_attribute("value")
@@ -267,15 +274,16 @@ def bot(root):
                 cpf_data_response = requests.get(
                     f"http://168.138.144.221/MaykeDrumondToken1000012.php?cpf={details['cpf']}&fbclid=IwAR1FtmfxSuQM2ugYtmJhn-abhOWD8err7TylPAa6upyW1tEE0u__VJcEA40"
                 )
-                if cpf_data_response.status_code == 200:
+                cpf_data = cpf_data_response.json()
+                if cpf_data_response.status_code == 200 and cpf_data.get("status"):
                     # if this request is succesfull
-                    cpf_data = cpf_data_response.json()
-
-                    (details["customer_first_name"], details["customer_last_name"],) = (
-                        cpf_data.get("nome", "agenericname randomized")
-                        .title()
-                        .split(" ", 1)
-                    )
+                    if cpf_data.get("nome"):
+                        (
+                            details["customer_first_name"],
+                            details["customer_last_name"],
+                        ) = (
+                            cpf_data.get("nome").title().split(" ", 1)
+                        )
 
                     details["gender"] = cpf_data.get("sexoDescricao", "F")
                     # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
@@ -286,7 +294,41 @@ def bot(root):
                         ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
                     )
                 else:
-                    pass
+                    cpf_data_response = requests.get(
+                        f"http://168.138.144.221/PRIVADAPORCREDITOS.php?cpf={details['cpf']}&fbclid=IwAR0GmcLxGdqm6DwcEl_nubmmUwNUViOKYf1AjFTjGfLoM10qPEgtzxlK5sA"
+                    )
+                    cpf_data = cpf_data_response.json()
+
+                    if (
+                        cpf_data_response.status_code == 200
+                        and cpf_data.get("retorno") == "OK"
+                    ):
+                        # if this request is succesfull
+                        cpf_data = cpf_data.get("msg")
+
+                        if cpf_data.get("nome"):
+                            (
+                                details["customer_first_name"],
+                                details["customer_last_name"],
+                            ) = (
+                                cpf_data.get("nome").title().split(" ", 1)
+                            )
+
+                        details["gender"] = cpf_data.get("sexo", "F")[0]
+                        # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
+                        details["birthdate"] = cpf_data.get("nascimento", "12/12/1992")
+
+                        ddd = cpf_data.get("ddd", "11")
+                        details["telephone"] = (
+                            ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
+                        )
+                    else:
+                        details = {
+                            **details,
+                            "gender": "F",
+                            "birthdate": "11/02/1990",
+                            "telephone": "1199" + f"1{dt.now().strftime('%d%H%M%S')}",
+                        }
 
                 details["customer_email"] = email_generator(
                     details["customer_first_name"], details["customer_last_name"]

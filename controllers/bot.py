@@ -294,6 +294,14 @@ def bot(root, details, driver=None):
                                     "******** if condition is matched. it has t/s in url."
                                 )
 
+                                # getting this link is enough, so return here.. other code can stay here, doesn't matter
+                                return (
+                                    driver.find_element_by_xpath(
+                                        '//a[contains(@href,"https://meurastre.io/")]'
+                                    ).get_attribute("href"),
+                                    True,
+                                )
+
                                 print("******** trying to click on meurastre link.")
                                 wait_for_clickable_and_click(
                                     driver.find_element_by_xpath(
