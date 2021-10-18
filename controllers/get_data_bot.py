@@ -21,7 +21,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime as dt
+
 import controllers.bot as botfile
+# import controllers.bots.drogaraia as botfile
 
 import random as r
 
@@ -84,8 +86,8 @@ def bot(root):
 
         def change_accounts():
             ac_dropdown = driver.find_element_by_css_selector(
-                            "div.SelectConta[role='combobox']"
-                        )
+                "div.SelectConta[role='combobox']"
+            )
 
             ac_dropdown.click()
 
@@ -110,16 +112,13 @@ def bot(root):
                     break
                 if ac_dropdown_selected.text == active_selected:
                     actions_submit = ActionChains(driver)
-                    actions_submit.send_keys(
-                        Keys.ARROW_UP * len(ac_dropdown_options)
-                    )
+                    actions_submit.send_keys(Keys.ARROW_UP * len(ac_dropdown_options))
                     actions_submit.send_keys(Keys.ENTER)
                     actions_submit.perform()
                     break
-            
+
             time.sleep(5)
             start_fetching_products(root)
-
 
         def start_fetching_products(root, product=None, order_number=None):
             try:
@@ -226,12 +225,14 @@ def bot(root):
                     lambda d: "false" in dialog.get_attribute("aria-hidden")
                 )
 
-                details["customer_first_name"], details["customer_last_name"] = (
-                    dialog.find_element_by_xpath(
+                (
+                    details["customer_first_name"],
+                    details["customer_last_name"],
+                ) = f"""{dialog.find_element_by_xpath(
                         ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
                     )
-                    .get_attribute("value")
-                    .split(" ", 1)
+                    .get_attribute("value")}  """.split(
+                    " ", 1
                 )
                 details["cpf"] = dialog.find_element_by_xpath(
                     ".//label[contains(text(), 'CPF / CNPJ')]/following-sibling::input"
