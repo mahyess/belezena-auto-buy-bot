@@ -45,11 +45,12 @@ def bot(root, details, driver=None):
         print("start bot...")
         # go to item details page
         product_name = details["name"]
+        product_name = "Hello Kitty Angel Cat Sugar Melon - Perfume Infantil 30ml"
         driver.get(f"https://busca.drogaraia.com.br/search?w={product_name}")
-        
+
         wait_for_clickable_and_click(
             driver.find_element_by_xpath(
-                f"//a[contains(@class, 'product-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
+                f"//a[contains(@data-sli-test, 'resultlink') and contains(translate(text(), '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]"
             ),
             driver,
         )
@@ -57,21 +58,38 @@ def bot(root, details, driver=None):
         if len(driver.find_elements_by_xpath("//button[contains(text(), 'Avise-me')]")):
             return "Out of Stock", False
 
+        driver.find_element_by_id("qty").send_keys(Keys.CONTROL, "a")
         driver.find_element_by_id("qty").send_keys(details["quantity"])
 
         loading_div = driver.find_element_by_id("addtocart_popup")
         # click on buy button
         wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[title^='Comprar']")
+            driver.find_element_by_css_selector("button[title^='Comprar']"), driver
         )
 
+        # wait for loading div to appear
         WebDriverWait(driver, 30).until(
             lambda d: "no-display" not in loading_div.get_attribute("class")
-        )
-        WebDriverWait(driver, 30).until(
-            lambda d: "no-display" in loading_div.get_attribute("class")
+            and "Por favor aguarde, carregando..."
+            in loading_div.find_element_by_css_selector("p").text
         )
 
+        # wait for loading div to disappear or show error
+        WebDriverWait(driver, 30).until(
+            lambda d: "no-display" in loading_div.get_attribute("class")
+            or "Por favor aguarde, carregando..."
+            not in loading_div.find_element_by_css_selector("p").text
+        )
+
+        # if out of stock error
+        if (
+            "A quantidade solicitada para este produto não está disponível."
+            in loading_div.find_element_by_css_selector("p").text
+        ):
+            print("Out of stock error")
+            return "Out of Stock", False
+
+        # if not error
         driver.get("https://www.drogaraia.com.br/checkout/cart/")
 
         driver.find_element_by_id("postcode").send_keys(details["cep"])
@@ -91,13 +109,19 @@ def bot(root, details, driver=None):
         )
 
         # email in login form
-        driver.find_element_by_id("full-name-input").send_keys(f'{details["customer_first_name"]} {details["customer_last_name"]}')
+        driver.find_element_by_id("full-name-input").send_keys(
+            f'{details["customer_first_name"]} {details["customer_last_name"]}'
+        )
         driver.find_element_by_id("email_address").send_keys(details["customer_email"])
         driver.find_element_by_id("taxvat").send_keys(details["cpf"])
         driver.find_element_by_id("telephone").send_keys(details["telephone"])
-        driver.find_element_by_id("password").send_keys(details["customer_email_password"])
-        driver.find_element_by_id("confirmation").send_keys(details["customer_email_password"])
-        driver.find_element_by_id("dob-date").send_keys(details["birthDate"])
+        driver.find_element_by_id("password").send_keys(
+            details["customer_email_password"]
+        )
+        driver.find_element_by_id("confirmation").send_keys(
+            details["customer_email_password"]
+        )
+        driver.find_element_by_id("dob-date").send_keys(details["birthdate"])
         gender_value = gender_dict[details["gender"]]
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector(f"label[for='{gender_value}']"),
@@ -109,8 +133,9 @@ def bot(root, details, driver=None):
         )
 
         wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[title='register']"), driver
+            driver.find_element_by_css_selector("button[title='Cadastrar']"), driver
         )
+        print("everything done.")
 
     except Exception as e:
         print(e)

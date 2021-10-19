@@ -22,8 +22,8 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime as dt
 
-import controllers.bot as botfile
-# import controllers.bots.drogaraia as botfile
+# import controllers.bot as botfile
+import controllers.bots.drogaraia as botfile
 
 import random as r
 
@@ -281,6 +281,7 @@ def bot(root):
                     details["birthdate"] = cpf_data.get("nascimento", "12/12/1992")
 
                     ddd = cpf_data.get("ddd", "11")
+                    ddd = ddd if ddd else "11"
                     details["telephone"] = (
                         ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
                     )
@@ -324,9 +325,7 @@ def bot(root):
                 details["customer_email"] = email_generator(
                     details["customer_first_name"], details["customer_last_name"]
                 )
-                details[
-                    "customer_email_password"
-                ] = f"Abc{dt.now().strftime('%Y%m%d%H%M%S')}"
+                details["customer_email_password"] = f"Abc{dt.now().strftime('%M%H%S')}"
 
                 details = strip_dict(details)
 
