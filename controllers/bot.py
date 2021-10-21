@@ -276,6 +276,7 @@ def bot(root, details, driver=None):
                                     )
                                 )
                                 if is_excessive:
+                                    root.is_reset_router_check.set(True)
                                     return "excess request", False
 
                             # if some other errors, consider card problem, change card and try again
@@ -293,6 +294,7 @@ def bot(root, details, driver=None):
                                 print(
                                     "******** if condition is matched. it has t/s in url."
                                 )
+                                root.is_reset_router_check.set(False)
 
                                 # getting this link is enough, so return here.. other code can stay here, doesn't matter
                                 return (
