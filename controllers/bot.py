@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 
 from selenium.webdriver.support.wait import WebDriverWait
 import ui.custom_dialogs
@@ -64,7 +65,7 @@ def bot(root, details, driver=None):
         #         driver.find_element_by_class_name("banner-close-button")
         #     )
         if len(driver.find_elements_by_xpath("//button[contains(text(), 'Avise-me')]")):
-            return "Out of Stock", False
+            return f"Out of Stock - {str(datetime.today().date())}", False
 
         # get item sku
         item_sku = driver.find_element_by_xpath(

@@ -9,7 +9,7 @@ from helpers.file_system import (
     FEEDING_FILE,
     file_initializer,
 )
-import controllers.bot as botfile
+import controllers.bots.update_beleza_stock as update_bot
 import controllers.get_data_bot as get_data_bot_file
 from helpers.csv_reader import (
     CARD_FILE_FIELDNAMES,
@@ -22,8 +22,8 @@ from helpers.csv_reader import (
 
 @ui_refresher
 def load_data(root):
-    root.show_message_box("Error", "This button is not used.", "warning")
-    # get_data_bot_file.bot(root)
+    update_bot.bot(root)
+    root.show_message_box("Successful", "Done.")
     # filename = root.onOpen()
     # try:
     #     with open(filename, "r", newline="") as input_file, open(

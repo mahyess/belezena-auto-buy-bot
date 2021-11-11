@@ -135,6 +135,14 @@ def bot(root, details, driver=None):
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("button[title='Cadastrar']"), driver
         )
+
+        driver.find_element_by_id("billing:postcode").send_keys(details["cep"])
+        driver.find_element_by_id("billing:telephone").send_keys(details["telephone"])
+        driver.find_element_by_id("billing:street2").send_keys(details["number"])
+        driver.find_element_by_id("billing:street4").send_keys(details["complement"])
+        wait_for_clickable_and_click(
+            driver.find_element_by_id("btn-create-address"), driver
+        )
         print("everything done.")
 
     except Exception as e:

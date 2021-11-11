@@ -1,4 +1,5 @@
 from selenium.webdriver.common.keys import Keys
+from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
 from helpers.ping_checker import ping_until_up
 from controllers.router_restart_bot import router_restart
 import re
@@ -73,52 +74,7 @@ def bot(root):
             driver.find_element_by_css_selector("button[type='submit']"), driver
         )
         time.sleep(3)
-        ac_dropdown = driver.find_element_by_css_selector(
-            "div.SelectConta[role='combobox']"
-        )
-        ac_dropdown_options = [
-            o.get_attribute("textContent").strip()
-            for o in ac_dropdown.find_element_by_css_selector(
-                "select"
-            ).find_elements_by_tag_name("option")
-        ]
-        print(ac_dropdown_options)
-
-        def change_accounts():
-            ac_dropdown = driver.find_element_by_css_selector(
-                "div.SelectConta[role='combobox']"
-            )
-
-            ac_dropdown.click()
-
-            ac_dropdown_selected = ac_dropdown.find_element_by_css_selector(
-                "label.ui-inputfield"
-            )
-            current_selected = ac_dropdown_selected.text
-            to_select = ac_dropdown_options[
-                (ac_dropdown_options.index(current_selected) + 1)
-                % len(ac_dropdown_options)
-            ]
-
-            while True:
-                active_selected = ac_dropdown_selected.text
-                actions = ActionChains(driver)
-                actions.send_keys(Keys.ARROW_DOWN)
-                actions.perform()
-                if ac_dropdown_selected.text.strip() in to_select:
-                    actions_submit = ActionChains(driver)
-                    actions_submit.send_keys(Keys.ENTER)
-                    actions_submit.perform()
-                    break
-                if ac_dropdown_selected.text == active_selected:
-                    actions_submit = ActionChains(driver)
-                    actions_submit.send_keys(Keys.ARROW_UP * len(ac_dropdown_options))
-                    actions_submit.send_keys(Keys.ENTER)
-                    actions_submit.perform()
-                    break
-
-            time.sleep(5)
-            start_fetching_products(root)
+        accounts = get_accounts(driver)
 
         def start_fetching_products(root, product=None, order_number=None):
             try:
@@ -132,7 +88,9 @@ def bot(root):
                     )
                     print(len(available_products))
                     if not len(available_products):
-                        change_accounts()
+                        change_accounts(driver, accounts)
+                        start_fetching_products(root)
+
                     product = available_products[0]
 
                 if order_number is None:
@@ -143,12 +101,19 @@ def bot(root):
                     file_reader = csv.DictReader(error_file, delimiter=",")
 
                     for line_count, row in enumerate(file_reader):
-                        if row.get("order_number") == order_number and row.get(
+                        if row.get("order_number") == order_number and any(x in row.get(
                             "remarks"
-                        ) in [
+                        ) for x in [
                             "Out of Stock",
                             "Not enough quantity",
-                        ]:
+                        ]):
+                            try:
+                                if "Out of Stock" in row.get("remarks"):
+                                    _, date = row.get("remarks").partition(" - ")
+                                    if date != str(dt.today().date()):
+                                        break
+                            except ValueError:
+                                pass
                             try:
                                 next_product = next_product.find_element_by_xpath(
                                     "following-sibling::*[contains(@class, 'ui-datatable-selectable') and .//span[text()='Aguardando Impressão']]"
@@ -162,6 +127,8 @@ def bot(root):
                                     order_number=next_order_number,
                                 )
                             except NoSuchElementException:
+                                change_accounts(driver, accounts)
+                                start_fetching_products(root)
                                 # next_btn = driver.find_element_by_class_name(
                                 #     "ui-paginator-next"
                                 # )
@@ -187,7 +154,7 @@ def bot(root):
                                 #         order_number=next_order_number,
                                 #     )
                                 # else:
-                                change_accounts()
+                                
 
                 details = {
                     "address_label": "casa",
