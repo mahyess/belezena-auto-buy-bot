@@ -33,8 +33,9 @@ def beleza_stock_scraper(name):
             "Sec-GPC": "1",
             "TE": "trailers",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36",
+            # "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36",
         }
+        headers["User-Agent"] = random_user_agent()
         with requests.Session() as s:
             if data is None:
                 return s.get(url, headers=headers).content

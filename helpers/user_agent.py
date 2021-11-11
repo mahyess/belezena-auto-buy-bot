@@ -57,7 +57,7 @@ cached = [
 ]
 
 
-def random_user_agent(root):
+def random_user_agent(root=None):
     try:
         url = "http://www.useragentstring.com/pages/useragentstring.php?name=Chrome"
         r = req.get(url)
@@ -75,4 +75,5 @@ def random_user_agent(root):
         else:
             return cached[randint(0, len(cached))]
     except Exception as e:
+        return cached[randint(0, len(cached))]
         root.show_message_box("from user agent", e, "warning")
