@@ -23,8 +23,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime as dt
 
-# import controllers.bot as botfile
-import controllers.bots.drogaraia as botfile
+import controllers.bots.belezanaweb as botfile
+
+# import controllers.bots.drogaraia as botfile
 
 import random as r
 
@@ -101,12 +102,13 @@ def bot(root):
                     file_reader = csv.DictReader(error_file, delimiter=",")
 
                     for line_count, row in enumerate(file_reader):
-                        if row.get("order_number") == order_number and any(x in row.get(
-                            "remarks"
-                        ) for x in [
-                            "Out of Stock",
-                            "Not enough quantity",
-                        ]):
+                        if row.get("order_number") == order_number and any(
+                            x in row.get("remarks")
+                            for x in [
+                                "Out of Stock",
+                                "Not enough quantity",
+                            ]
+                        ):
                             try:
                                 if "Out of Stock" in row.get("remarks"):
                                     _, date = row.get("remarks").partition(" - ")
@@ -154,7 +156,6 @@ def bot(root):
                                 #         order_number=next_order_number,
                                 #     )
                                 # else:
-                                
 
                 details = {
                     "address_label": "casa",
