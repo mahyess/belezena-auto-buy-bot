@@ -52,10 +52,24 @@ def bot(root, details, driver=None):
         #     if product_name.lower() in product.get_attribute("innerHTML").lower():
         #         product.click()
         #         break
-        wait_for_clickable_and_click(
-            driver.find_element_by_xpath(
+        product = None
+        while not product:
+            products = driver.find_elements_by_xpath(
                 f"//a[contains(@class, 'showcase-item-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
-            ),
+            )
+            if len(products):
+                product = products[0]
+            else:
+                load_more_btns = driver.find_elements_by_css_selector(
+                    "button.btn-load-more"
+                )
+                if len(load_more_btns):
+                    wait_for_clickable_and_click(load_more_btns[0], driver)
+                else:
+                    return f"Out of Stock - {str(datetime.today().date())}", False
+
+        wait_for_clickable_and_click(
+            product,
             driver,
         )
 
