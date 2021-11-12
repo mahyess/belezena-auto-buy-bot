@@ -27,6 +27,8 @@ def get_router_ip():
 
 def router_restart(root):
     router_ip = get_router_ip()
+    if router_ip not in ["192.168.15.1", "192.168.1.1"]:
+        router_ip = root.router_ip.get()
     options = Options()
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
