@@ -146,11 +146,7 @@ def bot(root, details=None, driver=None):
 
             if "ui-state-disabled" not in next_btn.get_attribute("class"):
                 spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
-                driver.execute_script(
-                    "arguments[0].scrollIntoView();",
-                    next_btn,
-                )
-                next_btn.click()
+                wait_for_clickable_and_click(next_btn, driver)
                 waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
                 waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
                 update()
