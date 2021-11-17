@@ -34,13 +34,16 @@ def wait_for_clickable_and_click(element, driver=None):
                 close_unnecessary_dialogs_if_any(driver)
 
             # ------- scrolling to proper position ---------
-            desired_y = (element.size['height'] / 2) + element.location['y']
-            current_y = (driver.execute_script('return window.innerHeight') / 2) + driver.execute_script('return window.pageYOffset')
+            desired_y = (element.size["height"] / 2) + element.location["y"]
+            current_y = (
+                driver.execute_script("return window.innerHeight") / 2
+            ) + driver.execute_script("return window.pageYOffset")
             scroll_y_by = desired_y - current_y
             driver.execute_script("window.scrollBy(0, arguments[0]);", scroll_y_by)
             # ------- scrolling to proper position ---------
-            
-            driver.execute_script("arguments[0].click();", element)
+
+            element.click()
+            # driver.execute_script("arguments[0].click();", element)
 
             break
 
