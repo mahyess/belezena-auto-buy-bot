@@ -25,7 +25,7 @@ def close_unnecessary_dialogs_if_any(driver):
     driver.implicitly_wait(10)
 
 
-def wait_for_clickable_and_click(element, driver=None):
+def wait_for_clickable_and_click(element, driver=None, nonjsclick=False):
     try_count = 0
     while try_count < 20:
         try:
@@ -42,8 +42,10 @@ def wait_for_clickable_and_click(element, driver=None):
             driver.execute_script("window.scrollBy(0, arguments[0]);", scroll_y_by)
             # ------- scrolling to proper position ---------
 
-            element.click()
-            # driver.execute_script("arguments[0].click();", element)
+            if nonjsclick:
+                element.click()
+            else:
+                driver.execute_script("arguments[0].click();", element)
 
             break
 

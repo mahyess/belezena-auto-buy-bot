@@ -146,7 +146,11 @@ def bot(root, details=None, driver=None):
 
             if "ui-state-disabled" not in next_btn.get_attribute("class"):
                 spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
-                wait_for_clickable_and_click(next_btn, driver)
+                wait_for_clickable_and_click(
+                    next_btn,
+                    driver,
+                    nonjsclick=True,
+                )
                 waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
                 waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
                 update()
@@ -164,6 +168,7 @@ def bot(root, details=None, driver=None):
                     "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
                 ),
                 driver,
+                nonjsclick=True,
             )
 
             state_active_to_paused_changer.perform()
