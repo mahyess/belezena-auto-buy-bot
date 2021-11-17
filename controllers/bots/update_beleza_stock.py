@@ -162,7 +162,8 @@ def bot(root, details=None, driver=None):
             wait_for_clickable_and_click(
                 driver.find_element_by_xpath(
                     "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
-                )
+                ),
+                driver,
             )
 
             state_active_to_paused_changer.perform()
