@@ -163,14 +163,11 @@ def bot(root, details=None, driver=None):
 
             spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
 
-            status_dropdown = driver.find_element_by_xpath(
-                "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
+            wait_for_clickable_and_click(
+                driver.find_element_by_xpath(
+                    "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
+                )
             )
-            driver.execute_script(
-                "arguments[0].scrollIntoView();",
-                status_dropdown,
-            )
-            status_dropdown.click()
 
             state_active_to_paused_changer.perform()
             waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
