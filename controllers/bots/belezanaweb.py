@@ -309,7 +309,7 @@ def bot(root, details, driver=None):
                                 print(
                                     "******** if condition is matched. it has t/s in url."
                                 )
-                                root.is_reset_router_check.set(False)
+                                # root.is_reset_router_check.set(False)
 
                                 # getting this link is enough, so return here.. other code can stay here, doesn't matter
                                 return (
