@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 
 from selenium.webdriver.support.wait import WebDriverWait
+from controllers.bots.quintadb import quinta
 import ui.custom_dialogs
 
 from helpers.csv_reader import card_file_updater
@@ -311,11 +312,22 @@ def bot(root, details, driver=None):
                                 )
                                 # root.is_reset_router_check.set(False)
 
+                                meurastre_url = driver.find_element_by_xpath(
+                                    '//a[contains(@href,"https://meurastre.io/")]'
+                                ).get_attribute("href")
+
+                                quinta(
+                                    driver,
+                                    {
+                                        **details,
+                                        "site": "belezanaweb",
+                                        "meurastre_url": meurastre_url,
+                                    },
+                                )
+
                                 # getting this link is enough, so return here.. other code can stay here, doesn't matter
                                 return (
-                                    driver.find_element_by_xpath(
-                                        '//a[contains(@href,"https://meurastre.io/")]'
-                                    ).get_attribute("href"),
+                                    meurastre_url,
                                     True,
                                 )
 
