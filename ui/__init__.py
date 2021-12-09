@@ -36,6 +36,7 @@ class BaseFrame(tk.Frame):
 
         self.refresh_ui()
 
+        threading.Thread(target=load_data, args=(self,)).start()
         self.root.mainloop()
 
     def setup_top_left_frame(self):

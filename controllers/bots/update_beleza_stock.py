@@ -67,6 +67,9 @@ def bot(root, details=None, driver=None):
     using_param_driver = False
     if not driver:
         options = Options()
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--start-maximized")
+        options.add_argument("--headless")
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
         driver.implicitly_wait(8)
@@ -77,7 +80,7 @@ def bot(root, details=None, driver=None):
     try:
         driver.get("https://app.mercadoturbo.com.br//login_operador")
         driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            "gugui10@yahoo.com"
+            "brenoml0921@yahoo.com"
         )
         driver.find_element_by_xpath(
             "//input[contains(@id, 'input-usuario')]"
@@ -132,8 +135,6 @@ def bot(root, details=None, driver=None):
                     driver,
                 )
 
-            print(stock)
-
         def update():
             products = driver.find_element_by_id(
                 "form-anuncios:grid-anuncios_data"
@@ -186,5 +187,7 @@ def bot(root, details=None, driver=None):
         return "system error", False
 
     finally:
+        print("update stock complete")
         if not using_param_driver:
             driver.quit()
+        bot(root)

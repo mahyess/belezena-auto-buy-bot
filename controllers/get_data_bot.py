@@ -63,7 +63,7 @@ def bot(root):
     try:
         driver.get("https://app.mercadoturbo.com.br//login_operador")
         driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            "gugui10@yahoo.com"
+            "brenoml0921@yahoo.com"
         )
         driver.find_element_by_xpath(
             "//input[contains(@id, 'input-usuario')]"
