@@ -316,14 +316,17 @@ def bot(root, details, driver=None):
                                     '//a[contains(@href,"https://meurastre.io/")]'
                                 ).get_attribute("href")
 
-                                quinta(
-                                    driver,
-                                    {
-                                        **details,
-                                        "site": "belezanaweb",
-                                        "meurastre_url": meurastre_url,
-                                    },
-                                )
+                                try:
+                                    quinta(
+                                        driver,
+                                        {
+                                            **details,
+                                            "site": "belezanaweb",
+                                            "meurastre_url": meurastre_url,
+                                        },
+                                    )
+                                except Exception as e:
+                                    pass
 
                                 # getting this link is enough, so return here.. other code can stay here, doesn't matter
                                 return (
