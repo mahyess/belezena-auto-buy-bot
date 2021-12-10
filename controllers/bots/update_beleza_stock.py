@@ -6,6 +6,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.webdriver.support.wait import WebDriverWait
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from helpers.ping_checker import ping_until_up
 
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 from helpers.user_agent import random_user_agent
@@ -45,6 +46,7 @@ def beleza_stock_scraper(name):
 
     url = f"https://www.belezanaweb.com.br/busca?q={name}"
 
+    ping_until_up()  # wait for website to be up
     page = fetch(url)
     tree = html.fromstring(page)
     products = tree.xpath(
