@@ -36,7 +36,7 @@ class BaseFrame(tk.Frame):
 
         self.refresh_ui()
 
-        threading.Thread(target=load_data, args=(self,)).start()
+        # threading.Thread(target=load_data, args=(self,)).start()
         self.root.mainloop()
 
     def setup_top_left_frame(self):
@@ -47,7 +47,7 @@ class BaseFrame(tk.Frame):
             text="Load Data",
             width=12,
             bg="sky blue",
-            command=lambda: load_data(self),
+            command=lambda: threading.Thread(target=load_data, args=(self,)).start(),
         )
         self.load_data_btn.pack(padx=10, pady=5, side="left")
         self.load_credit_data_btn = tk.Button(

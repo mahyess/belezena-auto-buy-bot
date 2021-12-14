@@ -71,7 +71,7 @@ def bot(root, details=None, driver=None):
         options = Options()
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--start-maximized")
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
         driver.implicitly_wait(8)
