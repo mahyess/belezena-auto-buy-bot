@@ -61,13 +61,14 @@ def bot(root, details, driver=None):
             if len(products):
                 product = products[0]
             else:
-                load_more_btns = driver.find_elements_by_css_selector(
-                    "button.btn-load-more"
-                )
-                if len(load_more_btns):
-                    wait_for_clickable_and_click(load_more_btns[0], driver)
-                else:
-                    return f"Out of Stock - {str(datetime.today().date())}", False
+                # load_more_btns = driver.find_elements_by_css_selector(
+                #     "button.btn-load-more"
+                # )
+                # if len(load_more_btns):
+                #     wait_for_clickable_and_click(load_more_btns[0], driver)
+                # else:
+                #     return f"Out of Stock - {str(datetime.today().date())}", False
+                return f"Out of Stock - {str(datetime.today().date())}", False
 
         wait_for_clickable_and_click(
             product,
