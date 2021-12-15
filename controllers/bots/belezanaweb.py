@@ -366,7 +366,7 @@ def bot(root, details, driver=None):
 
                     except Exception as e:
                         print(e)
-                        return "system error", False
+                        return f"Out of Stock - {str(datetime.today().date())}", False
 
             # reach here, if every card is used up
             # prompt to add more cards
