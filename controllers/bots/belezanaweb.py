@@ -284,17 +284,20 @@ def bot(root, details, driver=None):
                                     "div[data-cy='dangerToast']"
                                 )
                             ):
-                                toast = driver.find_element_by_css_selector(
-                                    "div[data-cy='dangerToast']"
-                                )
-                                is_excessive = len(
-                                    toast.find_elements_by_xpath(
-                                        "//*[contains(text(), 'excedido')]"
+                                try:
+                                    toast = driver.find_element_by_css_selector(
+                                        "div[data-cy='dangerToast']"
                                     )
-                                )
-                                if is_excessive:
-                                    root.is_reset_router_check.set(True)
-                                    return "excess request", False
+                                    is_excessive = len(
+                                        toast.find_elements_by_xpath(
+                                            "//*[contains(text(), 'excedido')]"
+                                        )
+                                    )
+                                    if is_excessive:
+                                        root.is_reset_router_check.set(True)
+                                        return "excess request", False
+                                except Exception as e:
+                                    pass
 
                             # if some other errors, consider card problem, change card and try again
                             card_file_updater(data)
@@ -356,7 +359,7 @@ def bot(root, details, driver=None):
                                 print("******** return successfully.")
                                 return driver.current_url, True
                         except Exception as e:
-                            return f"Sucess but {e}", False
+                            return f"Sucess but {e}", True
 
                         # refresh the page
                         driver.get(driver.current_url)
