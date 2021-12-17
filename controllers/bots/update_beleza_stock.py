@@ -178,14 +178,17 @@ def bot(root, details=None, driver=None):
             waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
             waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
 
-            # go to page 1 since it starts at random pages
-            wait_for_clickable_and_click(
-                driver.find_elements_by_css_selector("a.ui-paginator-page[aria-label='Page 1']")[0],
-                driver,
-                nonjsclick=True,
-            )
-            waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
-            waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
+            try:
+                # go to page 1 since it starts at random pages
+                wait_for_clickable_and_click(
+                    driver.find_elements_by_css_selector("a.ui-paginator-page[aria-label='Page 1']")[0],
+                    driver,
+                    nonjsclick=True,
+                )
+                waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
+                waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
+            except Exception as e:
+                pass
 
             update()
 
