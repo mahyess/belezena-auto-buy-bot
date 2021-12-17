@@ -46,7 +46,7 @@ def beleza_stock_scraper(name):
 
     url = f"https://www.belezanaweb.com.br/busca?q={name}"
 
-    ping_until_up()  # wait for website to be up
+    # ping_until_up()  # wait for website to be up
     page = fetch(url)
     tree = html.fromstring(page)
     products = tree.xpath(
