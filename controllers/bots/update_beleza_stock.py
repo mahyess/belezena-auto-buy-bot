@@ -114,7 +114,11 @@ def bot(root, details=None, driver=None):
                 .text
             )
 
-            stock = beleza_stock_scraper(name)
+            try:
+                stock = beleza_stock_scraper(name)
+            except Exception as e:
+                print(f"there was error finding stock for name: '{name}'")
+                stock = 0
 
             if current_stock != str(stock):
                 wait_for_clickable_and_click(
