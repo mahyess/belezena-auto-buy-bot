@@ -165,7 +165,7 @@ def bot(root, details=None, driver=None):
         state_active_to_paused_changer = ActionChains(driver)
         state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
         state_active_to_paused_changer.send_keys(Keys.ENTER)
-        for _ in accounts:
+        while True:
             update()
 
             spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
@@ -185,7 +185,9 @@ def bot(root, details=None, driver=None):
             try:
                 # go to page 1 since it starts at random pages
                 wait_for_clickable_and_click(
-                    driver.find_elements_by_css_selector("a.ui-paginator-page[aria-label='Page 1']")[0],
+                    driver.find_elements_by_css_selector(
+                        "a.ui-paginator-page[aria-label='Page 1']"
+                    )[0],
                     driver,
                     nonjsclick=True,
                 )
