@@ -147,7 +147,10 @@ def bot(root, details=None, driver=None):
             ).find_elements_by_css_selector("tr")
 
             for product in products:
-                update_single(product)
+                try:
+                    update_single(product)
+                except Exception as e:
+                    print(f"there was error updating product: '{e}'")
 
             next_btn = driver.find_elements_by_css_selector("a.ui-paginator-next")[-1]
 
