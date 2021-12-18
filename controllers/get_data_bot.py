@@ -58,6 +58,7 @@ def bot(root):
 
     options = Options()
     options.add_argument(f"user-agent={random_user_agent(root)}")
+    options.add_argument("--start-maximized")
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(10)
     try:
@@ -77,20 +78,34 @@ def bot(root):
         time.sleep(3)
         accounts = get_accounts(driver)
 
-        def start_fetching_products(root, product=None, order_number=None):
+        def start_fetching_products(
+            root, product=None, order_number=None, paginated=False
+        ):
             try:
                 if product is None:
-                    driver.get(
-                        "https://app.mercadoturbo.com.br/sistema/venda/vendas_ml"
-                    )
+                    if not paginated:
+                        driver.get(
+                            "https://app.mercadoturbo.com.br/sistema/venda/vendas_ml"
+                        )
                     available_products = driver.find_elements_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
-                        # "//div[contains(@class, 'ui-datatable-selectable') and .//*[text()='Aguardando Impressão']]"
                     )
-                    print(len(available_products))
                     if not len(available_products):
-                        change_accounts(driver, accounts)
-                        start_fetching_products(root)
+                        next_btn = driver.find_element_by_class_name(
+                            "ui-paginator-next"
+                        )
+
+                        if "disabled" not in next_btn.get_attribute("class"):
+                            wait_for_clickable_and_click(
+                                driver.find_element_by_class_name("ui-paginator-next"),
+                                driver,
+                            )
+                            time.sleep(4)
+
+                            start_fetching_products(root, paginated=True)
+                        else:
+                            change_accounts(driver, accounts)
+                            start_fetching_products(root)
 
                     product = available_products[0]
 
@@ -129,8 +144,23 @@ def bot(root):
                                     order_number=next_order_number,
                                 )
                             except NoSuchElementException:
-                                change_accounts(driver, accounts)
-                                start_fetching_products(root)
+                                next_btn = driver.find_element_by_class_name(
+                                    "ui-paginator-next"
+                                )
+
+                                if "disabled" not in next_btn.get_attribute("class"):
+                                    wait_for_clickable_and_click(
+                                        driver.find_element_by_class_name(
+                                            "ui-paginator-next"
+                                        ),
+                                        driver,
+                                    )
+                                    time.sleep(4)
+
+                                    start_fetching_products(root, paginated=True)
+                                else:
+                                    change_accounts(driver, accounts)
+                                    start_fetching_products(root)
                                 # next_btn = driver.find_element_by_class_name(
                                 #     "ui-paginator-next"
                                 # )
