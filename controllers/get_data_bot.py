@@ -23,6 +23,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from datetime import datetime as dt
+from unidecode import unidecode
 
 import controllers.bots.belezanaweb as botfile
 
@@ -227,12 +228,16 @@ def bot(root):
                 (
                     details["customer_first_name"],
                     details["customer_last_name"],
-                ) = f"""{dialog.find_element_by_xpath(
-                        ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
-                    )
-                    .get_attribute("value")}  """.split(
+                ) = f"""{
+                    unidecode(
+                        dialog.find_element_by_xpath(
+                            ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
+                        )
+                        .get_attribute("value")
+                    )}  """.split(
                     " ", 1
                 )
+
                 details["cpf"] = dialog.find_element_by_xpath(
                     ".//label[contains(text(), 'CPF / CNPJ')]/following-sibling::input"
                 ).get_attribute("value")
@@ -272,7 +277,7 @@ def bot(root):
                             details["customer_first_name"],
                             details["customer_last_name"],
                         ) = (
-                            cpf_data.get("nome").title().split(" ", 1)
+                            unidecode(cpf_data.get("nome")).title().split(" ", 1)
                         )
 
                     details["gender"] = cpf_data.get("sexoDescricao", "F")
@@ -302,7 +307,7 @@ def bot(root):
                                 details["customer_first_name"],
                                 details["customer_last_name"],
                             ) = (
-                                cpf_data.get("nome").title().split(" ", 1)
+                                unidecode(cpf_data.get("nome")).title().split(" ", 1)
                             )
 
                         details["gender"] = cpf_data.get("sexo", "F")[0]
