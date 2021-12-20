@@ -1,5 +1,6 @@
 from selenium.webdriver.common.keys import Keys
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from helpers.passgen import generate_password
 from helpers.ping_checker import ping_until_up
 from controllers.router_restart_bot import router_restart
 import re
@@ -323,7 +324,8 @@ def bot(root):
                 details["customer_email"] = email_generator(
                     details["customer_first_name"], details["customer_last_name"]
                 )
-                details["customer_email_password"] = f"Abc{dt.now().strftime('%M%H%S')}"
+
+                details["customer_email_password"] = generate_password()
 
                 details = strip_dict(details)
 
