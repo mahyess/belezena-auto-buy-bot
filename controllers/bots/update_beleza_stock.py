@@ -168,7 +168,7 @@ def bot(root, details=None, driver=None):
         state_active_to_paused_changer = ActionChains(driver)
         state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
         state_active_to_paused_changer.send_keys(Keys.ENTER)
-        while True:
+        for _ in accounts:
             update()
 
             spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
