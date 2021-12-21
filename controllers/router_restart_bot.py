@@ -1,4 +1,5 @@
 from selenium.webdriver.common.keys import Keys
+from helpers.ping_checker import ping_until_up
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 import time, socket
 from selenium import webdriver
@@ -77,4 +78,7 @@ def router_restart(root):
         raise e
 
     finally:
+        is_working = ping_until_up(to_return=True)
+        if not is_working:
+            return router_restart(root)
         driver.quit()

@@ -10,7 +10,8 @@ except ImportError:
     DEVNULL = os.open(os.devnull, os.O_RDWR)
 
 
-def ping_until_up(root=None, site="www.belezanaweb.com.br"):
+def ping_until_up(root=None, site="www.belezanaweb.com.br", to_return=False):
+    count = 0
     try:
         param = "-n" if platform.system().lower() == "windows" else "-c"
         while True:
@@ -18,11 +19,15 @@ def ping_until_up(root=None, site="www.belezanaweb.com.br"):
                 subprocess.call(["ping", param, "3", "www.belezanaweb.com.br"]) == 0
             )
             status_2 = (
-                subprocess.call(["ping", param, "3", "www.useragentstring.com"]) == 0
+                subprocess.call(["ping", param, "3", "app.mercadoturbo.com.br"]) == 0
             )
+            count += 1
             if status_1 and status_2:
-                return
-            print("www.belezanaweb.com.br or www.useragentstring.com is down...")
+                return True
+            if to_return and count > 10:
+                return False
+                
+            print("www.belezanaweb.com.br or app.mercadoturbo.com.br is down...")
             time.sleep(5)
     except Exception as e:
         if root:
