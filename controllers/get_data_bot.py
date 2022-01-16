@@ -361,6 +361,25 @@ def bot(root):
                     #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
                     #     )
                     if success:
+                        # ------------ remarks -----------------
+                        remarks_input_btn = product.find_element_by_id("div-toggle")
+                        wait_for_clickable_and_click(remarks_input_btn, driver)
+                        remarks_form = remarks_input_btn.find_element_by_xpath(
+                            "following-sibling::div"
+                        )
+                        remarks_form.find_element_by_xpath(
+                            ".//div[contains(@class, 'mt-width-full')]/input"
+                        ).send_keys(remarks)
+                        wait_for_clickable_and_click(
+                            remarks_form.find_element_by_css_selector(
+                                "button[type='submit'][class*='ui-button-success']"
+                            ),
+                            driver,
+                        )
+                        time.sleep(2)
+                        # ------------ remarks -----------------
+
+                        # ------------ cpf and delivery date -----------------
                         wait_for_clickable_and_click(
                             product.find_element_by_css_selector(
                                 "a[class*='statusDoPedido']"
@@ -405,8 +424,10 @@ def bot(root):
                             ),
                             driver,
                         )
+                        # ------------ cpf and delivery date -----------------
                         time.sleep(3)
 
+                        # ------------ message send -----------------
                         mt_wait_for_loader(
                             lambda: wait_for_clickable_and_click(
                                 product.find_element_by_xpath(
@@ -434,23 +455,7 @@ def bot(root):
                                 "a[class*='ui-dialog-titlebar-close']"
                             )
                         )
-
-                    if remarks:
-                        remarks_input_btn = product.find_element_by_id("div-toggle")
-                        wait_for_clickable_and_click(remarks_input_btn, driver)
-                        remarks_form = remarks_input_btn.find_element_by_xpath(
-                            "following-sibling::div"
-                        )
-                        remarks_form.find_element_by_xpath(
-                            ".//div[contains(@class, 'mt-width-full')]/input"
-                        ).send_keys(remarks)
-                        wait_for_clickable_and_click(
-                            remarks_form.find_element_by_css_selector(
-                                "button[type='submit'][class*='ui-button-success']"
-                            ),
-                            driver,
-                        )
-                        time.sleep(2)
+                        # ------------ message send -----------------
 
                 except Exception as e:
                     print(e)
