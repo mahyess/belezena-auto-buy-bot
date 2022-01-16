@@ -1,5 +1,6 @@
 from selenium.webdriver.common.keys import Keys
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from helpers.mt_wait_for_loader import mt_wait_for_loader
 from helpers.passgen import generate_password
 from helpers.ping_checker import ping_until_up
 from controllers.router_restart_bot import router_restart
@@ -380,7 +381,7 @@ def bot(root):
                         )
 
                         time.sleep(1)
-                        # remarks_field.send_keys(remarks)  # this field is supposed to be blank
+                        remarks_field.send_keys(details["cpf"])
                         time.sleep(1)
                         remarks_field.send_keys(
                             Keys.TAB,
@@ -405,6 +406,34 @@ def bot(root):
                             driver,
                         )
                         time.sleep(3)
+
+                        mt_wait_for_loader(
+                            lambda: wait_for_clickable_and_click(
+                                product.find_element_by_xpath(
+                                    "//button[.//span[class*='fa-message-lines']]"
+                                )
+                            )
+                        )
+
+                        dialog = driver.find_element_by_id("mensagensDialog")
+
+                        dialog.find_element_by_css_selector("textarea").send_keys(
+                            "Segue o link para fazer o rastreio do seu pedido: https://imediataexpress.info/tracking/"
+                        )
+
+                        mt_wait_for_loader(
+                            lambda: wait_for_clickable_and_click(
+                                dialog.find_element_by_css_selector(
+                                    "button[type='submit'][class*='ui-button-success']"
+                                )
+                            )
+                        )
+
+                        wait_for_clickable_and_click(
+                            dialog.find_element_by_css_selector(
+                                "a[class*='ui-dialog-titlebar-close']"
+                            )
+                        )
 
                     if remarks:
                         remarks_input_btn = product.find_element_by_id("div-toggle")
