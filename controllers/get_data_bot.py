@@ -428,7 +428,7 @@ def bot(root):
                         time.sleep(3)
 
                         # ------------ message send -----------------
-                        mt_wait_for_loader(
+                        mt_wait_for_loader(driver, 
                             lambda: wait_for_clickable_and_click(
                                 product.find_element_by_xpath(
                                     "//button[.//span[class*='fa-message-lines']]"
@@ -442,7 +442,7 @@ def bot(root):
                             "Segue o link para fazer o rastreio do seu pedido: https://imediataexpress.info/tracking/"
                         )
 
-                        mt_wait_for_loader(
+                        mt_wait_for_loader(driver, 
                             lambda: wait_for_clickable_and_click(
                                 dialog.find_element_by_css_selector(
                                     "button[type='submit'][class*='ui-button-success']"
