@@ -428,12 +428,14 @@ def bot(root):
                         time.sleep(3)
 
                         # ------------ message send -----------------
-                        mt_wait_for_loader(driver, 
+                        mt_wait_for_loader(
+                            driver,
                             lambda: wait_for_clickable_and_click(
-                                product.find_element_by_xpath(
-                                    "//button[.//span[class*='fa-message-lines']]"
-                                )
-                            )
+                                product.find_element_by_css_selector(
+                                    "span.fa-message-lines"
+                                ),
+                                driver,
+                            ),
                         )
 
                         dialog = driver.find_element_by_id("mensagensDialog")
@@ -442,18 +444,21 @@ def bot(root):
                             "Segue o link para fazer o rastreio do seu pedido: https://imediataexpress.info/tracking/"
                         )
 
-                        mt_wait_for_loader(driver, 
+                        mt_wait_for_loader(
+                            driver,
                             lambda: wait_for_clickable_and_click(
                                 dialog.find_element_by_css_selector(
                                     "button[type='submit'][class*='ui-button-success']"
-                                )
-                            )
+                                ),
+                                driver,
+                            ),
                         )
 
                         wait_for_clickable_and_click(
                             dialog.find_element_by_css_selector(
                                 "a[class*='ui-dialog-titlebar-close']"
-                            )
+                            ),
+                            driver,
                         )
                         # ------------ message send -----------------
 
@@ -465,7 +470,8 @@ def bot(root):
                     start_fetching_products(root)
 
             except Exception as e:
-                time.sleep(30)
+                print("restarting", e)
+                # time.sleep(30)
             finally:
                 root.refresh_ui()
                 start_fetching_products(root)
