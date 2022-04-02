@@ -39,7 +39,7 @@ def bot(root, details, driver=None):
         options = Options()
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(8)
+        driver.implicitly_wait(15)
     else:
         using_param_driver = True
 
@@ -96,7 +96,7 @@ def bot(root, details, driver=None):
         driver.get(buy_btn.get_attribute("href"))
 
         # enter cep_address code
-        driver.find_element_by_id("postalCode").send_keys(details["cep"])
+        # driver.find_element_by_id("postalCode").send_keys(details["cep"])
 
         # get quantity select dropdown and select desired value
         try:
@@ -175,8 +175,8 @@ def bot(root, details, driver=None):
 
         # else:
         # if not saved and there is another address card, trigger new form
-        if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
-            driver.find_element_by_css_selector("label[for='addAddress']").click()
+        #if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
+        #    driver.find_element_by_css_selector("label[for='addAddress']").click()
         # this is the first one being saved, sending directly to form
         driver.find_element_by_id("label").send_keys(details["address_label"])
         driver.find_element_by_id("postalCode").send_keys(details["cep"])
@@ -208,31 +208,55 @@ def bot(root, details, driver=None):
                 for line_count, data in enumerate(file_reader):
                     try:
                         wait_for_clickable_and_click(
-                            driver.find_element_by_xpath(
-                                "//div[.//*[contains(@name, 'shipping')]][1]/label"
+                            # driver.find_element_by_xpath(
+                            #     "//div[.//*[contains(@name, 'shipping')]][1]/label"
+                            # ),
+                            driver.find_element_by_css_selector(
+                                "div[data-cy='RadioCard']"
                             ),
                             driver,
                         )
 
-                        Select(
-                            driver.find_element_by_id("expiryMonth")
-                        ).select_by_value(f"{data['expiry_month']}")
-                        Select(driver.find_element_by_id("expiryYear")).select_by_value(
-                            f"{data['expiry_year']}"
-                        )
-                        number_input = driver.find_element_by_id("number")
+                        # card number
+                        iframe = driver.find_element_by_css_selector(
+                                "span[data-cse='encryptedCardNumber']"
+                            ).find_element_by_css_selector("iframe")
+                        driver.switch_to.frame(iframe)
+                        number_input = driver.find_element_by_id("encryptedCardNumber")
                         number_input.send_keys(Keys.CONTROL, "a")
                         number_input.send_keys(data["number"])
+                        driver.switch_to.default_content()
+
+                        #expiry date
+                        iframe = driver.find_element_by_css_selector(
+                                "span[data-cse='encryptedExpiryDate']"
+                            ).find_element_by_css_selector("iframe")
+                        driver.switch_to.frame(iframe)
+                        number_input = driver.find_element_by_id("encryptedExpiryDate")
+                        number_input.send_keys(Keys.CONTROL, "a")
+                        number_input.send_keys(data["expiry_month"])
+                        number_input.send_keys(str(data["expiry_year"])[2:])
+                        driver.switch_to.default_content()
+
+                        #cvv
+                        iframe = driver.find_element_by_css_selector(
+                                "span[data-cse='encryptedSecurityCode']"
+                            ).find_element_by_css_selector("iframe")
+                        driver.switch_to.frame(iframe)
+                        number_input = driver.find_element_by_id("encryptedSecurityCode")
+                        number_input.send_keys(Keys.CONTROL, "a")
+                        number_input.send_keys(data["cvc"])
+                        driver.switch_to.default_content()
+                        
+                        # name
                         holder_name_input = driver.find_element_by_id("holderName")
                         holder_name_input.send_keys(Keys.CONTROL, "a")
                         holder_name_input.send_keys(
                             f"{details['customer_first_name']} {details['customer_last_name']}"
                         )
-                        cvc_input = driver.find_element_by_id("cvc")
-                        cvc_input.send_keys(Keys.CONTROL, "a")
-                        cvc_input.send_keys(f"{data['cvc']}")
+                        
                         Select(
-                            driver.find_element_by_id("installment")
+                            driver.find_element_by_id("installments")
                         ).select_by_value("1")
 
                         # before_proceed_url = driver.current_url

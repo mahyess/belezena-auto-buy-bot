@@ -93,8 +93,11 @@ def is_empty_csv(filename):
                 return False
     return True
 
+def fix_nulls(s):
+    for line in s:
+        yield line.replace('\0', '')
 
 def get_lines_count(filename):
     with open(filename, "r", newline="") as csvfile:
-        reader = csv.reader(csvfile, delimiter=",")
+        reader = csv.reader((line.replace('\0','') for line in csvfile), delimiter=",")
         return len(list(reader)) - 1
