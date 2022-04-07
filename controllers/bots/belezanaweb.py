@@ -39,7 +39,7 @@ def bot(root, details, driver=None):
         options = Options()
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(15)
+        driver.implicitly_wait(25)
     else:
         using_param_driver = True
 

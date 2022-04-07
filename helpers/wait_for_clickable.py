@@ -22,7 +22,7 @@ def close_unnecessary_dialogs_if_any(driver):
         # print(e)
         pass
 
-    driver.implicitly_wait(15)
+    driver.implicitly_wait(25)
 
 
 def wait_for_clickable_and_click(element, driver=None, nonjsclick=False):
