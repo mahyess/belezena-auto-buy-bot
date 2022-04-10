@@ -312,6 +312,10 @@ def bot(root):
                             )
 
                         details["gender"] = cpf_data.get("sexo", "F")[0]
+                        # if gender not in M or F, set gender to F
+                        if details["gender"] not in ["M", "F"]:
+                            details["gender"] = "F"
+
                         # details["complement"] = details["complement"] if not details["complement"] == "NA" else ""
                         details["birthdate"] = cpf_data.get("nascimento", "12/12/1992")
 
