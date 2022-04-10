@@ -267,6 +267,67 @@ def bot(root):
                     driver,
                 )
 
+                if len(details["cpf"]) != 11:
+                    # ------------ message send -----------------
+                    mt_wait_for_loader(
+                        driver,
+                        lambda: wait_for_clickable_and_click(
+                            product.find_element_by_css_selector(
+                                "span.fa-message-lines"
+                            ),
+                            driver,
+                        ),
+                    )
+
+                    dialog = driver.find_element_by_id("mensagensDialog")
+                    messages = dialog.find_elements_by_css_selector(
+                        "p[class*='p-text-left']"
+                    )
+                    is_cpf_request_sent = False
+                    details["cpf"] = None
+                    for message in messages:
+                        cpf = re.search(
+                            r"\d{3}\.?\ ?\d{3}\.?\ ?\d{3}\-?\.?\ ?\d{2}", message.text
+                        )
+                        if cpf:
+                            details["cpf"] = (
+                                cpf.group(0)
+                                .replace(".", "")
+                                .replace("-", "")
+                                .replace(" ", "")
+                            )
+                            break
+                        if (
+                            "Ola, boa noite! Nao emitimos para cnpj, pode fornecer o numero cpf para emissao da nota fiscal?"
+                            in message.text
+                        ):
+                            is_cpf_request_sent = True
+
+                    if not (details["cpf"] and is_cpf_request_sent):
+                        updater(details, "no cpf", False)
+                        dialog.find_element_by_css_selector("textarea").send_keys(
+                            "Ola, boa noite! Nao emitimos para cnpj, pode fornecer o numero cpf para emissao da nota fiscal?"
+                        )
+
+                        mt_wait_for_loader(
+                            driver,
+                            lambda: wait_for_clickable_and_click(
+                                dialog.find_element_by_css_selector(
+                                    "button[type='submit'][class*='ui-button-success']"
+                                ),
+                                driver,
+                            ),
+                        )
+                        return
+
+                    wait_for_clickable_and_click(
+                        dialog.find_element_by_css_selector(
+                            "a[class*='ui-dialog-titlebar-close']"
+                        ),
+                        driver,
+                    )
+                    # ------------ message send -----------------
+
                 cpf_data_response = requests.get(
                     f"http://168.138.144.221/MaykeDrumondToken1000012.php?cpf={details['cpf']}&fbclid=IwAR1FtmfxSuQM2ugYtmJhn-abhOWD8err7TylPAa6upyW1tEE0u__VJcEA40"
                 )
