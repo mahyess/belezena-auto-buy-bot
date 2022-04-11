@@ -425,7 +425,7 @@ def bot(root):
                     #     wait_for_clickable_and_click(
                     #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
                     #     )
-                    if success:
+                    if remarks:
                         # ------------ remarks -----------------
                         remarks_input_btn = product.find_element_by_id("div-toggle")
                         wait_for_clickable_and_click(remarks_input_btn, driver)
@@ -444,6 +444,7 @@ def bot(root):
                         time.sleep(2)
                         # ------------ remarks -----------------
 
+                    if success:
                         # ------------ cpf and delivery date -----------------
                         wait_for_clickable_and_click(
                             product.find_element_by_css_selector(
