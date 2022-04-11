@@ -175,7 +175,7 @@ def bot(root, details, driver=None):
 
         # else:
         # if not saved and there is another address card, trigger new form
-        #if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
+        # if len(driver.find_elements_by_css_selector("label[for='addAddress']")):
         #    driver.find_element_by_css_selector("label[for='addAddress']").click()
         # this is the first one being saved, sending directly to form
         driver.find_element_by_id("label").send_keys(details["address_label"])
@@ -219,18 +219,18 @@ def bot(root, details, driver=None):
 
                         # card number
                         iframe = driver.find_element_by_css_selector(
-                                "span[data-cse='encryptedCardNumber']"
-                            ).find_element_by_css_selector("iframe")
+                            "span[data-cse='encryptedCardNumber']"
+                        ).find_element_by_css_selector("iframe")
                         driver.switch_to.frame(iframe)
                         number_input = driver.find_element_by_id("encryptedCardNumber")
                         number_input.send_keys(Keys.CONTROL, "a")
                         number_input.send_keys(data["number"])
                         driver.switch_to.default_content()
 
-                        #expiry date
+                        # expiry date
                         iframe = driver.find_element_by_css_selector(
-                                "span[data-cse='encryptedExpiryDate']"
-                            ).find_element_by_css_selector("iframe")
+                            "span[data-cse='encryptedExpiryDate']"
+                        ).find_element_by_css_selector("iframe")
                         driver.switch_to.frame(iframe)
                         number_input = driver.find_element_by_id("encryptedExpiryDate")
                         number_input.send_keys(Keys.CONTROL, "a")
@@ -238,23 +238,25 @@ def bot(root, details, driver=None):
                         number_input.send_keys(str(data["expiry_year"])[2:])
                         driver.switch_to.default_content()
 
-                        #cvv
+                        # cvv
                         iframe = driver.find_element_by_css_selector(
-                                "span[data-cse='encryptedSecurityCode']"
-                            ).find_element_by_css_selector("iframe")
+                            "span[data-cse='encryptedSecurityCode']"
+                        ).find_element_by_css_selector("iframe")
                         driver.switch_to.frame(iframe)
-                        number_input = driver.find_element_by_id("encryptedSecurityCode")
+                        number_input = driver.find_element_by_id(
+                            "encryptedSecurityCode"
+                        )
                         number_input.send_keys(Keys.CONTROL, "a")
                         number_input.send_keys(data["cvc"])
                         driver.switch_to.default_content()
-                        
+
                         # name
                         holder_name_input = driver.find_element_by_id("holderName")
                         holder_name_input.send_keys(Keys.CONTROL, "a")
                         holder_name_input.send_keys(
                             f"{details['customer_first_name']} {details['customer_last_name']}"
                         )
-                        
+
                         Select(
                             driver.find_element_by_id("installments")
                         ).select_by_value("1")
@@ -293,6 +295,7 @@ def bot(root, details, driver=None):
                         )
 
                         # runs if order number is not found
+                        driver.implicitly_wait(5)
                         if len(
                             driver.find_elements_by_css_selector(
                                 "div[data-cy='dangerLightToast']"
@@ -328,6 +331,7 @@ def bot(root, details, driver=None):
                             print("Card removed")
                             root.refresh_ui()
 
+                        driver.implicitly_wait(25)
                         try:
                             time.sleep(10)
                             print(
