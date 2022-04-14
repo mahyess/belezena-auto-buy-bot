@@ -308,21 +308,22 @@ def bot(root):
                         if NO_CPF_MSG in message.text:
                             is_cpf_request_sent = True
 
-                    if not (details["cpf"] and is_cpf_request_sent):
+                    if not details["cpf"]:
                         updater(details, f"No CPF - {str(dt.today().date())}", False)
-                        dialog.find_element_by_css_selector("textarea").send_keys(
-                            NO_CPF_MSG
-                        )
+                        if not is_cpf_request_sent:
+                            dialog.find_element_by_css_selector("textarea").send_keys(
+                                NO_CPF_MSG
+                            )
 
-                        mt_wait_for_loader(
-                            driver,
-                            lambda: wait_for_clickable_and_click(
-                                dialog.find_element_by_css_selector(
-                                    "button[type='submit'][class*='ui-button-success']"
-                                ),
+                            mt_wait_for_loader(
                                 driver,
-                            ),
-                        )
+                                lambda: wait_for_clickable_and_click(
+                                    dialog.find_element_by_css_selector(
+                                        "button[type='submit'][class*='ui-button-success']"
+                                    ),
+                                    driver,
+                                ),
+                            )
 
                     wait_for_clickable_and_click(
                         dialog.find_element_by_css_selector(
