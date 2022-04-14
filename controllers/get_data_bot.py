@@ -90,6 +90,13 @@ def bot(root):
                         driver.get(
                             "https://app.mercadoturbo.com.br/sistema/venda/vendas_ml"
                         )
+                    wait_for_clickable_and_click(
+                        driver.find_element_by_xpath(
+                            # span with text "Produtos"
+                            "//span[contains(@class, 'TabVendasTexto') and text()='Env. Pendente-Outros']"
+                        ),
+                        driver,
+                    )
                     available_products = driver.find_elements_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
                     )
@@ -125,13 +132,13 @@ def bot(root):
                             for x in [
                                 "Out of Stock",
                                 "Not enough quantity",
+                                "No CPF",
                             ]
                         ):
                             try:
-                                if "Out of Stock" in row.get("remarks"):
-                                    _, date = row.get("remarks").partition(" - ")
-                                    if date != str(dt.today().date()):
-                                        break
+                                _, date = row.get("remarks").partition(" - ")
+                                if date != str(dt.today().date()):
+                                    break
                             except ValueError:
                                 pass
                             try:
@@ -268,6 +275,7 @@ def bot(root):
                 )
 
                 if len(details["cpf"]) != 11:
+                    NO_CPF_MSG = "Ola, boa noite! Nao emitimos para cnpj, pode fornecer o numero cpf para emissao da nota fiscal?"
                     # ------------ message send -----------------
                     mt_wait_for_loader(
                         driver,
@@ -297,16 +305,13 @@ def bot(root):
                                 .replace(" ", "")
                             )
                             break
-                        if (
-                            "Ola, boa noite! Nao emitimos para cnpj, pode fornecer o numero cpf para emissao da nota fiscal?"
-                            in message.text
-                        ):
+                        if NO_CPF_MSG in message.text:
                             is_cpf_request_sent = True
 
                     if not (details["cpf"] and is_cpf_request_sent):
-                        updater(details, "no cpf", False)
+                        updater(details, f"No CPF - {str(dt.today().date())}", False)
                         dialog.find_element_by_css_selector("textarea").send_keys(
-                            "Ola, boa noite! Nao emitimos para cnpj, pode fornecer o numero cpf para emissao da nota fiscal?"
+                            NO_CPF_MSG
                         )
 
                         mt_wait_for_loader(
@@ -318,7 +323,6 @@ def bot(root):
                                 driver,
                             ),
                         )
-                        return
 
                     wait_for_clickable_and_click(
                         dialog.find_element_by_css_selector(
@@ -326,6 +330,9 @@ def bot(root):
                         ),
                         driver,
                     )
+
+                    if not details["cpf"]:
+                        start_fetching_products(root)
                     # ------------ message send -----------------
 
                 cpf_data_response = requests.get(
