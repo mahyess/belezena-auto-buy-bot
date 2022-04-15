@@ -125,6 +125,11 @@ def bot(root, details=None, driver=None):
                 .find_element_by_class_name("ui-cell-editor-output")
                 .text
             )
+            current_price = (
+                product.find_element_by_class_name("cellPreco")
+                .find_element_by_class_name("ui-cell-editor-output")
+                .text
+            )
 
             try:
                 is_available, price = beleza_stock_scraper(name)
@@ -132,8 +137,10 @@ def bot(root, details=None, driver=None):
                 print(f"there was error finding stock for name: '{name}'")
                 is_available = False
                 price = 0
+            price = str(round((price * (1 + PRICE_PERCENT / 100)), 2)).replace(".", ",")
+            stock = str(QTY) if is_available else "0"
 
-            if current_stock != str(QTY):
+            if current_stock != stock or price != current_price:
                 wait_for_clickable_and_click(
                     product.find_element_by_class_name(
                         "cellEdit"
@@ -146,16 +153,14 @@ def bot(root, details=None, driver=None):
                     .find_element_by_css_selector("input[type='text']")
                 )
                 stock_input.send_keys(Keys.CONTROL, "a")
-                stock_input.send_keys(str(QTY))
+                stock_input.send_keys(stock)
                 price_input = (
                     product.find_element_by_class_name("cellPreco")
                     .find_element_by_class_name("ui-cell-editor-input")
                     .find_element_by_css_selector("input[type='text']")
                 )
                 price_input.send_keys(Keys.CONTROL, "a")
-                price_input.send_keys(
-                    str((price * PRICE_PERCENT / 100) + price).replace(".", ",")
-                )
+                price_input.send_keys(price)
                 wait_for_clickable_and_click(
                     product.find_element_by_class_name(
                         "cellEdit"
