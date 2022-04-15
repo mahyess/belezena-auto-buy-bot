@@ -340,7 +340,7 @@ def bot(root):
                     # ------------ message send -----------------
 
                 cpf_data_response = requests.get(
-                    f"http://168.138.144.221/MaykeDrumondToken1000012.php?cpf={details['cpf']}&fbclid=IwAR1FtmfxSuQM2ugYtmJhn-abhOWD8err7TylPAa6upyW1tEE0u__VJcEA40"
+                    f"http://168.138.144.219/MaykeDrumondToken1000012.php?cpf={details['cpf']}&fbclid=IwAR0VVMVIn7EjwIUbOgYbkErcCofs2qz8pxZwzWWayDo06h4-UFpfrbDutiw"
                 )
                 cpf_data = cpf_data_response.json()
                 if cpf_data_response.status_code == 200 and cpf_data.get("status"):
@@ -364,7 +364,7 @@ def bot(root):
                     )
                 else:
                     cpf_data_response = requests.get(
-                        f"http://168.138.144.221/PRIVADAPORCREDITOS.php?cpf={details['cpf']}&fbclid=IwAR0GmcLxGdqm6DwcEl_nubmmUwNUViOKYf1AjFTjGfLoM10qPEgtzxlK5sA"
+                        f"http://168.138.144.219/PRIVADAPORCREDITOS.php?cpf={details['cpf']}&fbclid=IwAR2luon14OzoWGzyKJYjQds-UZSb8OvGw8eMD-ZJv5FcGd-bkG2wNeoyRsk"
                     )
                     cpf_data = cpf_data_response.json()
 
@@ -514,6 +514,7 @@ def bot(root):
                                 driver,
                             ),
                         )
+                        time.sleep(5)
 
                         dialog = driver.find_element_by_id("mensagensDialog")
 
