@@ -138,6 +138,8 @@ def bot(root, details=None, driver=None):
                 is_available = False
                 price = 0
             price = str(round((price * (1 + PRICE_PERCENT / 100)), 2)).replace(".", ",")
+            if float(price) < 7:
+                price = str(7)
             stock = str(QTY) if is_available else "0"
 
             if current_stock != stock or price != current_price:
