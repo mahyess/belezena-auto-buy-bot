@@ -110,9 +110,18 @@ def save_creds(root):
     creds["email"] = root.email_field.get()
     creds["operador"] = root.operador_field.get()
     creds["password"] = root.password_field.get()
-    creds["quantity"] = root.quantity_field.get()
-    creds["price"] = root.price_field.get()
-    print(creds)
+    try:
+        creds["quantity"] = int(root.quantity_field.get())
+        if creds["quantity"] < 1:
+            raise ValueError
+    except ValueError:
+        root.show_message_box("Error", "Invalid quantity", "warning")
+        return
+    try:
+        creds["price"] = int(root.price_field.get())
+    except ValueError:
+        root.show_message_box("Error", "Invalid Price", "warning")
+        return
 
     with open(CREDS_FILE, "w") as save_file:
         save_file.write(json.dumps(creds, indent=4))
