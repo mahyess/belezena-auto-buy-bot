@@ -1,3 +1,4 @@
+import json
 import os
 import csv
 import platform
@@ -20,6 +21,7 @@ FEEDING_FILE = str(Path.home()) + "/.autobuy/feeder.csv"
 ERROR_FILE = str(Path.home()) + "/.autobuy/error.csv"
 COMPLETED_FILE = str(Path.home()) + "/.autobuy/completed.csv"
 CARD_FILE = str(Path.home()) + "/.autobuy/card.csv"
+CREDS_FILE = str(Path.home()) + "/.autobuy/creds.json"
 
 
 FIELDNAMES = [
@@ -61,3 +63,20 @@ file_initializer(FEEDING_FILE)
 file_initializer(ERROR_FILE)
 file_initializer(COMPLETED_FILE)
 file_initializer(CARD_FILE, ["number", "expiry_month", "expiry_year", "cvc"])
+
+# for creds file
+is_file_exists = os.path.isfile(CREDS_FILE)
+if not is_file_exists:
+    with open(CREDS_FILE, "w") as save_file:
+        save_file.write(
+            json.dumps(
+                {
+                    "email": "",
+                    "operador": "",
+                    "password": "",
+                    "quantity": 5,
+                    "price": 0,
+                },
+                indent=4,
+            )
+        )

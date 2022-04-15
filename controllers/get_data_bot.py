@@ -1,3 +1,4 @@
+import json
 from selenium.webdriver.common.keys import Keys
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
 from helpers.mt_wait_for_loader import mt_wait_for_loader
@@ -12,7 +13,7 @@ from helpers.wait_for_clickable import wait_for_clickable_and_click
 from selenium.webdriver.support.wait import WebDriverWait
 
 from helpers.csv_reader import FEEDER_FILE_FIELDNAMES, updater
-from helpers.file_system import ERROR_FILE, FEEDING_FILE
+from helpers.file_system import CREDS_FILE, ERROR_FILE, FEEDING_FILE
 from helpers.user_agent import random_user_agent
 import time
 from selenium import webdriver
@@ -58,6 +59,8 @@ def strip_dict(d):
 def bot(root):
     root.status = 1
     root.refresh_ui()
+    with open(CREDS_FILE, "r") as f:
+        creds = json.load(f)
 
     options = Options()
     options.add_argument(f"user-agent={random_user_agent(root)}")
@@ -67,13 +70,13 @@ def bot(root):
     try:
         driver.get("https://app.mercadoturbo.com.br//login_operador")
         driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            "brenoml0921@yahoo.com"
+            creds.get("email", "brenoml0921@yahoo.com")
         )
         driver.find_element_by_xpath(
             "//input[contains(@id, 'input-usuario')]"
-        ).send_keys("operador1")
+        ).send_keys(creds.get("operador", "operador1"))
         driver.find_element_by_css_selector("input[type='password']").send_keys(
-            "36461529"
+            creds.get("password", "36461529")
         )
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("button[type='submit']"), driver

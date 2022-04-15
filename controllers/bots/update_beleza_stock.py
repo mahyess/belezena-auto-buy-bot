@@ -1,4 +1,5 @@
 import csv
+import json
 import time
 import requests
 from lxml import html
@@ -6,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.webdriver.support.wait import WebDriverWait
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from helpers.file_system import CREDS_FILE
 from helpers.ping_checker import ping_until_up
 
 from helpers.wait_for_clickable import wait_for_clickable_and_click
@@ -54,15 +56,23 @@ def beleza_stock_scraper(name):
     )
 
     for product in products:
+        product_data = product.get("data-event")
+        product_data = json.loads(product_data)
+        price = product_data.get("price")
         if "showcase-item-unavailable" in product.classes:
             print("unavailable")
-            return 0
+            return False, price
 
         print("available")
-        return 5
+        return True, price
 
     print("Nothing")
-    return 0
+    return False, 0
+
+
+creds = json.load(open(CREDS_FILE))
+QTY = creds.get("quantity")
+PRICE_PERCENT = creds.get("price")
 
 
 def bot(root, details=None, driver=None):
@@ -80,15 +90,17 @@ def bot(root, details=None, driver=None):
     waiter = WebDriverWait(driver, 10)
 
     try:
+        with open(CREDS_FILE, "r") as f:
+            creds = json.load(f)
         driver.get("https://app.mercadoturbo.com.br//login_operador")
         driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            "brenoml0921@yahoo.com"
+            creds.get("email", "brenoml0921@yahoo.com")
         )
         driver.find_element_by_xpath(
             "//input[contains(@id, 'input-usuario')]"
-        ).send_keys("operador1")
+        ).send_keys(creds.get("operador", "operador1"))
         driver.find_element_by_css_selector("input[type='password']").send_keys(
-            "36461529"
+            creds.get("password", "36461529")
         )
         wait_for_clickable_and_click(
             driver.find_element_by_css_selector("button[type='submit']"), driver
@@ -115,12 +127,13 @@ def bot(root, details=None, driver=None):
             )
 
             try:
-                stock = beleza_stock_scraper(name)
+                is_available, price = beleza_stock_scraper(name)
             except Exception as e:
                 print(f"there was error finding stock for name: '{name}'")
-                stock = 0
+                is_available = False
+                price = 0
 
-            if current_stock != str(stock):
+            if current_stock != str(QTY):
                 wait_for_clickable_and_click(
                     product.find_element_by_class_name(
                         "cellEdit"
@@ -133,7 +146,16 @@ def bot(root, details=None, driver=None):
                     .find_element_by_css_selector("input[type='text']")
                 )
                 stock_input.send_keys(Keys.CONTROL, "a")
-                stock_input.send_keys(str(stock))
+                stock_input.send_keys(str(QTY))
+                price_input = (
+                    product.find_element_by_class_name("cellPreco")
+                    .find_element_by_class_name("ui-cell-editor-input")
+                    .find_element_by_css_selector("input[type='text']")
+                )
+                price_input.send_keys(Keys.CONTROL, "a")
+                price_input.send_keys(
+                    str((price * PRICE_PERCENT / 100) + price).replace(".", ",")
+                )
                 wait_for_clickable_and_click(
                     product.find_element_by_class_name(
                         "cellEdit"
@@ -194,8 +216,10 @@ def bot(root, details=None, driver=None):
                     driver,
                     nonjsclick=True,
                 )
+                print("hello")
                 waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
                 waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
+                print("hello agin")
             except Exception as e:
                 pass
 

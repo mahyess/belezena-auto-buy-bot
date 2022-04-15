@@ -1,5 +1,12 @@
+import json
 import threading
-from helpers.file_system import CARD_FILE, COMPLETED_FILE, ERROR_FILE, FEEDING_FILE
+from helpers.file_system import (
+    CARD_FILE,
+    COMPLETED_FILE,
+    CREDS_FILE,
+    ERROR_FILE,
+    FEEDING_FILE,
+)
 from helpers.csv_reader import get_lines_count
 import tkinter as tk
 import tkinter.filedialog as filedialog
@@ -11,6 +18,7 @@ from controllers import (
     load_credit_card,
     load_data,
     pause,
+    save_creds,
 )
 
 
@@ -23,13 +31,15 @@ class BaseFrame(tk.Frame):
 
         self.setup_top_left_frame()
         self.setup_top_right_frame()
-        self.setup_middle_frame()
+        self.setup_middle_left_frame()
+        self.setup_middle_right_frame()
         self.setup_bottom_frame()
 
         self.top_left_frame.grid(row=0, column=0, sticky="ew")
-        self.top_right_frame.grid(row=0, column=1, sticky="new")
-        self.report_frame.grid(row=1, column=0, columnspan=2, sticky="nsew")
-        self.status_frame.grid(row=2, column=0, columnspan=2, sticky="sew")
+        self.top_right_frame.grid(row=0, column=1, columnspan=2, sticky="new")
+        self.report_frame.grid(row=1, column=0, columnspan=2, sticky="nsw")
+        self.creds_frame.grid(row=1, column=2, columnspan=1, sticky="nsw")
+        self.status_frame.grid(row=2, column=0, columnspan=3, sticky="sew")
 
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_columnconfigure(1, weight=1)
@@ -114,7 +124,7 @@ class BaseFrame(tk.Frame):
         )
         self.clear_credit_btn.pack(padx=10, pady=5, side="left")
 
-    def setup_middle_frame(self):
+    def setup_middle_left_frame(self):
         self.report_frame = tk.Frame(
             self.root,
             width=500,
@@ -185,6 +195,63 @@ class BaseFrame(tk.Frame):
         self.error_count_frame.pack(padx=10, pady=5, side="left")
         self.order_left_count_frame.pack(padx=10, pady=5, side="left")
         self.cc_left_count_frame.pack(padx=10, pady=5, side="left")
+
+    def setup_middle_right_frame(self):
+        creds = json.load(open(CREDS_FILE))
+        self.creds_frame = tk.Frame(
+            self.root,
+            width=250,
+            height=400,
+            background="#ffffff",
+            highlightbackground="#ffffff",
+            highlightthickness=2,
+            borderwidth=2,
+            relief=RIDGE,
+        )
+
+        # create a Email label
+        email = tk.Label(self.creds_frame, text="Email", bg="white")
+        self.email_field = tk.Entry(self.creds_frame)
+        self.email_field.insert(0, creds.get("email", "brenoml0921@yahoo.com"))
+        email.grid(row=1, column=0)
+        self.email_field.grid(row=1, column=1, columnspan=3)
+
+        # create a Operador label
+        operador = tk.Label(self.creds_frame, text="Operador", bg="white")
+        self.operador_field = tk.Entry(self.creds_frame)
+        self.operador_field.insert(0, creds.get("operador", "operador1"))
+        operador.grid(row=2, column=0)
+        self.operador_field.grid(row=2, column=1, columnspan=3)
+
+        # create a Password label
+        password = tk.Label(self.creds_frame, text="Password", bg="white")
+        self.password_field = tk.Entry(self.creds_frame)
+        self.password_field.insert(0, creds.get("password", "36461529"))
+        password.grid(row=3, column=0)
+        self.password_field.grid(row=3, column=1, columnspan=3)
+
+        # create a Quantity label
+        quantity = tk.Label(self.creds_frame, text="Quantity", bg="white")
+        self.quantity_field = tk.Entry(self.creds_frame, width=5)
+        self.quantity_field.insert(0, creds.get("quantity", "5"))
+        quantity.grid(row=4, column=0)
+        self.quantity_field.grid(row=4, column=1)
+
+        # create a Price label
+        price = tk.Label(self.creds_frame, text="Price", bg="white")
+        self.price_field = tk.Entry(self.creds_frame, width=5)
+        self.price_field.insert(0, creds.get("price", 0))
+        price.grid(row=4, column=2)
+        self.price_field.grid(row=4, column=3)
+
+        save_creds_btn = tk.Button(
+            self.creds_frame,
+            text="Save",
+            width=10,
+            bg="#bada55",
+            command=lambda: save_creds(self),
+        )
+        save_creds_btn.grid(row=5, column=0, columnspan=4)
 
     def setup_bottom_frame(self):
         # status bar

@@ -1,3 +1,4 @@
+import json
 from helpers.ui_refresher import ui_refresher
 from controllers.router_restart_bot import router_restart
 import csv, os
@@ -5,6 +6,7 @@ from helpers.ping_checker import ping_until_up
 from helpers.file_system import (
     CARD_FILE,
     COMPLETED_FILE,
+    CREDS_FILE,
     ERROR_FILE,
     FEEDING_FILE,
     file_initializer,
@@ -103,8 +105,19 @@ def clear_credit(root):
 
 
 @ui_refresher
-def save(root):
+def save_creds(root):
+    creds = {}
+    creds["email"] = root.email_field.get()
+    creds["operador"] = root.operador_field.get()
+    creds["password"] = root.password_field.get()
+    creds["quantity"] = root.quantity_field.get()
+    creds["price"] = root.price_field.get()
+    print(creds)
+
+    with open(CREDS_FILE, "w") as save_file:
+        save_file.write(json.dumps(creds, indent=4))
+
     root.show_message_box(
         "Save",
-        "This button doesn't do anything.",
+        "Saved.",
     )
