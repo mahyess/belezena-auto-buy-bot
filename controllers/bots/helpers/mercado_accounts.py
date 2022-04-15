@@ -2,6 +2,8 @@ import time
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
+import controllers
+
 
 def get_accounts(driver):
     ac_dropdown = driver.find_element_by_css_selector(
@@ -17,7 +19,9 @@ def get_accounts(driver):
     return ac_dropdown_options
 
 
-def change_accounts(driver, accounts=None):
+def change_accounts(driver, accounts=None, root=None):
+    if root:
+        controllers.clear(root, confirmation=False)
     if accounts is None:
         accounts = get_accounts(driver)
 

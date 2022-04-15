@@ -75,12 +75,15 @@ def pause(root):
 
 
 @ui_refresher
-def clear(root):
-    result = root.show_message_box(
-        "Clear",
-        "Are you sure? This will clear all data you cannot recover.",
-        "question",
-    )
+def clear(root, confirmation=True):
+    if confirmation:
+        result = root.show_message_box(
+            "Clear",
+            "Are you sure? This will clear all data you cannot recover.",
+            "question",
+        )
+    else:
+        result = True
     if result:
         os.remove(FEEDING_FILE)
         os.remove(ERROR_FILE)

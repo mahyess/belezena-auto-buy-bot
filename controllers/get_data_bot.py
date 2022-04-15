@@ -117,7 +117,7 @@ def bot(root):
 
                             start_fetching_products(root, paginated=True)
                         else:
-                            change_accounts(driver, accounts)
+                            change_accounts(driver, accounts, root)
                             start_fetching_products(root)
 
                     product = available_products[0]
@@ -172,7 +172,7 @@ def bot(root):
 
                                     start_fetching_products(root, paginated=True)
                                 else:
-                                    change_accounts(driver, accounts)
+                                    change_accounts(driver, accounts, root)
                                     start_fetching_products(root)
                                 # next_btn = driver.find_element_by_class_name(
                                 #     "ui-paginator-next"
