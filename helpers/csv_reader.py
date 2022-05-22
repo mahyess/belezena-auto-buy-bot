@@ -29,6 +29,11 @@ def updater(completed_row, remarks=None, is_success: bool = True):
     lines = list()
     success = list()
     failure = list()
+    completed_row["remarks"] = remarks
+    if is_success:
+        success.append(completed_row)
+    else:
+        failure.append(completed_row)
     with open(FEEDING_FILE, "r", newline="") as read_file:
         reader = csv.DictReader(
             read_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
@@ -93,14 +98,18 @@ def is_empty_csv(filename):
                 return False
     return True
 
+
 def fix_nulls(s):
     for line in s:
-        yield line.replace('\0', '')
+        yield line.replace("\0", "")
+
 
 def get_lines_count(filename):
     try:
         with open(filename, "r", newline="") as csvfile:
-            reader = csv.reader((line.replace('\0','') for line in csvfile), delimiter=",")
+            reader = csv.reader(
+                (line.replace("\0", "") for line in csvfile), delimiter=","
+            )
             return len(list(reader)) - 1
     except FileNotFoundError:
         return 0

@@ -97,9 +97,9 @@ def bot(root):
                         driver.find_element_by_xpath(
                             # span with text "Produtos"
                             "//span[contains(@class, 'TabVendasTexto') and text()='Env. Pendente-Outros']"
-                                                    ),
+                        ),
                         driver,
-                    ) 
+                    )
                     time.sleep(5)
                     available_products = driver.find_elements_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
@@ -298,7 +298,14 @@ def bot(root):
                     )
                     is_cpf_request_sent = False
                     details["cpf"] = None
-                    for message in messages:
+                    for i, message in enumerate(messages):
+                        if NO_CPF_MSG in message.text:
+                            is_cpf_request_sent = True
+
+                        if not i:
+                            # ignore first message
+                            continue
+
                         cpf = re.search(
                             r"\d{3}\.?\ ?\d{3}\.?\ ?\d{3}\-?\.?\ ?\d{2}", message.text
                         )
@@ -310,8 +317,6 @@ def bot(root):
                                 .replace(" ", "")
                             )
                             break
-                        if NO_CPF_MSG in message.text:
-                            is_cpf_request_sent = True
 
                     if not details["cpf"]:
                         updater(details, f"No CPF - {str(dt.today().date())}", False)
