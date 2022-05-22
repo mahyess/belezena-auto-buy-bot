@@ -11,7 +11,8 @@ from helpers.file_system import (
     FEEDING_FILE,
     file_initializer,
 )
-import controllers.bots.update_beleza_stock as update_bot
+import controllers.bots.update_beleza_stock as update_stock_bot
+import controllers.bots.update_order_status as update_order_status_bot
 import controllers.get_data_bot as get_data_bot_file
 from helpers.csv_reader import (
     CARD_FILE_FIELDNAMES,
@@ -19,29 +20,19 @@ from helpers.csv_reader import (
     is_empty_csv,
     FEEDER_FILE_FIELDNAMES,
     updater,
-    )
+)
 
 
 @ui_refresher
 def load_data(root):
-    update_bot.bot(root)
+    update_stock_bot.bot(root)
     root.show_message_box("Successful", "Done.")
-    # filename = root.onOpen()
-    # try:
-    #     with open(filename, "r", newline="") as input_file, open(
-    #         FEEDING_FILE, "a", newline=""
-    #     ) as save_file:
-    #         file_reader = csv.DictReader(input_file, delimiter=",")
-    #         file_writer = csv.DictWriter(
-    #             save_file, delimiter=",", fieldnames=FEEDER_FILE_FIELDNAMES
-    #         )
 
-    #         for line_count, row in enumerate(file_reader):
-    #             file_writer.writerow(row)
 
-    #     root.show_message_box("Successful", f"{line_count+1} Data Imported")
-    # except ValueError:
-    #     root.show_message_box("Error", "Invalid File Headers", "warning")
+@ui_refresher
+def load_order_status(root):
+    update_order_status_bot.bot(root)
+    root.show_message_box("Successful", "Done.")
 
 
 @ui_refresher

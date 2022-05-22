@@ -8,6 +8,7 @@ from controllers.router_restart_bot import router_restart
 import re
 import csv
 import requests
+from helpers.post_remark import post_remarks
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 
 from selenium.webdriver.support.wait import WebDriverWait
@@ -445,20 +446,7 @@ def bot(root):
                     #     )
                     if remarks:
                         # ------------ remarks -----------------
-                        remarks_input_btn = product.find_element_by_id("div-toggle")
-                        wait_for_clickable_and_click(remarks_input_btn, driver)
-                        remarks_form = remarks_input_btn.find_element_by_xpath(
-                            "following-sibling::div"
-                        )
-                        remarks_form.find_element_by_xpath(
-                            ".//div[contains(@class, 'mt-width-full')]/input"
-                        ).send_keys(remarks)
-                        wait_for_clickable_and_click(
-                            remarks_form.find_element_by_css_selector(
-                                "button[type='submit'][class*='ui-button-success']"
-                            ),
-                            driver,
-                        )
+                        post_remarks(driver, product, remarks)
                         time.sleep(2)
                         # ------------ remarks -----------------
 

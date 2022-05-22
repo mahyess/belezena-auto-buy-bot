@@ -17,6 +17,7 @@ from controllers import (
     clear_credit,
     load_credit_card,
     load_data,
+    load_order_status,
     pause,
     save_creds,
 )
@@ -59,7 +60,7 @@ class BaseFrame(tk.Frame):
             bg="sky blue",
             command=lambda: threading.Thread(target=load_data, args=(self,)).start(),
         )
-        self.load_data_btn.pack(padx=10, pady=5, side="left")
+        self.load_data_btn.grid(row=0, column=0, sticky="ew")
         self.load_credit_data_btn = tk.Button(
             self.top_left_frame,
             text="Load Credit Card",
@@ -67,7 +68,25 @@ class BaseFrame(tk.Frame):
             bg="sky blue",
             command=lambda: load_credit_card(self),
         )
-        self.load_credit_data_btn.pack(padx=10, pady=5, side="left")
+        self.load_credit_data_btn.grid(row=0, column=1, sticky="ew")
+        self.order_status_btn = tk.Button(
+            self.top_left_frame,
+            text="Order Status",
+            width=12,
+            bg="sky blue",
+            command=lambda: threading.Thread(
+                target=load_order_status, args=(self,)
+            ).start(),
+        )
+        self.order_status_btn.grid(row=1, column=0, sticky="ew")
+        self.messages_btn = tk.Button(
+            self.top_left_frame,
+            text="Reply Messages",
+            width=12,
+            bg="sky blue",
+            command=lambda: threading.Thread(target=messages, args=(self,)).start(),
+        )
+        self.messages_btn.grid(row=1, column=1, sticky="ew")
 
     def setup_top_right_frame(self):
         # right area

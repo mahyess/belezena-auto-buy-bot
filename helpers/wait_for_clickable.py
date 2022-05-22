@@ -1,7 +1,7 @@
 import time
 
 
-def close_unnecessary_dialogs_if_any(driver):
+def close_unnecessary_dialogs_if_any(driver, wait_time=25):
     driver.implicitly_wait(0)
 
     try:
@@ -22,16 +22,16 @@ def close_unnecessary_dialogs_if_any(driver):
         # print(e)
         pass
 
-    driver.implicitly_wait(25)
+    driver.implicitly_wait(wait_time)
 
 
-def wait_for_clickable_and_click(element, driver=None, nonjsclick=False):
+def wait_for_clickable_and_click(element, driver=None, nonjsclick=False, wait_time=25):
     try_count = 0
     while try_count < 20:
         try:
             try_count += 1
             if driver:
-                close_unnecessary_dialogs_if_any(driver)
+                close_unnecessary_dialogs_if_any(driver, wait_time=wait_time)
 
             # ------- scrolling to proper position ---------
             desired_y = (element.size["height"] / 2) + element.location["y"]
