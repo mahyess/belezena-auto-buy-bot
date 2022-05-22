@@ -137,9 +137,10 @@ def bot(root, details=None, driver=None):
                 print(f"there was error finding stock for name: '{name}'")
                 is_available = False
                 price = 0
-            price = str(round((price * (1 + PRICE_PERCENT / 100)), 2)).replace(".", ",")
+            price = (round((price * (1 + PRICE_PERCENT / 100)), 2))
             if float(price) < 7:
                 price = str(7)
+            price = str(price).replace(".",",")
             stock = str(QTY) if is_available else "0"
 
             if current_stock != stock or price != current_price:

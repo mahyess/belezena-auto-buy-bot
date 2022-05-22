@@ -3,7 +3,7 @@ from helpers.ping_checker import ping_until_up
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 import time, socket
 from selenium import webdriver
-
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -62,16 +62,23 @@ def router_restart(root):
 
         elif router_ip == "192.168.1.1":
             driver.get("http://192.168.1.1/index.html#login")
-            driver.find_element_by_id("txtPwd").send_keys("vivo")
-            driver.find_element_by_id("txtPwd").send_keys(Keys.ENTER)
+            try:
+                driver.find_element_by_id("txtPwd").send_keys("vivo")
+                driver.find_element_by_id("txtPwd").send_keys(Keys.ENTER)
+               
+            except NoSuchElementException:
+                pass
+            
+            time.sleep(5)
             wait_for_clickable_and_click(
                 driver.find_element_by_id("h_connect_btn"), driver
             )
+            
             time.sleep(60)
             wait_for_clickable_and_click(
                 driver.find_element_by_id("h_connect_btn"), driver
             )
-            time.sleep(5)
+            time.sleep(8)
 
     except Exception as e:
         print(e)

@@ -19,7 +19,7 @@ from helpers.csv_reader import (
     is_empty_csv,
     FEEDER_FILE_FIELDNAMES,
     updater,
-)
+    )
 
 
 @ui_refresher

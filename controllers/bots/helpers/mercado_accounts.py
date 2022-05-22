@@ -1,8 +1,108 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import csv
 import time
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-import controllers
+from helpers.file_system import ERROR_FILE, FIELDNAMES
 
 
 def get_accounts(driver):
@@ -20,8 +120,19 @@ def get_accounts(driver):
 
 
 def change_accounts(driver, accounts=None, root=None):
+    try: 
+        with open(ERROR_FILE, "w", newline="") as save_file:
+            fieldnames = [*FIELDNAMES, "remarks"]
+            file_writer = csv.DictWriter(
+                save_file, delimiter=",", fieldnames=fieldnames
+            )
+
+            file_writer.writeheader()
+            print("file cleared")
+    except Exception as e:
+        print("file clear problem") 
     if root:
-        controllers.clear(root, confirmation=False)
+        root.refresh_ui()
     if accounts is None:
         accounts = get_accounts(driver)
 

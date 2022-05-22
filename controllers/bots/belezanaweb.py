@@ -193,12 +193,12 @@ def bot(root, details, driver=None):
             driver.find_element_by_css_selector("button[type='submit']"), driver
         )
         print("...create new address")
-
+        
         # endereco form complete
         # pagamento form start
 
         print("...choose by ticket")
-
+        
         def read_cards_and_enter(root, driver):
             with open(CARD_FILE, "r", newline="") as csv_file:
                 file_reader = csv.DictReader(

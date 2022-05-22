@@ -23,6 +23,6 @@ def quinta(driver, details):
         ".//label[contains(text(), 'Link')]/following-sibling::input"
     ).send_keys(details["meurastre_url"])
 
-    driver.find_element_by_css_selector("input[type='submit']").click()
+    driver.find_element_by_css_selector("button[type='submit']").click()
 
     return 0

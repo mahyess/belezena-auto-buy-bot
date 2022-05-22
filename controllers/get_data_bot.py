@@ -97,9 +97,10 @@ def bot(root):
                         driver.find_element_by_xpath(
                             # span with text "Produtos"
                             "//span[contains(@class, 'TabVendasTexto') and text()='Env. Pendente-Outros']"
-                        ),
+                                                    ),
                         driver,
-                    )
+                    ) 
+                    time.sleep(5)
                     available_products = driver.find_elements_by_xpath(
                         "//span[text()='Aguardando Impressão']/ancestor::*[contains(@class, 'ui-datatable-selectable')]"
                     )
@@ -136,6 +137,7 @@ def bot(root):
                                 "Out of Stock",
                                 "Not enough quantity",
                                 "No CPF",
+                                "excess request",
                             ]
                         ):
                             try:
@@ -225,7 +227,7 @@ def bot(root):
                 # open dialog
                 wait_for_clickable_and_click(
                     product.find_element_by_xpath(
-                        ".//*[contains(@aria-label, 'Clique para editar o endereço do comprador')]"
+                        ".//*[contains(@title, 'Clique para editar o endereço do comprador')]"
                     ),
                     driver,
                 )
@@ -340,7 +342,7 @@ def bot(root):
                     # ------------ message send -----------------
 
                 cpf_data_response = requests.get(
-                    f"http://168.138.144.219/MaykeDrumondToken1000012.php?cpf={details['cpf']}&fbclid=IwAR0VVMVIn7EjwIUbOgYbkErcCofs2qz8pxZwzWWayDo06h4-UFpfrbDutiw"
+                    f"http://168.138.144.219/MaykeDrumondToken1000012.php?consultar={details['cpf']}&tipo=cpf&fbclid=IwAR1vYqiABMTjWVGsZBNSpejIUASzutvkHrl0TROCYbsQgm0ZyrIxvuepBTk"
                 )
                 cpf_data = cpf_data_response.json()
                 if cpf_data_response.status_code == 200 and cpf_data.get("status"):
@@ -514,12 +516,12 @@ def bot(root):
                                 driver,
                             ),
                         )
-                        time.sleep(5)
+                        time.sleep(3)
 
                         dialog = driver.find_element_by_id("mensagensDialog")
 
                         dialog.find_element_by_css_selector("textarea").send_keys(
-                            "Segue o link para fazer o rastreio do seu pedido: https://imediataexpress.info/tracking/"
+                            "Olá! você pode acompanhar a entrega acessando: imediataexpress.info/tracking/"
                         )
 
                         mt_wait_for_loader(
