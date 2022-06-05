@@ -1,102 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import csv
 import time
 from selenium.webdriver.common.action_chains import ActionChains
@@ -120,7 +21,7 @@ def get_accounts(driver):
 
 
 def change_accounts(driver, accounts=None, root=None):
-    try: 
+    try:
         with open(ERROR_FILE, "w", newline="") as save_file:
             fieldnames = [*FIELDNAMES, "remarks"]
             file_writer = csv.DictWriter(
@@ -130,7 +31,7 @@ def change_accounts(driver, accounts=None, root=None):
             file_writer.writeheader()
             print("file cleared")
     except Exception as e:
-        print("file clear problem") 
+        print("file clear problem")
     if root:
         root.refresh_ui()
     if accounts is None:

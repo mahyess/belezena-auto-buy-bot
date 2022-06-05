@@ -6,9 +6,9 @@ import requests
 from lxml import html
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
@@ -19,8 +19,23 @@ from helpers.wait_for_clickable import wait_for_clickable_and_click
 from helpers.user_agent import random_user_agent
 
 
+def next_page(driver):
+    next = driver.find_elements_by_css_selector("a.ui-paginator-next")[-1]
+
+    if "ui-state-disabled" not in next.get_attribute("class"):
+        # s = spinner
+        s = driver.find_element_by_css_selector("div.dialog-aguarde")
+        wait_for_clickable_and_click(next, driver, nonjsclick=True, wait_time=10)
+        WebDriverWait(driver, 10).until(
+            lambda _: "false" in s.get_attribute("aria-hidden")
+        )
+        WebDriverWait(driver, 10).until(
+            lambda _: "true" in s.get_attribute("aria-hidden")
+        )
+
+
 def bot(root, details=None, driver=None):
-    WAIT_TIME = 3
+    WAIT_TIME = 8
     with open(CREDS_FILE, "r") as f:
         creds = json.load(f)
     using_param_driver = False
@@ -33,7 +48,7 @@ def bot(root, details=None, driver=None):
         driver.implicitly_wait(WAIT_TIME)
     else:
         using_param_driver = True
-    waiter = WebDriverWait(driver, 10)
+    waiter = WebDriverWait(driver, WAIT_TIME)
 
     try:
         driver.get("https://app.mercadoturbo.com.br//login_operador")
@@ -54,20 +69,22 @@ def bot(root, details=None, driver=None):
         time.sleep(3)
         accounts = get_accounts(driver)
 
-        driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
-
         def update_single(product):
             # if delivered
-            deliver_btn = product.find_element_by_css_selector("a.statusDoPedido")
+            try:
+                deliver_btn = product.find_element_by_css_selector("a.statusDoPedido")
+            except NoSuchElementException:
+                print("update_single err: no deliver button")
+                return False
             # if already marked as delivered
             if len(deliver_btn.find_elements_by_css_selector("div.GreenBack")):
-                return
+                return False
             # product.find_element_by_id("div-toggle").click()
             meurastre_link_remarks = product.find_elements_by_xpath(
                 './/span[contains(text(), "meurastre.io")]'
             )
             if len(meurastre_link_remarks) == 0 or meurastre_link_remarks[0].text == "":
-                return
+                return False
 
             try:
                 soup = BeautifulSoup(
@@ -79,24 +96,31 @@ def bot(root, details=None, driver=None):
                 order_states = __next_data__["props"]["pageProps"]["order"][
                     "shippings"
                 ][0]["steps"]
+                print(order_states)
             except Exception as e:
                 print("soup ma problem")
 
+            dom_changed = False
             status_remark: str = ""
             for i, step in enumerate(reversed(order_states)):
                 if step["date"]:
                     status_remark = f"{step['message']} {step['date']}"
                     if step["message"] not in product.get_attribute("innerHTML"):
                         post_remarks(driver, product, status_remark)
+                        dom_changed = True
                     if not i:
                         # open dialog
-                        mt_wait_for_loader(
-                            driver,
-                            lambda: wait_for_clickable_and_click(
-                                deliver_btn, driver, wait_time=WAIT_TIME
-                            ),
+                        wait_for_clickable_and_click(
+                            deliver_btn, driver, wait_time=WAIT_TIME
                         )
-                        dialog = driver.find_element_by_id("jaEntregueiDialog")
+                        dialog = waiter.until(
+                            EC.visibility_of_element_located(
+                                (By.ID, "jaEntregueiDialog")
+                            )
+                        )
+                        waiter.until(
+                            lambda d: "false" in dialog.get_attribute("aria-hidden")
+                        )
 
                         # select option delivered
                         wait_for_clickable_and_click(
@@ -106,6 +130,7 @@ def bot(root, details=None, driver=None):
                             ),
                             driver,
                             wait_time=WAIT_TIME,
+                            nonjsclick=True,
                         )
 
                         # save
@@ -119,34 +144,55 @@ def bot(root, details=None, driver=None):
                                 wait_time=WAIT_TIME,
                             ),
                         )
+                        if dialog.get_attribute("aria-hidden") == "false":
+                            wait_for_clickable_and_click(
+                                dialog.find_element_by_css_selector(
+                                    "a.ui-dialog-titlebar-close"
+                                ),
+                                driver,
+                                wait_time=WAIT_TIME,
+                            )
 
                     break
 
+            return dom_changed
+
         def update():
-            products = driver.find_element_by_id(
-                "form-vendas:grid-vendas_data"
-            ).find_elements_by_css_selector("tr")
+            # product_ids = [el.get_attribute('data-rk') for el in driver.find_element_by_id(
+            #     "form-vendas:grid-vendas_data"
+            # ).find_elements_by_css_selector("tr")]
 
-            for product in products:
+            driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
+            dom_changed = True
+            data_ri = -1
+            while True:
+                data_ri += 1
+                # for _ in range(data_ri // 20):
+                if data_ri and data_ri % 20 == 0:
+                    next_page(driver)
+                    dom_changed = True
                 try:
-                    update_single(product)
+                    if dom_changed:
+                        time.sleep(5)
+                    product = driver.find_element_by_id(
+                        "form-vendas:grid-vendas_data"
+                    ).find_element_by_css_selector(f"tr[data-ri='{data_ri}']")
+                    # product = WebDriverWait(
+                    #     driver.find_element_by_id("form-vendas:grid-vendas_data"),
+                    #     WAIT_TIME,
+                    # ).until(
+                    #     EC.element_to_be_clickable(
+                    #         (By.CSS_SELECTOR, f"tr[data-ri='{data_ri}']")
+                    #     )
+                    # )
+
+                    dom_changed = update_single(product)
+                except NoSuchElementException:
+                    print("update err: no such element")
+                    break
                 except Exception as e:
-                    print(f"there was error updating product: '{e}'")
+                    print(f"products_loop err: '{e}'")
 
-            next_btn = driver.find_elements_by_css_selector("a.ui-paginator-next")[-1]
-
-            if "ui-state-disabled" not in next_btn.get_attribute("class"):
-                spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
-                wait_for_clickable_and_click(
-                    next_btn, driver, nonjsclick=True, wait_time=WAIT_TIME
-                )
-                waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
-                waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
-                update()
-
-        state_active_to_paused_changer = ActionChains(driver)
-        state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
-        state_active_to_paused_changer.send_keys(Keys.ENTER)
         for _ in accounts:
             update()
 

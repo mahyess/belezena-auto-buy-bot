@@ -7,6 +7,6 @@ def mt_wait_for_loader(driver, statements):
     try:
         statements()
     except Exception as e:
-        print(e)
+        print("wait for loader: ", e)
     waiter.until(lambda _: "false" in spinner.get_attribute("aria-hidden"))
     waiter.until(lambda _: "true" in spinner.get_attribute("aria-hidden"))
