@@ -20,6 +20,7 @@ from controllers import (
     load_order_status,
     pause,
     save_creds,
+    reply_messages,
 )
 
 
@@ -84,7 +85,9 @@ class BaseFrame(tk.Frame):
             text="Reply Messages",
             width=12,
             bg="sky blue",
-            command=lambda: threading.Thread(target=messages, args=(self,)).start(),
+            command=lambda: threading.Thread(
+                target=reply_messages, args=(self,)
+            ).start(),
         )
         self.messages_btn.grid(row=1, column=1, sticky="ew")
 

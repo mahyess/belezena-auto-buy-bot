@@ -13,6 +13,7 @@ from helpers.file_system import (
 )
 import controllers.bots.update_beleza_stock as update_stock_bot
 import controllers.bots.update_order_status as update_order_status_bot
+import controllers.bots.reply_messages as reply_messages_bot
 import controllers.get_data_bot as get_data_bot_file
 from helpers.csv_reader import (
     CARD_FILE_FIELDNAMES,
@@ -21,6 +22,12 @@ from helpers.csv_reader import (
     FEEDER_FILE_FIELDNAMES,
     updater,
 )
+
+
+@ui_refresher
+def reply_messages(root):
+    reply_messages_bot.bot(root)
+    root.show_message_box("Successful", "Done.")
 
 
 @ui_refresher
