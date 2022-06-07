@@ -14,6 +14,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: ${{ github.ref }}
+        tag_name: ${{ env.RELEASE_VERSION }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
     - name: Package Application
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
@@ -24,17 +38,6 @@ jobs:
         name: autobuy
         path: dist/windows
 
-    - name: release
-      uses: actions/create-release@v1
-      id: create_release
-      with:
-        draft: false
-        prerelease: false
-        release_name: ${{ github.ref }}
-        tag_name: ${{ github.event.repository.updated_at}}
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-    
     - name: upload artifact
       uses: actions/upload-release-asset@v1
       env:
