@@ -23,6 +23,18 @@ jobs:
       with:
         name: autobuy
         path: dist/windows
+
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}
+        body_path: CHANGELOG.md
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
     
     - name: upload artifact
       uses: actions/upload-release-asset@v1
