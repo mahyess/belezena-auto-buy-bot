@@ -21,5 +21,15 @@ jobs:
 
     - uses: actions/upload-artifact@v2
       with:
-        name: name-of-artifact
+        name: autobuy
         path: dist/windows
+    
+    - name: upload artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/windows/autobuy.zip
+        asset_name: autobuy.zip
+        asset_content_type: application/zip
