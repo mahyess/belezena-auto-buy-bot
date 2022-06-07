@@ -4,6 +4,7 @@ black==21.7b0
 bs4==0.0.1
 certifi==2021.5.30
 charset-normalizer==2.0.4
+chromedriver-autoinstaller==0.3.1
 click==8.0.1
 fake-useragent==0.1.11
 idna==3.2
