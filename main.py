@@ -1,13 +1,18 @@
 import tkinter as tk
-import chromedriver_autoinstaller
 
 from ui import BaseFrame
 
 
 def main():
-    installed = chromedriver_autoinstaller.install()
+    try:
+        import chromedriver_autoinstaller
+
+        chromedriver_autoinstaller.install()
+    except ImportError:
+        pass
+
     root = tk.Tk()
-    root.geometry("950x300")
+    root.geometry("950x330")
     root.title("Auto Buy Bot")
     BaseFrame(root)
     root.mainloop()

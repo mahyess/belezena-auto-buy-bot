@@ -22,6 +22,7 @@ ERROR_FILE = str(Path.home()) + "/.autobuy/error.csv"
 COMPLETED_FILE = str(Path.home()) + "/.autobuy/completed.csv"
 CARD_FILE = str(Path.home()) + "/.autobuy/card.csv"
 CREDS_FILE = str(Path.home()) + "/.autobuy/creds.json"
+MSG_FILE = str(Path.home()) + "/.autobuy/msg.txt"
 
 
 FIELDNAMES = [

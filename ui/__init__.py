@@ -6,6 +6,7 @@ from helpers.file_system import (
     CREDS_FILE,
     ERROR_FILE,
     FEEDING_FILE,
+    MSG_FILE,
 )
 from helpers.csv_reader import get_lines_count
 import tkinter as tk
@@ -34,6 +35,7 @@ class BaseFrame(tk.Frame):
         self.setup_top_left_frame()
         self.setup_top_right_frame()
         self.setup_middle_left_frame()
+        self.setup_middle_middle_frame()
         self.setup_middle_right_frame()
         self.setup_bottom_frame()
 
@@ -157,66 +159,104 @@ class BaseFrame(tk.Frame):
             borderwidth=2,
             relief=RIDGE,
         )
-        self.report_frame.place(relx=5, rely=5, anchor="center")
-        tk.Label(self.report_frame, text="Report: ", font=(14)).pack(
-            padx=10,
-            pady=5,
-            # side="left",
-        )
+        self.report_frame.grid(row=1, column=0, sticky="nsew")
 
-        self.success_count_frame = tk.Frame(self.report_frame, bg="#111")
+        self.first_row_frame = tk.Frame(self.report_frame, bg="#fff")
+        self.first_row_frame.pack(fill="x")
+        self.second_row_frame = tk.Frame(self.report_frame, bg="#fff")
+        self.second_row_frame.pack(fill="x")
+
+        self.success_count_frame = tk.Frame(self.first_row_frame, bg="#111")
         self.success_count = tk.Label(
             self.success_count_frame,
             text="31/354",
-            width="14",
+            width="11",
         )
         self.success_count.pack(padx=10, pady=5, fill="both", expand=1)
         tk.Label(
             self.success_count_frame,
             text="Successfull",
             foreground="blue",
-            width="14",
+            width="11",
         ).pack(padx=10, pady=5, fill="both", expand=1)
 
-        self.error_count_frame = tk.Frame(self.report_frame, bg="#111")
+        self.error_count_frame = tk.Frame(self.first_row_frame, bg="#111")
         self.error_count = tk.Label(
             self.error_count_frame,
             text="02/354",
-            width="14",
+            width="11",
         )
         self.error_count.pack(padx=10, pady=5, fill="both", expand=1)
         tk.Label(
             self.error_count_frame,
             text="Error",
             foreground="red",
-            width="14",
+            width="11",
         ).pack(padx=10, pady=5, fill="both", expand=1)
 
-        self.order_left_count_frame = tk.Frame(self.report_frame, bg="#111")
+        self.order_left_count_frame = tk.Frame(self.second_row_frame, bg="#111")
         self.remaining_count = tk.Label(
             self.order_left_count_frame,
             text="321/354",
-            width="14",
+            width="11",
         )
         self.remaining_count.pack(padx=10, pady=5, fill="both", expand=1)
         tk.Label(
             self.order_left_count_frame,
             text="Orders Left",
             foreground="green",
-            width="14",
+            width="11",
         ).pack(padx=10, pady=5, fill="both", expand=1)
 
-        self.cc_left_count_frame = tk.Frame(self.report_frame, bg="#111")
-        self.cc_count = tk.Label(self.cc_left_count_frame, text="39/45", width="14")
+        self.cc_left_count_frame = tk.Frame(self.second_row_frame, bg="#111")
+        self.cc_count = tk.Label(self.cc_left_count_frame, text="39/45", width="11")
         self.cc_count.pack(padx=10, pady=5, fill="both", expand=1)
         tk.Label(
-            self.cc_left_count_frame, text="CC Left", foreground="green", width="14"
+            self.cc_left_count_frame, text="CC Left", foreground="green", width="11"
         ).pack(padx=10, pady=5, fill="both", expand=1)
 
         self.success_count_frame.pack(padx=10, pady=5, side="left")
         self.error_count_frame.pack(padx=10, pady=5, side="left")
         self.order_left_count_frame.pack(padx=10, pady=5, side="left")
         self.cc_left_count_frame.pack(padx=10, pady=5, side="left")
+
+    def setup_middle_middle_frame(self):
+        def msg_writer(txt):
+            with open(MSG_FILE, "w") as f:
+                f.write(txt)
+            tk.messagebox.showinfo("Save", "Message Saved")
+
+        def msg_reader():
+            try:
+                with open(MSG_FILE, "r") as f:
+                    return f.read()
+            except FileNotFoundError:
+                return "Test Message"
+
+        self.message_frame = tk.Frame(
+            self.root,
+            width=500,
+            height=400,
+            background="#ffffff",
+            highlightbackground="#ffffff",
+            highlightthickness=2,
+            borderwidth=2,
+            relief=RIDGE,
+        )
+        self.message_frame.grid(row=1, column=1, sticky="nsew")
+
+        self.message_field = tk.Text(self.message_frame, height=6, width=41)
+        self.message_field.insert(tk.INSERT, msg_reader())
+        self.message_field.grid(row=1, column=0)
+
+        save_message_btn = tk.Button(
+            self.message_frame,
+            text="Save Automatic Message",
+            width=20,
+            bg="#bada55",
+            command=lambda: msg_writer(self.message_field.get("1.0", tk.END)),
+        )
+        save_message_btn.grid(row=2, column=0)
 
     def setup_middle_right_frame(self):
         creds = json.load(open(CREDS_FILE))

@@ -13,19 +13,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
-from helpers.file_system import CREDS_FILE
+from helpers.file_system import CREDS_FILE, MSG_FILE
 from helpers.mt_wait_for_loader import mt_wait_for_loader
 from helpers.post_remark import post_remarks
 from helpers.wait_for_clickable import wait_for_clickable_and_click
 from helpers.user_agent import random_user_agent
 
 DIGIT_REGEX = re.compile(r"\d+")
-MESSAGE_TEXT = """
-Hello,
-This is a test message.
-
-Send message here.
-"""
 
 
 class regex_text_to_be_present_in_element(EC.text_to_be_present_in_element):
@@ -41,6 +35,12 @@ class regex_text_to_be_present_in_element(EC.text_to_be_present_in_element):
 
 
 def bot(root, details=None, driver=None):
+    try:
+        with open(MSG_FILE, "r") as f:
+            MESSAGE_TEXT = f.read()
+    except FileNotFoundError:
+        MESSAGE_TEXT = "Test Message"
+
     WAIT_TIME = 25
     with open(CREDS_FILE, "r") as f:
         creds = json.load(f)
