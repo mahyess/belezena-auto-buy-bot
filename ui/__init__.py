@@ -225,14 +225,6 @@ class BaseFrame(tk.Frame):
             with open(MSG_FILE, "w", encoding="utf-8") as f:
                 f.write(txt)
             tk.messagebox.showinfo("Save", "Message Saved")
-            with open(MSG_FILE, "r", encoding="utf-8") as f:
-                enc = f.read()
-            with open(MSG_FILE, "w") as f:
-                f.write(txt)
-            with open(MSG_FILE, "r") as f:
-                nenc = f.read()
-            print(enc == nenc)
-            print(enc == txt)
 
         def msg_reader():
             try:
