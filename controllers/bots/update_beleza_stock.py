@@ -109,7 +109,7 @@ def bot(root, details=None, driver=None):
         accounts = get_accounts(driver)
 
         driver.get("https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador")
-
+        time.sleep(6)
         def update_single(product):
             if "ui-datatable-empty-message" in product.get_attribute("class"):
                 return
@@ -243,6 +243,5 @@ def bot(root, details=None, driver=None):
 
     finally:
         print("update stock complete")
-        if not using_param_driver:
-            driver.quit()
+        
         bot(root)

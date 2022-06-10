@@ -1,5 +1,5 @@
 import datetime
-
+import time
 
 def quinta(driver, details):
     QUINTA_URL = (
@@ -22,7 +22,11 @@ def quinta(driver, details):
     driver.find_element_by_xpath(
         ".//label[contains(text(), 'Link')]/following-sibling::input"
     ).send_keys(details["meurastre_url"])
-
-    driver.find_element_by_css_selector("button[type='submit']").click()
-
+    driver.find_element_by_id("dtype_cwW7FdGI9dSikPWRRcOSkX").send_keys(Keys.ENTER)
+    pyautogui.press('enter')
+    driver.find_element_by_name("button").click()
+    timer.sleep(2)
+    driver.find_element_by_text("Enviar").click()
+    driver.find_element_by_id("dtype_cwW7FdGI9dSikPWRRcOSkX").send_keys(Keys.ENTER)
+    pyautogui.press('enter')
     return 0

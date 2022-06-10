@@ -39,7 +39,7 @@ def bot(root, details, driver=None):
         options = Options()
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(25)
+        driver.implicitly_wait(10)
     else:
         using_param_driver = True
 
@@ -196,7 +196,7 @@ def bot(root, details, driver=None):
         
         # endereco form complete
         # pagamento form start
-
+        time.sleep(5)
         print("...choose by ticket")
         
         def read_cards_and_enter(root, driver):

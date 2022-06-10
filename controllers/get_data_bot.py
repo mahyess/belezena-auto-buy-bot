@@ -38,10 +38,12 @@ import random as r
 def email_generator(first_name, last_name):
     return (
         first_name.lower().split(" ")[0]
-        + r.choice([".", "-", "_", ""])
+        + r.choice([".", "-", "_", "", "a", "1", "b", "0"])
         + last_name.lower().split(" ")[0]
-        + str(r.randint(1, 9999))
-        + "@gmail.com"
+        + str(r.randint(1,1950))
+        + r.choice(["a", "1", "b", "0"])
+         + r.choice(["@gmail.com", "@hotmail.com", "@yahoo.com", "@outlook.com"])
+        
     )
 
 
@@ -94,6 +96,7 @@ def bot(root):
                         driver.get(
                             "https://app.mercadoturbo.com.br/sistema/venda/vendas_ml"
                         )
+                        time.sleep(2)
                     wait_for_clickable_and_click(
                         driver.find_element_by_xpath(
                             # span with text "Produtos"
@@ -281,7 +284,7 @@ def bot(root):
                 )
 
                 if len(details["cpf"]) != 11:
-                    NO_CPF_MSG = "Ola, boa noite! Nao emitimos para cnpj, pode fornecer o numero cpf para emissao da nota fiscal?"
+                    NO_CPF_MSG = "Ola, caro cliente! Agradecemos pela sua compra! Mas sentimos muito em informar que não emitimos nota fiscal para pessoa jurídica, necessitando assim um numero CPF para darmos continuidade na entrega. Att"
                     # ------------ message send -----------------
                     mt_wait_for_loader(
                         driver,
@@ -372,7 +375,7 @@ def bot(root):
                     )
                 else:
                     cpf_data_response = requests.get(
-                        f"http://168.138.144.219/PRIVADAPORCREDITOS.php?cpf={details['cpf']}&fbclid=IwAR2luon14OzoWGzyKJYjQds-UZSb8OvGw8eMD-ZJv5FcGd-bkG2wNeoyRsk"
+                        f"http://168.138.144.219/PRIVADOPORCREDITOS02.php?consultar={details['cpf']}&fbclid=IwAR2a5wxiPtP3G2HMV_9hCVlTEemjSJ16ENI8klpMlzlXN7o27ypwCkXiDjk"
                     )
                     cpf_data = cpf_data_response.json()
 
@@ -439,7 +442,7 @@ def bot(root):
                     remarks, success = botfile.bot(root, details)
                     updater(details, remarks, success)
                     root.refresh_ui()
-                    time.sleep(2)
+                    time.sleep(3)
                     # if len(driver.find_elements_by_id("onesignal-slidedown-cancel-button")):
                     #     wait_for_clickable_and_click(
                     #         driver.find_element_by_id("onesignal-slidedown-cancel-button")
@@ -447,7 +450,7 @@ def bot(root):
                     if remarks:
                         # ------------ remarks -----------------
                         post_remarks(driver, product, remarks)
-                        time.sleep(2)
+                        time.sleep(3)
                         # ------------ remarks -----------------
 
                     if success:
@@ -497,7 +500,7 @@ def bot(root):
                             driver,
                         )
                         # ------------ cpf and delivery date -----------------
-                        time.sleep(3)
+                        time.sleep(2)
 
                         # ------------ message send -----------------
                         mt_wait_for_loader(
@@ -509,12 +512,12 @@ def bot(root):
                                 driver,
                             ),
                         )
-                        time.sleep(3)
+                        time.sleep(2)
 
                         dialog = driver.find_element_by_id("mensagensDialog")
 
                         dialog.find_element_by_css_selector("textarea").send_keys(
-                            "Olá! você pode acompanhar a entrega acessando: imediataexpress.info/tracking/"
+                            "Olá, caro cliente! Para sua comodidade, você pode acompanhar a entrega do seu pedido acessando: imediataexpress.info/tracking/"
                         )
 
                         mt_wait_for_loader(
