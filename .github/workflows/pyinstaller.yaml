@@ -45,7 +45,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: autobuy
-        path: dist/windows
+        path: dist/main.exe
 
     - name: upload artifact
       uses: actions/upload-release-asset@v1
@@ -53,6 +53,6 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/windows/main.exe
+        asset_path: dist/main.exe
         asset_name: autobuy.exe
         asset_content_type: application/vnd.microsoft.portable-executable
