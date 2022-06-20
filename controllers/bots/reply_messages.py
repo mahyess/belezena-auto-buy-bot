@@ -1,3 +1,4 @@
+#_*_ coding: utf-8 _*_
 import json
 import time
 import re
@@ -39,6 +40,7 @@ def bot(root, details=None, driver=None):
         with open(MSG_FILE, "r") as f:
             MESSAGE_TEXT = f.read()
     except FileNotFoundError:
+        encoding='UTF-8'
         MESSAGE_TEXT = "Test Message"
 
     WAIT_TIME = 25

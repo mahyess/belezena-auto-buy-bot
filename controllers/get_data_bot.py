@@ -454,10 +454,11 @@ def bot(root):
                         # ------------ remarks -----------------
 
                     if success:
+                        time.sleep(2)
                         # ------------ cpf and delivery date -----------------
                         wait_for_clickable_and_click(
-                            product.find_element_by_css_selector(
-                                "a[class*='statusDoPedido']"
+                            product.find_element_by_id(
+                                "form-vendas:grid-vendas:0:statusFrete"
                             ),
                             driver,
                         )

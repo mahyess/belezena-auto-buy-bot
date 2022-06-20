@@ -300,7 +300,7 @@ def bot(root, details, driver=None):
                             driver.find_elements_by_css_selector(
                                 "div[data-cy='dangerLightToast']"
                             )
-                        ) or len(
+                        ) or len( 
                             driver.find_elements_by_css_selector(
                                 "div[data-cy='dangerToast']"
                             )
@@ -333,7 +333,7 @@ def bot(root, details, driver=None):
 
                         driver.implicitly_wait(25)
                         try:
-                            time.sleep(10)
+                            time.sleep(12)
                             print(
                                 "******** order is successful. page is changed probably."
                             )

@@ -1,3 +1,4 @@
+# _*_ coding: utf-8 _*_
 import tkinter as tk
 
 from ui import BaseFrame
