@@ -9,13 +9,27 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+
+    - name: Install Requirements
+      run: |
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build Application
+      run: |
+        python -m PyInstaller main.spec
+
     - name: set env
-      run: echo "NOW=v$(date +'%Y%m%d.%H%M%S')" >> $GITHUB_ENV
+      run: echo "NOW=v$(date +'%Y%m%d.%H%M%S')" >> $env:GITHUB_ENV
 
     - name: release
       uses: actions/create-release@v1
@@ -28,15 +42,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Package Application
-      uses: JackMcKew/pyinstaller-action-windows@main
-      with:
-        path: .
-
     - uses: actions/upload-artifact@v2
       with:
         name: autobuy
-        path: dist/windows
+        path: dist/main.exe
 
     - name: upload artifact
       uses: actions/upload-release-asset@v1
@@ -44,6 +53,6 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/windows/main.exe
+        asset_path: dist/main.exe
         asset_name: autobuy.exe
         asset_content_type: application/vnd.microsoft.portable-executable
