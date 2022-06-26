@@ -41,8 +41,6 @@ def change_accounts(driver, accounts=None, root=None, to_account=None):
         "div.SelectConta[role='combobox']"
     )
 
-    ac_dropdown.click()
-
     ac_dropdown_selected = ac_dropdown.find_element_by_css_selector(
         "label.ui-inputfield"
     )
@@ -53,6 +51,7 @@ def change_accounts(driver, accounts=None, root=None, to_account=None):
     if current_selected == to_select:
         return current_selected
 
+    ac_dropdown.click()
     while True:
         current_selected = ac_dropdown_selected.text
         actions = ActionChains(driver)

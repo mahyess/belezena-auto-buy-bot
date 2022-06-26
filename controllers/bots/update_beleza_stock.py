@@ -86,7 +86,7 @@ def bot(root, details=None, driver=None):
         # options.add_argument("--headless")
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(2)
+        driver.implicitly_wait(25)
     else:
         using_param_driver = True
     waiter = WebDriverWait(driver, 10)
@@ -112,17 +112,24 @@ def bot(root, details=None, driver=None):
             driver.find_element_by_css_selector("button[type='submit']"), driver
         )
         time.sleep(3)
+        driver.get("https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador")
         accounts = get_accounts(driver)
 
         is_active = True
         data_ri = 0
-        current_account = accounts[0]
+        current_account = accounts[1]
+        change_accounts(driver, accounts=accounts, to_account=current_account)
         while True:
-            if "error" in driver.current_url or data_ri % 20 == 0:
-                driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
-                driver.get(
-                    "https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador"
-                )
+            if (
+                "error" in driver.current_url
+                or "relogar" in driver.current_url
+                or data_ri % 20 == 0
+            ):
+                if "error" in driver.current_url or "relogar" in driver.current_url:
+                    driver.get(
+                        "https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador"
+                    )
+
                 change_accounts(driver, accounts=accounts, to_account=current_account)
                 for _ in range(data_ri // 20):
                     mt_wait_for_loader(
