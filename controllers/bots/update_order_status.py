@@ -72,7 +72,7 @@ def bot(root, details=None, driver=None):
         def update_single(product):
             # if delivered
             try:
-                deliver_btn = product.find_element_by_css_selector("a.statusDoPedido")
+                deliver_btn = product.find_element_by_css_selector("a.ButtonEnvio")
             except NoSuchElementException:
                 print("update_single err: no deliver button")
                 return False

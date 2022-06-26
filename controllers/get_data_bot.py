@@ -40,10 +40,9 @@ def email_generator(first_name, last_name):
         first_name.lower().split(" ")[0]
         + r.choice([".", "-", "_", "", "a", "1", "b", "0"])
         + last_name.lower().split(" ")[0]
-        + str(r.randint(1,1950))
+        + str(r.randint(1, 1950))
         + r.choice(["a", "1", "b", "0"])
-         + r.choice(["@gmail.com", "@hotmail.com", "@yahoo.com", "@outlook.com"])
-        
+        + r.choice(["@gmail.com", "@hotmail.com", "@yahoo.com", "@outlook.com"])
     )
 
 
@@ -86,6 +85,7 @@ def bot(root):
         )
         time.sleep(3)
         accounts = get_accounts(driver)
+        change_accounts(driver, accounts=accounts, to_account="AAAOPOMEGA25")
 
         def start_fetching_products(
             root, product=None, order_number=None, paginated=False
@@ -295,11 +295,12 @@ def bot(root):
                             driver,
                         ),
                     )
+                    dialog = WebDriverWait(driver, 25).until(
+                        EC.visibility_of_element_located((By.ID, "mensagensDialog"))
+                    )
 
                     dialog = driver.find_element_by_id("mensagensDialog")
-                    messages = dialog.find_elements_by_css_selector(
-                        "p[class*='p-text-left']"
-                    )
+                    messages = dialog.find_elements_by_css_selector("p.p-text-left")
                     is_cpf_request_sent = False
                     details["cpf"] = None
                     for i, message in enumerate(messages):
@@ -457,9 +458,7 @@ def bot(root):
                         time.sleep(2)
                         # ------------ cpf and delivery date -----------------
                         wait_for_clickable_and_click(
-                            product.find_element_by_id(
-                                "form-vendas:grid-vendas:0:statusFrete"
-                            ),
+                            product.find_element_by_css_selector("a.ButtonEnvio"),
                             driver,
                         )
                         dialog = WebDriverWait(driver, 10).until(
