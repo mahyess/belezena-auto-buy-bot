@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
 from helpers.file_system import CREDS_FILE
+from helpers.mt_wait_for_loader import mt_wait_for_loader
 from helpers.ping_checker import ping_until_up
 
 from helpers.wait_for_clickable import wait_for_clickable_and_click
@@ -19,6 +20,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 
 
 def beleza_stock_scraper(name):
@@ -84,10 +86,14 @@ def bot(root, details=None, driver=None):
         # options.add_argument("--headless")
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(8)
+        driver.implicitly_wait(2)
     else:
         using_param_driver = True
     waiter = WebDriverWait(driver, 10)
+
+    state_active_to_paused_changer = ActionChains(driver)
+    state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
+    state_active_to_paused_changer.send_keys(Keys.ENTER)
 
     try:
         with open(CREDS_FILE, "r") as f:
@@ -108,134 +114,73 @@ def bot(root, details=None, driver=None):
         time.sleep(3)
         accounts = get_accounts(driver)
 
-        driver.get("https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador")
-        time.sleep(6)
-        def update_single(product):
-            if "ui-datatable-empty-message" in product.get_attribute("class"):
-                return
-
-            name = (
-                product.find_element_by_class_name("cellAnuncio")
-                .find_element_by_class_name("ui-cell-editor-output")
-                .text
-            )
-
-            current_stock = (
-                product.find_element_by_class_name("cellQtd")
-                .find_element_by_class_name("ui-cell-editor-output")
-                .text
-            )
-            current_price = (
-                product.find_element_by_class_name("cellPreco")
-                .find_element_by_class_name("ui-cell-editor-output")
-                .text
-            )
+        is_active = True
+        data_ri = 0
+        current_account = accounts[0]
+        while True:
+            if "error" in driver.current_url or data_ri % 20 == 0:
+                driver.get("https://app.mercadoturbo.com.br/sistema/venda/vendas_ml")
+                driver.get(
+                    "https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador"
+                )
+                change_accounts(driver, accounts=accounts, to_account=current_account)
+                for _ in range(data_ri // 20):
+                    mt_wait_for_loader(
+                        driver,
+                        lambda: wait_for_clickable_and_click(
+                            driver.find_elements_by_css_selector("a.ui-paginator-next")[
+                                -1
+                            ],
+                            driver,
+                            nonjsclick=True,
+                        ),
+                    )
 
             try:
-                is_available, price = beleza_stock_scraper(name)
-            except Exception as e:
-                print(f"there was error finding stock for name: '{name}'")
-                is_available = False
-                price = 0
-            price = (round((price * (1 + PRICE_PERCENT / 100)), 2))
-            if float(price) < 7:
-                price = str(7)
-            price = str(price).replace(".",",")
-            stock = str(QTY) if is_available else "0"
-
-            if current_stock != stock or price != current_price:
-                wait_for_clickable_and_click(
-                    product.find_element_by_class_name(
-                        "cellEdit"
-                    ).find_element_by_class_name("ui-row-editor-pencil"),
-                    driver,
+                product = driver.find_element_by_css_selector(
+                    f"tr[data-ri='{str(data_ri)}']"
                 )
-                stock_input = (
-                    product.find_element_by_class_name("cellQtd")
-                    .find_element_by_class_name("ui-cell-editor-input")
-                    .find_element_by_css_selector("input[type='text']")
+                data_ri += 1
+            except NoSuchElementException:
+                data_ri = 0
+                if is_active:
+                    is_active = False
+
+                    wait_for_clickable_and_click(
+                        driver.find_element_by_xpath(
+                            "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
+                        ),
+                        driver,
+                        nonjsclick=True,
+                    )
+                    mt_wait_for_loader(
+                        driver,
+                        lambda: state_active_to_paused_changer.perform(),
+                    )
+
+                else:
+                    is_active = True
+                    current_account = change_accounts(driver, accounts)
+
+                page_1_btns = driver.find_elements_by_css_selector(
+                    "a.ui-paginator-page[aria-label='Page 1']"
                 )
-                stock_input.send_keys(Keys.CONTROL, "a")
-                stock_input.send_keys(stock)
-                price_input = (
-                    product.find_element_by_class_name("cellPreco")
-                    .find_element_by_class_name("ui-cell-editor-input")
-                    .find_element_by_css_selector("input[type='text']")
-                )
-                price_input.send_keys(Keys.CONTROL, "a")
-                price_input.send_keys(price)
-                wait_for_clickable_and_click(
-                    product.find_element_by_class_name(
-                        "cellEdit"
-                    ).find_element_by_class_name("ui-row-editor-check"),
-                    driver,
-                )
+                if len(page_1_btns) and "ui-state-active" not in page_1_btns[
+                    0
+                ].get_attribute("class"):
+                    mt_wait_for_loader(
+                        driver,
+                        lambda: wait_for_clickable_and_click(
+                            driver.find_element_by_css_selector(
+                                "a.ui-paginator-page[aria-label='Page 1']"
+                            ),
+                            driver,
+                            nonjsclick=True,
+                        ),
+                    )
 
-        def update():
-            products = driver.find_element_by_id(
-                "form-anuncios:grid-anuncios_data"
-            ).find_elements_by_css_selector("tr")
-
-            for product in products:
-                try:
-                    update_single(product)
-                except Exception as e:
-                    print(f"there was error updating product: '{e}'")
-
-            next_btn = driver.find_elements_by_css_selector("a.ui-paginator-next")[-1]
-
-            if "ui-state-disabled" not in next_btn.get_attribute("class"):
-                spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
-                wait_for_clickable_and_click(
-                    next_btn,
-                    driver,
-                    nonjsclick=True,
-                )
-                waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
-                waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
-                update()
-
-        state_active_to_paused_changer = ActionChains(driver)
-        state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
-        state_active_to_paused_changer.send_keys(Keys.ENTER)
-        for _ in accounts:
-            update()
-
-            spinner = driver.find_element_by_css_selector("div.dialog-aguarde")
-
-            wait_for_clickable_and_click(
-                driver.find_element_by_xpath(
-                    "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
-                ),
-                driver,
-                nonjsclick=True,
-            )
-
-            state_active_to_paused_changer.perform()
-            waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
-            waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
-
-            try:
-                # go to page 1 since it starts at random pages
-                wait_for_clickable_and_click(
-                    driver.find_elements_by_css_selector(
-                        "a.ui-paginator-page[aria-label='Page 1']"
-                    )[0],
-                    driver,
-                    nonjsclick=True,
-                )
-                print("hello")
-                waiter.until(lambda d: "false" in spinner.get_attribute("aria-hidden"))
-                waiter.until(lambda d: "true" in spinner.get_attribute("aria-hidden"))
-                print("hello agin")
-            except Exception as e:
-                pass
-
-            update()
-
-            change_accounts(driver, accounts)
-
-        print("everything done.")
+                continue
+            update_single(driver, product)
 
     except Exception as e:
         print(e)
@@ -243,5 +188,68 @@ def bot(root, details=None, driver=None):
 
     finally:
         print("update stock complete")
-        
+
         bot(root)
+
+
+def update_single(driver, product):
+    name = (
+        product.find_element_by_class_name("cellAnuncio")
+        .find_element_by_class_name("ui-cell-editor-output")
+        .text
+    )
+
+    current_stock = (
+        product.find_element_by_class_name("cellQtd")
+        .find_element_by_class_name("ui-cell-editor-output")
+        .text
+    )
+    current_price = (
+        product.find_element_by_class_name("cellPreco")
+        .find_element_by_class_name("ui-cell-editor-output")
+        .text
+    )
+
+    try:
+        is_available, price = beleza_stock_scraper(name)
+    except Exception as e:
+        print(f"there was error finding stock for name: '{name}'")
+        is_available = False
+        price = 0
+    price = round((price * (1 + PRICE_PERCENT / 100)), 2)
+    if float(price) < 7:
+        price = str(7)
+    price = str(price).replace(".", ",")
+    stock = str(QTY) if is_available else "0"
+
+    if current_stock != stock or price != current_price:
+        wait_for_clickable_and_click(
+            product.find_element_by_class_name("cellEdit").find_element_by_class_name(
+                "ui-row-editor-pencil"
+            ),
+            driver,
+        )
+
+        stock_input = (
+            product.find_element_by_class_name("cellQtd")
+            .find_element_by_class_name("ui-cell-editor-input")
+            .find_element_by_css_selector("input[type='text']")
+        )
+        stock_input.send_keys(Keys.CONTROL, "a")
+        stock_input.send_keys(stock)
+        price_input = (
+            product.find_element_by_class_name("cellPreco")
+            .find_element_by_class_name("ui-cell-editor-input")
+            .find_element_by_css_selector("input[type='text']")
+        )
+        price_input.send_keys(Keys.CONTROL, "a")
+        price_input.send_keys(price)
+        mt_wait_for_loader(
+            driver,
+            lambda: wait_for_clickable_and_click(
+                product.find_element_by_class_name(
+                    "cellEdit"
+                ).find_element_by_class_name("ui-row-editor-check"),
+                driver,
+            ),
+        )

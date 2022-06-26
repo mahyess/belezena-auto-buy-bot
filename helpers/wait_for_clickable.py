@@ -5,21 +5,15 @@ def close_unnecessary_dialogs_if_any(driver, wait_time=25):
     driver.implicitly_wait(0)
 
     try:
-        print("// closing banner if found")
         driver.find_element_by_xpath("//*[@id='onetrust-accept-btn-handler']").click()
-        print("// closed banner")
     except Exception as e:
-        # print(e)
         pass
 
     try:
-        print("// closing notification dialog if found")
         driver.find_element_by_xpath(
             "//*[@id='onesignal-slidedown-cancel-button']"
         ).click()
-        print("// closed notification dialog")
     except Exception as e:
-        # print(e)
         pass
 
     driver.implicitly_wait(wait_time)
