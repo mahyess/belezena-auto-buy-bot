@@ -132,16 +132,18 @@ def bot(root, details=None, driver=None):
 
                 change_accounts(driver, accounts=accounts, to_account=current_account)
                 for _ in range(data_ri // 20):
-                    mt_wait_for_loader(
-                        driver,
-                        lambda: wait_for_clickable_and_click(
-                            driver.find_elements_by_css_selector("a.ui-paginator-next")[
-                                -1
-                            ],
+                    next_btn = driver.find_elements_by_css_selector(
+                        "a.ui-paginator-next"
+                    )[-1]
+                    if "ui-state-disabled" not in next_btn.get_attribute("class"):
+                        mt_wait_for_loader(
                             driver,
-                            nonjsclick=True,
-                        ),
-                    )
+                            lambda: wait_for_clickable_and_click(
+                                next_btn,
+                                driver,
+                                nonjsclick=True,
+                            ),
+                        )
 
             try:
                 product = driver.find_element_by_css_selector(
@@ -163,6 +165,12 @@ def bot(root, details=None, driver=None):
                     mt_wait_for_loader(
                         driver,
                         lambda: state_active_to_paused_changer.perform(),
+                    )
+                    mt_wait_for_loader(
+                        driver,
+                        lambda: driver.find_element_by_css_selector(
+                            "input[placeholder='Buscar por']"
+                        ).send_keys(Keys.ENTER),
                     )
 
                 else:
@@ -187,19 +195,39 @@ def bot(root, details=None, driver=None):
                     )
 
                 continue
-            update_single(driver, product)
+            try:
+                update_single(driver, product)
+            except Exception as e:
+                print("error changing values here. but we continue")
 
     except Exception as e:
         print(e)
         return "system error", False
 
     finally:
+        driver.quit()
         print("update stock complete")
 
         bot(root)
 
 
 def update_single(driver, product):
+    # wait_for_clickable_and_click(
+    #     product.find_element_by_class_name("cellEdit").find_element_by_class_name(
+    #         "ui-row-editor-pencil"
+    #     ),
+    #     driver,
+    # )
+    # mt_wait_for_loader(
+    #     driver,
+    #     lambda: wait_for_clickable_and_click(
+    #         product.find_element_by_class_name("cellEdit").find_element_by_class_name(
+    #             "ui-row-editor-check"
+    #         ),
+    #         driver,
+    #     ),
+    # )
+    # return
     name = (
         product.find_element_by_class_name("cellAnuncio")
         .find_element_by_class_name("ui-cell-editor-output")
