@@ -20,7 +20,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
 
 
 def beleza_stock_scraper(name):
@@ -75,10 +78,10 @@ def beleza_stock_scraper(name):
 creds = json.load(open(CREDS_FILE))
 QTY = creds.get("quantity")
 PRICE_PERCENT = creds.get("price")
+INVENTORY_URL = "https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador"
 
 
-def bot(root, details=None, driver=None):
-    using_param_driver = False
+def bot(root, driver=None, current_account=None, data_ri=0, is_active=True):
     if not driver:
         options = Options()
         options.add_argument("--window-size=1920,1080")
@@ -87,50 +90,41 @@ def bot(root, details=None, driver=None):
         options.add_argument(f"user-agent={random_user_agent(root)}")
         driver = webdriver.Chrome(options=options)
         driver.implicitly_wait(25)
-    else:
-        using_param_driver = True
+
     waiter = WebDriverWait(driver, 10)
 
-    state_active_to_paused_changer = ActionChains(driver)
-    state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
-    state_active_to_paused_changer.send_keys(Keys.ENTER)
-
     try:
-        with open(CREDS_FILE, "r") as f:
-            creds = json.load(f)
-        driver.get("https://app.mercadoturbo.com.br//login_operador")
-        driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            creds.get("email", "brenoml0921@yahoo.com")
-        )
-        driver.find_element_by_xpath(
-            "//input[contains(@id, 'input-usuario')]"
-        ).send_keys(creds.get("operador", "operador1"))
-        driver.find_element_by_css_selector("input[type='password']").send_keys(
-            creds.get("password", "36461529")
-        )
-        wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']"), driver
-        )
-        time.sleep(3)
-        driver.get("https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador")
+        if not assert_page_to_inventory(driver):
+            with open(CREDS_FILE, "r") as f:
+                creds = json.load(f)
+            driver.get("https://app.mercadoturbo.com.br//login_operador")
+            driver.find_element_by_xpath(
+                "//input[contains(@id, 'input-conta')]"
+            ).send_keys(creds.get("email", "brenoml0921@yahoo.com"))
+            driver.find_element_by_xpath(
+                "//input[contains(@id, 'input-usuario')]"
+            ).send_keys(creds.get("operador", "operador1"))
+            driver.find_element_by_css_selector("input[type='password']").send_keys(
+                creds.get("password", "36461529")
+            )
+            wait_for_clickable_and_click(
+                driver.find_element_by_css_selector("button[type='submit']"), driver
+            )
+            time.sleep(3)
+
+            assert_page_to_inventory(driver)
+
         accounts = get_accounts(driver)
-
-        is_active = True
-        data_ri = 0
-        current_account = accounts[1]
+        current_account = current_account or accounts[1]
         change_accounts(driver, accounts=accounts, to_account=current_account)
-        while True:
-            if (
-                "error" in driver.current_url
-                or "relogar" in driver.current_url
-                or data_ri % 20 == 0
-            ):
-                if "error" in driver.current_url or "relogar" in driver.current_url:
-                    driver.get(
-                        "https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador"
-                    )
+        if not is_active:
+            change_active_to_passive(driver)
 
+        while True:
+            if not INVENTORY_URL in driver.current_url or data_ri % 20 == 0:
                 change_accounts(driver, accounts=accounts, to_account=current_account)
+                if not (assert_page_to_inventory(driver) or is_active):
+                    change_active_to_passive(driver)
                 for _ in range(data_ri // 20):
                     next_btn = driver.find_elements_by_css_selector(
                         "a.ui-paginator-next"
@@ -151,27 +145,18 @@ def bot(root, details=None, driver=None):
                 )
                 data_ri += 1
             except NoSuchElementException:
+                if not assert_page_to_inventory(driver):
+                    bot(
+                        root,
+                        driver=driver,
+                        current_account=current_account,
+                        data_ri=data_ri,
+                        is_active=is_active,
+                    )
                 data_ri = 0
                 if is_active:
                     is_active = False
-
-                    wait_for_clickable_and_click(
-                        driver.find_element_by_xpath(
-                            "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
-                        ),
-                        driver,
-                        nonjsclick=True,
-                    )
-                    mt_wait_for_loader(
-                        driver,
-                        lambda: state_active_to_paused_changer.perform(),
-                    )
-                    mt_wait_for_loader(
-                        driver,
-                        lambda: driver.find_element_by_css_selector(
-                            "input[placeholder='Buscar por']"
-                        ).send_keys(Keys.ENTER),
-                    )
+                    change_active_to_passive(driver)
 
                 else:
                     is_active = True
@@ -201,33 +186,23 @@ def bot(root, details=None, driver=None):
                 print("error changing values here. but we continue")
 
     except Exception as e:
-        print(e)
-        return "system error", False
-
-    finally:
         driver.quit()
-        print("update stock complete")
+        bot(
+            root,
+            current_account=current_account,
+            data_ri=data_ri,
+            is_active=is_active,
+        )
 
-        bot(root)
+
+def assert_page_to_inventory(driver):
+    if not INVENTORY_URL in driver.current_url:
+        driver.get(INVENTORY_URL)
+        return False
+    return True
 
 
 def update_single(driver, product):
-    # wait_for_clickable_and_click(
-    #     product.find_element_by_class_name("cellEdit").find_element_by_class_name(
-    #         "ui-row-editor-pencil"
-    #     ),
-    #     driver,
-    # )
-    # mt_wait_for_loader(
-    #     driver,
-    #     lambda: wait_for_clickable_and_click(
-    #         product.find_element_by_class_name("cellEdit").find_element_by_class_name(
-    #             "ui-row-editor-check"
-    #         ),
-    #         driver,
-    #     ),
-    # )
-    # return
     name = (
         product.find_element_by_class_name("cellAnuncio")
         .find_element_by_class_name("ui-cell-editor-output")
@@ -288,3 +263,46 @@ def update_single(driver, product):
                 driver,
             ),
         )
+
+
+def change_active_to_passive(driver):
+    state_active_to_paused_changer = ActionChains(driver)
+    state_active_to_paused_changer.send_keys(Keys.ARROW_DOWN)
+    state_active_to_paused_changer.send_keys(Keys.ENTER)
+
+    wait_for_clickable_and_click(
+        driver.find_element_by_xpath(
+            "//h4[contains(., 'Status:')]/following-sibling::div[@role='combobox']"
+        ),
+        driver,
+        nonjsclick=True,
+    )
+    mt_wait_for_loader(
+        driver,
+        lambda: state_active_to_paused_changer.perform(),
+    )
+    mt_wait_for_loader(
+        driver,
+        lambda: driver.find_element_by_css_selector(
+            "input[placeholder='Buscar por']"
+        ).send_keys(Keys.ENTER),
+    )
+
+
+def update_single_test_without_scrape(driver, product):
+    wait_for_clickable_and_click(
+        product.find_element_by_class_name("cellEdit").find_element_by_class_name(
+            "ui-row-editor-pencil"
+        ),
+        driver,
+    )
+    mt_wait_for_loader(
+        driver,
+        lambda: wait_for_clickable_and_click(
+            product.find_element_by_class_name("cellEdit").find_element_by_class_name(
+                "ui-row-editor-check"
+            ),
+            driver,
+        ),
+    )
+    return
