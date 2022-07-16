@@ -75,5 +75,5 @@ def random_user_agent(root=None):
         else:
             return cached[randint(0, len(cached))]
     except Exception as e:
+        print("getting cached user agent")
         return cached[randint(0, len(cached))]
-        root.show_message_box("from user agent", e, "warning")

@@ -7,6 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.webdriver.support.wait import WebDriverWait
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from controllers.bots.helpers.webdriver import driver_setup_mercado, get_bot_driver
 from helpers.file_system import CREDS_FILE
 from helpers.mt_wait_for_loader import mt_wait_for_loader
 from helpers.ping_checker import ping_until_up
@@ -30,21 +31,12 @@ def beleza_stock_scraper(name):
     def fetch(url, data=None):
         headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-US;en;q=0.5",
-            "Connection": "keep-alive",
-            "DNT": "1",
-            "Host": "www.belezanaweb.com.br",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "Sec-GPC": "1",
-            "TE": "trailers",
-            "Upgrade-Insecure-Requests": "1",
-            # "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36",
+            "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "en-US;en;q=0.5",
+            "Connection": "keep-alive", "DNT": "1", "Host": "www.belezanaweb.com.br",
+            "Sec-Fetch-Dest": "document", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1", "Sec-GPC": "1", "TE": "trailers", "Upgrade-Insecure-Requests": "1",
+            "User-Agent": random_user_agent()
         }
-        headers["User-Agent"] = random_user_agent()
         with requests.Session() as s:
             if data is None:
                 return s.get(url, headers=headers).content
@@ -83,34 +75,11 @@ INVENTORY_URL = "https://app.mercadoturbo.com.br/sistema/anuncio/gerenciador"
 
 def bot(root, driver=None, current_account=None, data_ri=0, is_active=True):
     if not driver:
-        options = Options()
-        options.add_argument("--window-size=1920,1080")
-        options.add_argument("--start-maximized")
-        # options.add_argument("--headless")
-        options.add_argument(f"user-agent={random_user_agent(root)}")
-        driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(25)
-
-    waiter = WebDriverWait(driver, 10)
+        driver, waiter = get_bot_driver()
 
     try:
         if not assert_page_to_inventory(driver):
-            with open(CREDS_FILE, "r") as f:
-                creds = json.load(f)
-            driver.get("https://app.mercadoturbo.com.br//login_operador")
-            driver.find_element_by_xpath(
-                "//input[contains(@id, 'input-conta')]"
-            ).send_keys(creds.get("email", "brenoml0921@yahoo.com"))
-            driver.find_element_by_xpath(
-                "//input[contains(@id, 'input-usuario')]"
-            ).send_keys(creds.get("operador", "operador1"))
-            driver.find_element_by_css_selector("input[type='password']").send_keys(
-                creds.get("password", "36461529")
-            )
-            wait_for_clickable_and_click(
-                driver.find_element_by_css_selector("button[type='submit']"), driver
-            )
-            time.sleep(3)
+            driver, accounts = driver_setup_mercado(driver)
 
             assert_page_to_inventory(driver)
 

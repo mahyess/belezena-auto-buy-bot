@@ -1,6 +1,7 @@
 import json
 from selenium.webdriver.common.keys import Keys
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from controllers.bots.helpers.webdriver import driver_setup_mercado, get_bot_driver
 from helpers.mt_wait_for_loader import mt_wait_for_loader
 from helpers.passgen import generate_password
 from helpers.ping_checker import ping_until_up
@@ -37,12 +38,12 @@ import random as r
 
 def email_generator(first_name, last_name):
     return (
-        first_name.lower().split(" ")[0]
-        + r.choice([".", "-", "_", "", "a", "1", "b", "0"])
-        + last_name.lower().split(" ")[0]
-        + str(r.randint(1, 1950))
-        + r.choice(["a", "1", "b", "0"])
-        + r.choice(["@gmail.com", "@hotmail.com", "@yahoo.com", "@outlook.com"])
+            first_name.lower().split(" ")[0]
+            + r.choice([".", "-", "_", "", "a", "1", "b", "0"])
+            + last_name.lower().split(" ")[0]
+            + str(r.randint(1, 1950))
+            + r.choice(["a", "1", "b", "0"])
+            + r.choice(["@gmail.com", "@hotmail.com", "@yahoo.com", "@outlook.com"])
     )
 
 
@@ -61,34 +62,13 @@ def strip_dict(d):
 def bot(root):
     root.status = 1
     root.refresh_ui()
-    with open(CREDS_FILE, "r") as f:
-        creds = json.load(f)
-
-    options = Options()
-    options.add_argument(f"user-agent={random_user_agent(root)}")
-    options.add_argument("--start-maximized")
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10)
+    driver, waiter = get_bot_driver()
     try:
-        driver.get("https://app.mercadoturbo.com.br//login_operador")
-        driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            creds.get("email", "brenoml0921@yahoo.com")
-        )
-        driver.find_element_by_xpath(
-            "//input[contains(@id, 'input-usuario')]"
-        ).send_keys(creds.get("operador", "operador1"))
-        driver.find_element_by_css_selector("input[type='password']").send_keys(
-            creds.get("password", "36461529")
-        )
-        wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']"), driver
-        )
-        time.sleep(3)
-        accounts = get_accounts(driver)
-        change_accounts(driver, accounts=accounts, to_account="AAAOPOMEGA25")
+        driver, accounts = driver_setup_mercado(driver)
+        change_accounts(driver, accounts=accounts, to_account="AABOPOMEGA28")
 
         def start_fetching_products(
-            root, product=None, order_number=None, paginated=False
+                root, product=None, order_number=None, paginated=False
         ):
             try:
                 if product is None:
@@ -136,13 +116,13 @@ def bot(root):
 
                     for line_count, row in enumerate(file_reader):
                         if row.get("order_number") == order_number and any(
-                            x in row.get("remarks")
-                            for x in [
-                                "Out of Stock",
-                                "Not enough quantity",
-                                "No CPF",
-                                "excess request",
-                            ]
+                                x in row.get("remarks")
+                                for x in [
+                                    "Out of Stock",
+                                    "Not enough quantity",
+                                    "No CPF",
+                                    "excess request",
+                                ]
                         ):
                             try:
                                 _, date = row.get("remarks").partition(" - ")
@@ -246,12 +226,12 @@ def bot(root):
                     details["customer_first_name"],
                     details["customer_last_name"],
                 ) = f"""{
-                    unidecode(
-                        dialog.find_element_by_xpath(
-                            ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
-                        )
-                        .get_attribute("value")
-                    )}  """.split(
+                unidecode(
+                    dialog.find_element_by_xpath(
+                        ".//label[contains(text(), 'Nome Destinatário')]/following-sibling::input"
+                    )
+                    .get_attribute("value")
+                )}  """.split(
                     " ", 1
                 )
 
@@ -372,7 +352,7 @@ def bot(root):
                     ddd = cpf_data.get("ddd", "11")
                     ddd = ddd if ddd else "11"
                     details["telephone"] = (
-                        ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
+                            ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
                     )
                 else:
                     cpf_data_response = requests.get(
@@ -381,8 +361,8 @@ def bot(root):
                     cpf_data = cpf_data_response.json()
 
                     if (
-                        cpf_data_response.status_code == 200
-                        and cpf_data.get("retorno") == "OK"
+                            cpf_data_response.status_code == 200
+                            and cpf_data.get("retorno") == "OK"
                     ):
                         # if this request is succesfull
                         cpf_data = cpf_data.get("msg")
@@ -405,7 +385,7 @@ def bot(root):
 
                         ddd = cpf_data.get("ddd", "11")
                         details["telephone"] = (
-                            ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
+                                ddd + "99" + f"1{dt.now().strftime('%d%H%M%S')}"
                         )
                     else:
                         details = {

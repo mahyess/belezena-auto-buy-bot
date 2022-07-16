@@ -12,6 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
+from controllers.bots.helpers.webdriver import driver_setup_mercado
 from helpers.file_system import CREDS_FILE
 from helpers.mt_wait_for_loader import mt_wait_for_loader
 from helpers.post_remark import post_remarks
@@ -51,23 +52,7 @@ def bot(root, details=None, driver=None):
     waiter = WebDriverWait(driver, WAIT_TIME)
 
     try:
-        driver.get("https://app.mercadoturbo.com.br//login_operador")
-        driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            creds.get("email", "brenoml0921@yahoo.com")
-        )
-        driver.find_element_by_xpath(
-            "//input[contains(@id, 'input-usuario')]"
-        ).send_keys(creds.get("operador", "operador1"))
-        driver.find_element_by_css_selector("input[type='password']").send_keys(
-            creds.get("password", "36461529")
-        )
-        wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']"),
-            driver,
-            wait_time=WAIT_TIME,
-        )
-        time.sleep(3)
-        accounts = get_accounts(driver)
+        driver, accounts = driver_setup_mercado(driver)
 
         def update_single(product):
             # if delivered

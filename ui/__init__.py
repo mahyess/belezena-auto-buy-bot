@@ -1,18 +1,11 @@
 import json
-import requests
 import threading
-from helpers.file_system import (
-    CARD_FILE,
-    COMPLETED_FILE,
-    CREDS_FILE,
-    ERROR_FILE,
-    FEEDING_FILE,
-    MSG_FILE,
-)
-from helpers.csv_reader import get_lines_count
 import tkinter as tk
 import tkinter.filedialog as filedialog
 from tkinter.constants import RIDGE
+
+import requests
+
 from controllers import (
     auto_buy,
     clear,
@@ -23,6 +16,15 @@ from controllers import (
     pause,
     save_creds,
     reply_messages,
+)
+from controllers.bots.helpers.messages import msg_reader, msg_writer
+from helpers.csv_reader import get_lines_count
+from helpers.file_system import (
+    CARD_FILE,
+    COMPLETED_FILE,
+    CREDS_FILE,
+    ERROR_FILE,
+    FEEDING_FILE,
 )
 
 
@@ -236,17 +238,7 @@ class BaseFrame(tk.Frame):
             exit()
 
     def setup_middle_middle_frame(self):
-        def msg_writer(txt):
-            with open(MSG_FILE, "w", encoding="utf-8") as f:
-                f.write(txt)
-            tk.messagebox.showinfo("Save", "Message Saved")
 
-        def msg_reader():
-            try:
-                with open(MSG_FILE, "r") as f:
-                    return f.read()
-            except FileNotFoundError:
-                return "Test Message"
 
         self.message_frame = tk.Frame(
             self.root,

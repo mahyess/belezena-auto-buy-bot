@@ -3,6 +3,8 @@ import tkinter as tk
 
 from ui import BaseFrame
 
+WAIT_TIME = 2
+
 
 def main():
     try:

@@ -1,24 +1,14 @@
-#_*_ coding: utf-8 _*_
-import json
-import time
+# _*_ coding: utf-8 _*_
 import re
+import time
 
-from bs4 import BeautifulSoup
-import requests
-from lxml import html
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 
-from controllers.bots.helpers.mercado_accounts import change_accounts, get_accounts
-from helpers.file_system import CREDS_FILE, MSG_FILE
+from controllers.bots.helpers.mercado_accounts import change_accounts
+from controllers.bots.helpers.messages import msg_reader
+from controllers.bots.helpers.webdriver import get_bot_driver, driver_setup_mercado
 from helpers.mt_wait_for_loader import mt_wait_for_loader
-from helpers.post_remark import post_remarks
 from helpers.wait_for_clickable import wait_for_clickable_and_click
-from helpers.user_agent import random_user_agent
 
 DIGIT_REGEX = re.compile(r"\d+")
 
@@ -30,52 +20,18 @@ class regex_text_to_be_present_in_element(EC.text_to_be_present_in_element):
                 EC._find_element(driver, self.locator).get_attribute("innerHTML")
             )
 
-            return matched != None
+            return matched is not None
         except EC.StaleElementReferenceException:
             return False
 
 
-def bot(root, details=None, driver=None):
-    try:
-        with open(MSG_FILE, "r") as f:
-            MESSAGE_TEXT = f.read()
-    except FileNotFoundError:
-        encoding='UTF-8'
-        MESSAGE_TEXT = "Test Message"
+def bot(root, driver=None):
+    MESSAGE_TEXT = msg_reader()
 
-    WAIT_TIME = 25
-    with open(CREDS_FILE, "r") as f:
-        creds = json.load(f)
-    using_param_driver = False
-    if not driver:
-        options = Options()
-        options.add_argument("--window-size=1920,1080")
-        options.add_argument("--start-maximized")
-        options.add_argument(f"user-agent={random_user_agent(root)}")
-        driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(WAIT_TIME)
-    else:
-        using_param_driver = True
-    waiter = WebDriverWait(driver, WAIT_TIME)
-
+    if driver is None:
+        driver, waiter = get_bot_driver(root)
     try:
-        driver.get("https://app.mercadoturbo.com.br//login_operador")
-        driver.find_element_by_xpath("//input[contains(@id, 'input-conta')]").send_keys(
-            creds.get("email", "brenoml0921@yahoo.com")
-        )
-        driver.find_element_by_xpath(
-            "//input[contains(@id, 'input-usuario')]"
-        ).send_keys(creds.get("operador", "operador1"))
-        driver.find_element_by_css_selector("input[type='password']").send_keys(
-            creds.get("password", "36461529")
-        )
-        wait_for_clickable_and_click(
-            driver.find_element_by_css_selector("button[type='submit']"),
-            driver,
-            wait_time=WAIT_TIME,
-        )
-        time.sleep(3)
-        accounts = get_accounts(driver)
+        driver, accounts = driver_setup_mercado(driver)
 
         def reply_messages():
             messages = driver.find_element_by_id(
@@ -104,14 +60,10 @@ def bot(root, details=None, driver=None):
                     driver,
                 )
 
-        for _ in accounts:
-            driver.get(
-                "https://app.mercadoturbo.com.br/sistema/mensagem/conversacoes_novo"
-            )
-
+        for account in accounts:
+            driver.get("https://app.mercadoturbo.com.br/sistema/mensagem/conversacoes_novo")
             reply_messages()
-
-            change_accounts(driver, accounts)
+            change_accounts(driver, accounts, to_account=account)
 
         print("everything done.")
 
@@ -121,6 +73,5 @@ def bot(root, details=None, driver=None):
 
     finally:
         print("reply message complete")
-        if not using_param_driver:
-            driver.quit()
+        driver.quit()
         bot(root)
