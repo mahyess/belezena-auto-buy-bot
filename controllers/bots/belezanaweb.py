@@ -56,7 +56,7 @@ def bot(root, details, driver=None):
         product = None
         while not product:
             products = driver.find_elements_by_xpath(
-                f"//a[contains(@class, 'showcase-item-image') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
+                f"//div[contains(@class, 'showcase-item') and .//img[contains(translate(@alt, '{product_name.upper()}', '{product_name.lower()}'), '{product_name.lower()}')]]"
             )
             if len(products):
                 product = products[0]
