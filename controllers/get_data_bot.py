@@ -31,8 +31,6 @@ from unidecode import unidecode
 
 import controllers.bots.belezanaweb as botfile
 
-# import controllers.bots.drogaraia as botfile
-
 import random as r
 
 
